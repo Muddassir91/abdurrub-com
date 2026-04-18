@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ============================================================
+       BLOG POST TEMPLATE
+       Replace every {{ TOKEN }} below, then save as a new .html file
+       in this folder, e.g. retention-math.html.
+       Then open ../blog.html and add a card linking to this post.
+       ============================================================ -->
+
+  <title>{{ POST_TITLE }} | Muddassir Abdur Rub</title>
+  <meta name="description" content="{{ POST_SUMMARY_UNDER_155_CHARS }}" />
+  <link rel="canonical" href="https://abdurrub.com/pages/blog/{{ POST_SLUG }}.html" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="{{ POST_TITLE }}" />
+  <meta property="og:description" content="{{ POST_SUMMARY_UNDER_155_CHARS }}" />
+  <meta property="og:image" content="https://abdurrub.com/images/Mud-website-image.png" />
+  <meta property="article:published_time" content="{{ ISO_DATE }}" />
+  <meta property="article:author" content="Muddassir Abdur Rub" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: {
+      colors: {
+        teal:{50:'#f0fdfa',100:'#ccfbf1',200:'#99f6e4',300:'#5eead4',400:'#2dd4bf',500:'#14b8a6',600:'#0d9488',700:'#0f766e',800:'#115e59',900:'#134e4a',950:'#0a4d5c'},
+        ink:{900:'#0a0a0a',700:'#1f2937',500:'#4b5563',400:'#6b7280',300:'#9ca3af',200:'#e5e7eb',100:'#f3f4f6',50:'#fafafa'}
+      },
+      fontFamily:{ sans:['Inter','sans-serif'], display:['Archivo','sans-serif'] },
+      maxWidth:{ 'screen-2xl':'1280px' }
+    }}}
+  </script>
+  <link rel="stylesheet" href="../../css/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f766e'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='Archivo,sans-serif' font-weight='800' font-size='18' fill='white'%3EM%3C/text%3E%3C/svg%3E" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "{{ POST_TITLE }}",
+    "datePublished": "{{ ISO_DATE }}",
+    "author": { "@type": "Person", "name": "Muddassir Abdur Rub", "url": "https://abdurrub.com/" },
+    "image": "https://abdurrub.com/images/Mud-website-image.png",
+    "mainEntityOfPage": "https://abdurrub.com/pages/blog/{{ POST_SLUG }}.html"
+  }
+  </script>
+
+  <style>
+    .prose h2 { font-family: Archivo, sans-serif; font-weight: 700; font-size: 1.75rem; margin-top: 2.5rem; margin-bottom: 1rem; letter-spacing: -0.02em; }
+    .prose h3 { font-family: Archivo, sans-serif; font-weight: 700; font-size: 1.25rem; margin-top: 2rem; margin-bottom: .75rem; }
+    .prose p  { margin-bottom: 1.25rem; line-height: 1.75; color: #4b5563; font-size: 1.0625rem; }
+    .prose ul { margin: 1.25rem 0; padding-left: 1.25rem; color: #4b5563; }
+    .prose li { margin-bottom: .5rem; line-height: 1.7; }
+    .prose blockquote { border-left: 3px solid #0f766e; padding: .25rem 1.25rem; margin: 1.5rem 0; color: #1f2937; font-style: normal; }
+    .prose a { color: #0f766e; text-decoration: underline; text-underline-offset: 3px; }
+    .prose a:hover { color: #115e59; }
+    .prose strong { color: #0a0a0a; font-weight: 600; }
+    .prose img { border-radius: 14px; margin: 1.75rem 0; }
+  </style>
+</head>
+
+<body class="bg-white text-ink-900 font-sans antialiased">
+
+<nav data-nav class="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur border-b border-ink-100">
+  <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex h-16 items-center justify-between">
+      <a href="../../index.html" class="font-display font-bold text-xl text-teal-950 tracking-tight">Muddassir<span class="text-teal-500">.</span></a>
+      <div class="hidden md:flex items-center gap-8">
+        <a href="../blog.html" class="text-ink-500 hover:text-teal-700 transition text-sm">Blog</a>
+        <a href="../../index.html#faq" class="text-ink-500 hover:text-teal-700 transition text-sm">FAQs</a>
+        <a href="https://calendar.app.google/LEcHPfT7csau1WCQ7" target="_blank" rel="noopener" class="btn btn-primary text-sm py-2 px-5">Book a call</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- POST -->
+<article class="pt-32 pb-16 lg:pt-40 lg:pb-20">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <a href="../blog.html" class="text-sm text-ink-400 hover:text-teal-700 inline-flex items-center gap-2">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      All posts
+    </a>
+
+    <header class="mt-8 mb-10">
+      <div class="flex items-center gap-3 text-xs text-ink-400 uppercase tracking-widest mb-4">
+        <span>{{ CATEGORY }}</span>
+        <span>·</span>
+        <span>{{ READ_TIME }} min read</span>
+        <span>·</span>
+        <time datetime="{{ ISO_DATE }}">{{ HUMAN_DATE }}</time>
+      </div>
+      <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold leading-[1.08] tracking-tight">
+        {{ POST_TITLE }}
+      </h1>
+      <p class="mt-5 text-lg text-ink-500 leading-relaxed">
+        {{ DECK_SENTENCE_THAT_SETS_UP_THE_PIECE }}
+      </p>
+    </header>
+
+    <div class="prose">
+
+      <p>{{ OPENING_PARAGRAPH }}</p>
+
+      <h2>{{ FIRST_SECTION_HEADING }}</h2>
+      <p>{{ FIRST_SECTION_BODY }}</p>
+
+      <h2>{{ SECOND_SECTION_HEADING }}</h2>
+      <p>{{ SECOND_SECTION_BODY }}</p>
+
+      <blockquote>{{ OPTIONAL_PULL_QUOTE }}</blockquote>
+
+      <h2>{{ THIRD_SECTION_HEADING }}</h2>
+      <p>{{ THIRD_SECTION_BODY }}</p>
+
+    </div>
+
+    <div class="mt-14 pt-10 border-t border-ink-100">
+      <p class="text-sm text-ink-400 uppercase tracking-widest mb-3">Next step</p>
+      <h3 class="font-display text-2xl font-bold">If retention is the bottleneck, the audit is free.</h3>
+      <a href="https://calendar.app.google/LEcHPfT7csau1WCQ7" target="_blank" rel="noopener" class="mt-5 inline-block btn btn-primary">
+        Book your free retention audit
+      </a>
+    </div>
+  </div>
+</article>
+
+<footer class="border-t border-ink-100 py-12">
+  <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+      <span class="font-display font-bold text-lg text-teal-950">Muddassir Abdur Rub<span class="text-teal-500">.</span></span>
+      <div class="flex flex-wrap gap-6 text-sm">
+        <a href="https://www.linkedin.com/in/muddassir-marketing" target="_blank" rel="noopener" class="text-ink-500 hover:text-teal-700">LinkedIn</a>
+        <a href="https://x.com/its_abdurrub" target="_blank" rel="noopener" class="text-ink-500 hover:text-teal-700">X / Twitter</a>
+        <a href="https://substack.com/@mud26" target="_blank" rel="noopener" class="text-ink-500 hover:text-teal-700">Substack</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>
