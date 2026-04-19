@@ -20,18 +20,23 @@ cnc-rose/
 
 ## Preview the model
 
-The STL viewer needs to fetch `rose.stl` over HTTP, so don't open the file
-directly with `file://`. From this folder:
+**Just double-click `preview.html`.** The STL is embedded inside the page, so
+it works straight from `file://` — no web server required. (The page only needs
+internet access for the three.js library.)
+
+Drag to orbit, scroll to zoom, right-drag to pan. The dashed teal box shows
+the 100 × 100 × 40 mm stock blank the CNC will cut from; the X/Y/Z axes mark
+the work-coordinate origin. Use **Load a different .stl** (or just drop a file
+onto the page) to view any other STL.
+
+If you'd rather serve over HTTP:
 
 ```bash
-python3 -m http.server 8000
+cd cnc-rose && python3 -m http.server 8000
+# then open http://localhost:8000/preview.html
 ```
 
-Then visit <http://localhost:8000/preview.html>. Drag to orbit, scroll to zoom,
-right-drag to pan. The dashed teal box shows the 100 × 100 × 40 mm stock blank
-the CNC will cut from; the X/Y/Z axes mark the work-coordinate origin.
-
-You can also drag `rose.stl` straight into any STL viewer (Microsoft 3D Viewer,
+You can also open `rose.stl` directly in any STL viewer (Microsoft 3D Viewer,
 Windows File Explorer thumbnail, MeshLab, PrusaSlicer, Bambu Studio, Fusion 360,
 <https://www.viewstl.com/>, etc.).
 
@@ -54,6 +59,7 @@ inside its bounds.
 ```bash
 python3 generate_rose.py     # writes rose.stl
 python3 generate_gcode.py    # writes rose_roughing.nc and rose_finishing.nc
+python3 build_preview.py     # re-embeds rose.stl inside preview.html
 ```
 
 Both scripts are pure Python 3 (no dependencies). Edit them to change petal
