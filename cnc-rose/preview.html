@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>3D Rose - STL Preview</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #0a0a0a; color: #e5e7eb;
+               font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  #viewer { position: fixed; inset: 0; }
+  .panel {
+    position: fixed; top: 16px; left: 16px; padding: 14px 16px;
+    background: rgba(15, 23, 32, 0.78); backdrop-filter: blur(8px);
+    border: 1px solid rgba(94, 234, 212, 0.25); border-radius: 12px;
+    max-width: 320px; line-height: 1.45; font-size: 13px;
+  }
+  .panel h1 { margin: 0 0 6px 0; font-size: 15px; color: #5eead4; letter-spacing: 0.02em; }
+  .panel small { color: #9ca3af; }
+  .panel kbd { background:#1f2937; border:1px solid #374151; padding:1px 5px;
+               border-radius:4px; font-size:11px; }
+  .stats { position: fixed; bottom: 14px; left: 16px; font-size: 12px; color: #9ca3af; }
+  .err { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+         color: #fca5a5; background: #1f2937; padding: 14px 18px; border-radius: 8px;
+         border: 1px solid #7f1d1d; max-width: 480px; }
+</style>
+</head>
+<body>
+<div id="viewer"></div>
+
+<div class="panel">
+  <h1>3D Rose — STL preview</h1>
+  <div>Parametric model for CNC routing on a wooden blank.</div>
+  <div style="margin-top: 8px;">
+    <small>
+      <kbd>drag</kbd> orbit &nbsp;
+      <kbd>scroll</kbd> zoom &nbsp;
+      <kbd>right-drag</kbd> pan
+    </small>
+  </div>
+  <div style="margin-top:10px;">
+    <small>Stock outline (100&times;100&times;40&nbsp;mm) shown in dashed teal.</small>
+  </div>
+</div>
+
+<div class="stats" id="stats">Loading rose.stl &hellip;</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { STLLoader } from 'three/addons/loaders/STLLoader.js';
+
+const stats = document.getElementById('stats');
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0a0a);
+
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2000);
+camera.position.set(120, -140, 110);
+camera.up.set(0, 0, 1);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.getElementById('viewer').appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.target.set(0, 0, 15);
+
+// Lighting — warm key + cool fill so the petal curvature reads.
+scene.add(new THREE.AmbientLight(0xffffff, 0.35));
+const key = new THREE.DirectionalLight(0xfff1d6, 1.1);
+key.position.set(80, -60, 120);
+key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048);
+const d = 80;
+key.shadow.camera.left = -d;
+key.shadow.camera.right = d;
+key.shadow.camera.top = d;
+key.shadow.camera.bottom = -d;
+key.shadow.camera.near = 1;
+key.shadow.camera.far = 400;
+scene.add(key);
+
+const fill = new THREE.DirectionalLight(0x8ad8ff, 0.45);
+fill.position.set(-90, 60, 60);
+scene.add(fill);
+
+const rim = new THREE.DirectionalLight(0xffffff, 0.35);
+rim.position.set(0, 100, 30);
+scene.add(rim);
+
+// Ground / spoilboard plane.
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(400, 400),
+  new THREE.MeshStandardMaterial({ color: 0x1a1f24, roughness: 0.95, metalness: 0.0 })
+);
+ground.receiveShadow = true;
+scene.add(ground);
+
+// Stock outline: 100 x 100 x 40 mm wood blank, sitting on the spoilboard.
+const stockSize = { x: 100, y: 100, z: 40 };
+const stockGeom = new THREE.BoxGeometry(stockSize.x, stockSize.y, stockSize.z);
+const stockEdges = new THREE.EdgesGeometry(stockGeom);
+const stockLines = new THREE.LineSegments(
+  stockEdges,
+  new THREE.LineDashedMaterial({ color: 0x14b8a6, dashSize: 3, gapSize: 2, linewidth: 1 })
+);
+stockLines.position.set(0, 0, stockSize.z / 2);
+stockLines.computeLineDistances();
+scene.add(stockLines);
+
+// Axes at the work origin (X red, Y green, Z blue) — top-centre of stock.
+const axes = new THREE.AxesHelper(20);
+axes.position.set(0, 0, stockSize.z);
+scene.add(axes);
+
+// Load and place the rose.
+const loader = new STLLoader();
+loader.load(
+  'rose.stl',
+  (geometry) => {
+    geometry.computeVertexNormals();
+    const material = new THREE.MeshStandardMaterial({
+      color: 0xb71c3a, roughness: 0.55, metalness: 0.05, flatShading: false,
+    });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    scene.add(mesh);
+
+    geometry.computeBoundingBox();
+    const bb = geometry.boundingBox;
+    const sx = (bb.max.x - bb.min.x).toFixed(2);
+    const sy = (bb.max.y - bb.min.y).toFixed(2);
+    const sz = (bb.max.z - bb.min.z).toFixed(2);
+    const ntri = geometry.attributes.position.count / 3;
+    stats.textContent = `rose.stl  ${ntri.toLocaleString()} tri  -  ${sx} x ${sy} x ${sz} mm`;
+  },
+  (xhr) => {
+    if (xhr.lengthComputable) {
+      const pct = ((xhr.loaded / xhr.total) * 100).toFixed(0);
+      stats.textContent = `Loading rose.stl - ${pct}%`;
+    }
+  },
+  (err) => {
+    console.error(err);
+    const div = document.createElement('div');
+    div.className = 'err';
+    div.innerHTML = 'Could not load <b>rose.stl</b>. Open this page over <code>http://</code> ' +
+                    '(not <code>file://</code>) — try <code>python3 -m http.server</code> in this folder.';
+    document.body.appendChild(div);
+  }
+);
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+(function loop() {
+  requestAnimationFrame(loop);
+  controls.update();
+  renderer.render(scene, camera);
+})();
+</script>
+</body>
+</html>
