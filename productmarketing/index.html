@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Product Marketing for SaaS and AI Companies | Muddassir Abdur Rub</title>
+  <meta name="description" content="Two years leading product marketing, lifecycle revenue, and internal marketing systems at Passion.io. Title on the door: Senior Copywriter. Work behind it: PMM, end to end." />
+  <link rel="canonical" href="https://abdurrub.com/productmarketing" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Product Marketing for SaaS and AI Companies | Muddassir Abdur Rub" />
+  <meta property="og:description" content="Two years leading product marketing, lifecycle revenue, and internal marketing systems at Passion.io." />
+  <meta property="og:image" content="https://abdurrub.com/images/Mud-website-image.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: {
+      colors: {
+        teal:{50:'#f0fdfa',100:'#ccfbf1',200:'#99f6e4',300:'#5eead4',400:'#2dd4bf',500:'#14b8a6',600:'#0d9488',700:'#0f766e',800:'#115e59',900:'#134e4a',950:'#0a4d5c'},
+        ink:{900:'#0a0a0a',700:'#1f2937',500:'#4b5563',400:'#6b7280',300:'#9ca3af',200:'#e5e7eb',100:'#f3f4f6',50:'#fafafa'}
+      },
+      fontFamily:{ sans:['Inter','sans-serif'], display:['Archivo','sans-serif'] },
+      maxWidth:{ 'screen-2xl':'1280px' }
+    }}}
+  </script>
+  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f766e'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='Archivo,sans-serif' font-weight='800' font-size='18' fill='white'%3EM%3C/text%3E%3C/svg%3E" />
+
+  <style>
+    /* Page-local styles for the product marketing page */
+    .lane-card {
+      background: white;
+      border: 1px solid var(--ink-200, #e5e7eb);
+      border-radius: 18px;
+      padding: 28px;
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    }
+    .lane-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 24px 48px -16px rgba(10,77,92,.18);
+      border-color: #99f6e4;
+    }
+    .lane-card .lane-num {
+      font-family: 'Archivo', sans-serif;
+      font-weight: 700;
+      font-size: .75rem;
+      color: #0f766e;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .work-card {
+      background: white;
+      border: 1px solid var(--ink-200, #e5e7eb);
+      border-radius: 18px;
+      overflow: hidden;
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    }
+    .work-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 28px 56px -18px rgba(10,77,92,.22);
+      border-color: #99f6e4;
+    }
+    .work-card .thumb {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #f0fdfa;
+      cursor: zoom-in;
+    }
+    .work-card .thumb img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: top;
+      transition: transform .35s ease;
+    }
+    .work-card .thumb:hover img { transform: scale(1.03); }
+    .work-card .thumb::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, transparent 60%, rgba(0,0,0,.04));
+      pointer-events: none;
+    }
+    .work-card .body { padding: 22px 24px 26px; }
+    .work-card .badge {
+      display: inline-block;
+      font-size: .72rem; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase;
+      color: #0f766e;
+      background: #ccfbf1;
+      padding: 4px 10px; border-radius: 999px;
+    }
+    .work-card h3 {
+      font-family: 'Archivo', sans-serif;
+      font-weight: 700; font-size: 1.25rem;
+      margin-top: 12px;
+      line-height: 1.25;
+    }
+    .work-card p {
+      color: #4b5563; line-height: 1.6;
+      margin-top: 8px; font-size: .96rem;
+    }
+    .stat-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 22px;
+    }
+    .stat-card .label {
+      font-size: .72rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .12em;
+      color: #0f766e;
+    }
+    .stat-card .value {
+      font-family: 'Archivo', sans-serif;
+      font-weight: 700; font-size: 2rem;
+      color: #0a4d5c; margin-top: 4px;
+      line-height: 1.1;
+    }
+    .stat-card .note {
+      color: #6b7280; font-size: .85rem;
+      margin-top: 6px; line-height: 1.45;
+    }
+    .proof-shot {
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid #e5e7eb;
+      background: white;
+      cursor: zoom-in;
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+    .proof-shot:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 28px 56px -18px rgba(10,77,92,.22);
+    }
+    .proof-shot img { width: 100%; display: block; }
+    .ref-block {
+      background: linear-gradient(180deg, #f0fdfa 0%, #ffffff 100%);
+      border: 1px solid #99f6e4;
+      border-radius: 24px;
+      padding: 36px;
+    }
+    .placeholder-shot {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      border: 2px dashed #5eead4;
+      border-radius: 18px;
+      background: #f0fdfa;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 12px;
+      color: #0f766e; text-align: center;
+      padding: 24px;
+    }
+    .placeholder-shot .ph-title {
+      font-family: 'Archivo', sans-serif;
+      font-weight: 700; font-size: 1rem;
+    }
+    .placeholder-shot .ph-note {
+      font-size: .82rem; color: #4b5563; line-height: 1.5;
+    }
+    /* Lightbox */
+    .lightbox {
+      position: fixed; inset: 0;
+      background: rgba(10, 25, 40, .92);
+      z-index: 100;
+      display: none;
+      align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img {
+      max-width: 100%;
+      max-height: 90vh;
+      border-radius: 12px;
+      box-shadow: 0 40px 80px -20px rgba(0,0,0,.5);
+    }
+    .lightbox-close {
+      position: absolute; top: 24px; right: 24px;
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.2);
+      color: white;
+      width: 40px; height: 40px;
+      border-radius: 999px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .lightbox-close:hover { background: rgba(255,255,255,.2); }
+    .pivot-callout {
+      border-left: 4px solid #14b8a6;
+      padding-left: 24px;
+      margin-top: 28px;
+    }
+  </style>
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"Person",
+    "name":"Muddassir Abdur Rub",
+    "url":"https://abdurrub.com",
+    "jobTitle":"Direct Response Marketer",
+    "description":"Product marketing for SaaS and AI companies. Two years at Passion.io leading product marketing, lifecycle revenue, and internal marketing systems."
+  }
+  </script>
+</head>
+
+<body class="bg-white text-ink-900 font-sans antialiased">
+
+<!-- ============================================================ -->
+<!-- NAV -->
+<!-- ============================================================ -->
+<nav data-nav class="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur border-b border-ink-100">
+  <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex h-16 items-center justify-between">
+      <a href="../index.html" class="font-display font-bold text-xl text-teal-950 tracking-tight">Muddassir<span class="text-teal-500">.</span></a>
+      <div class="hidden md:flex items-center gap-8">
+        <div class="menu-trigger">
+          <button class="text-ink-500 hover:text-teal-700 transition text-sm flex items-center gap-1" aria-haspopup="true">
+            Services
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="menu-dropdown">
+            <a href="../pages/email-marketing.html">Email Marketing &amp; Retention<span class="small">Lifecycle systems for businesses past $100K</span></a>
+            <a href="../pages/creative-strategy.html">Creative Strategy Operating System<span class="small">Score your creative strategy in 7 questions</span></a>
+          </div>
+        </div>
+        <div class="menu-trigger">
+          <button class="text-teal-700 font-semibold transition text-sm flex items-center gap-1" aria-haspopup="true">
+            Past Work
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="menu-dropdown">
+            <a href="/productmarketing">Product Marketing for SaaS &amp; AI<span class="small">Two years at Passion.io, end to end</span></a>
+          </div>
+        </div>
+        <a href="../pages/blog.html" class="text-ink-500 hover:text-teal-700 transition text-sm">Blog</a>
+        <a href="../index.html#faq" class="text-ink-500 hover:text-teal-700 transition text-sm">FAQs</a>
+        <a href="https://calendar.app.google/LEcHPfT7csau1WCQ7" target="_blank" rel="noopener" class="btn btn-primary text-sm py-2 px-5">Book a call</a>
+      </div>
+      <button data-menu-btn class="md:hidden p-2 -mr-2 text-ink-700" aria-label="Menu" aria-expanded="false">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu md:hidden">
+    <div class="px-6 py-8 flex flex-col gap-4">
+      <p class="text-xs uppercase tracking-widest text-ink-400">Services</p>
+      <a href="../pages/email-marketing.html" class="text-lg text-ink-700">Email Marketing &amp; Retention</a>
+      <a href="../pages/creative-strategy.html" class="text-lg text-ink-700">Creative Strategy Operating System</a>
+      <p class="text-xs uppercase tracking-widest text-ink-400 mt-2">Past Work</p>
+      <a href="/productmarketing" class="text-lg text-teal-700 font-semibold">Product Marketing for SaaS &amp; AI</a>
+      <div class="border-t border-ink-100 pt-4 mt-2"></div>
+      <a href="../pages/blog.html" class="text-lg text-ink-700">Blog</a>
+      <a href="../index.html#faq" class="text-lg text-ink-700">FAQs</a>
+      <a href="https://calendar.app.google/LEcHPfT7csau1WCQ7" target="_blank" rel="noopener" class="btn btn-primary self-start mt-2">Book a call</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================================================ -->
+<!-- HERO -->
+<!-- ============================================================ -->
+<section class="pt-28 pb-12 lg:pt-36 lg:pb-16">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <a href="../index.html" class="text-sm text-ink-400 hover:text-teal-700 inline-flex items-center gap-2">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back to home
+    </a>
+    <p class="eyebrow mt-8 mb-4">Past Work · Product Marketing</p>
+    <h1 class="font-display text-4xl sm:text-5xl lg:text-[3.5rem] font-bold leading-[1.05] tracking-tight max-w-4xl">
+      Product marketing for <span class="gradient-text">SaaS and AI companies.</span>
+    </h1>
+    <p class="mt-6 text-lg sm:text-xl text-ink-500 leading-relaxed max-w-3xl">
+      Two years leading product marketing, lifecycle revenue, and internal marketing systems at Passion.io.
+      <br class="hidden sm:block" />
+      <span class="text-ink-700 font-medium">Title: Senior Copywriter.</span>
+    </p>
+    <p class="mt-5 text-base text-ink-500 leading-relaxed max-w-3xl">
+      The page below is the work that title didn't capture. Positioning, launches, customer research, internal systems, cross-functional collaboration. Everything a PMM ships, shipped under a different name.
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- THE NUMBERS -->
+<!-- ============================================================ -->
+<section class="py-20 bg-[var(--tint)] border-y border-ink-100">
+  <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl reveal">
+      <p class="eyebrow mb-3">The Numbers</p>
+      <h2 class="font-display text-3xl sm:text-4xl font-bold leading-tight">$2,442,707 in email revenue. Validated by my manager.</h2>
+      <p class="mt-5 text-lg text-ink-500 leading-relaxed">
+        These numbers were sent to me by Oliver Crockett, Head of Performance Marketing at Passion.io and my team lead. He pulled them together with our analyst Lisa for use in references. They are the work, broken down by revenue line.
+      </p>
+    </div>
+
+    <div class="mt-12 grid lg:grid-cols-5 gap-8 reveal">
+      <!-- Left: Olly's Slack screenshot -->
+      <div class="lg:col-span-3">
+        <div class="proof-shot" data-lightbox="images/olly-slack-kpis.png">
+          <div class="placeholder-shot" id="ollyPlaceholder">
+            <div class="ph-title">Slack screenshot from Olly goes here</div>
+            <div class="ph-note">Export the screenshot from Photos and save it as<br /><code style="background:#fff;padding:2px 8px;border-radius:6px;font-size:.78rem">productmarketing/images/olly-slack-kpis.png</code><br />The page will pick it up automatically.</div>
+          </div>
+        </div>
+        <p class="mt-3 text-sm text-ink-400 italic">Slack thread, Mar 12 2026. Names of people other than Oliver and the founders are not relevant to the marketing work and have been left in only because they are part of the source.</p>
+      </div>
+
+      <!-- Right: Headline KPI cards -->
+      <div class="lg:col-span-2 space-y-4">
+        <div class="stat-card">
+          <div class="label">Total email revenue</div>
+          <div class="value">$2.44M</div>
+          <div class="note">Across 2023, 2024, and 2025. Built on a list that already existed.</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Revenue per lead</div>
+          <div class="value">$13 → $27</div>
+          <div class="note">Doubled across the engagement. Same product, segmented audience.</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Black Friday 2024</div>
+          <div class="value">$256,094</div>
+          <div class="note">In thirty days. Record campaign in the history of the company.</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Newsletter revenue</div>
+          <div class="value">+336%</div>
+          <div class="note">From 2023 to 2025. 3.5x growth on the same content cadence.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Revenue breakdown -->
+    <div class="mt-14 reveal">
+      <p class="eyebrow mb-3">Where the revenue came from</p>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="stat-card">
+          <div class="label">Automated webinar follow-ups</div>
+          <div class="value">$1.115M</div>
+          <div class="note">The single largest revenue line. Nurture sequences off live and evergreen webinars.</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Mini promos</div>
+          <div class="value">$643K</div>
+          <div class="note">Short, segmented offer windows across the year.</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Black Friday campaigns</div>
+          <div class="value">$615K</div>
+          <div class="note">Three years stacked. 2024 was the record.</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Nurture emails</div>
+          <div class="value">$68K</div>
+          <div class="note">Pure nurture, no promo. 2025 alone was 4x the 2023 number.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- THE FIVE LANES -->
+<!-- ============================================================ -->
+<section class="py-24">
+  <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl reveal">
+      <p class="eyebrow mb-3">The Scope</p>
+      <h2 class="font-display text-3xl sm:text-4xl font-bold leading-tight">Five lanes. All of them PMM work. None of them in the job title.</h2>
+      <p class="mt-5 text-lg text-ink-500 leading-relaxed">
+        Product marketing is the connective tissue between product, sales, marketing, and the customer. Below is what that meant inside Passion.io for two years, including the launch of YouAI, the company's AI coach product.
+      </p>
+    </div>
+
+    <div class="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-6 reveal">
+      <div class="lane-card">
+        <div class="lane-num">Lane 01</div>
+        <h3 class="font-display font-bold text-xl mt-2">Positioning &amp; Messaging</h3>
+        <p class="mt-3 text-ink-500 leading-relaxed">Defined value props for YouAI launch. Built the messaging framework that ran across landing pages, sales decks, ads, and email. Founded on customer language, not brand voice docs.</p>
+      </div>
+      <div class="lane-card">
+        <div class="lane-num">Lane 02</div>
+        <h3 class="font-display font-bold text-xl mt-2">Lifecycle Revenue</h3>
+        <p class="mt-3 text-ink-500 leading-relaxed">Owned the revenue line that produced $2.44M across two years. BFCM record in 2024. Doubled rev per lead. Webinar follow-up sequences alone produced $1.1M.</p>
+      </div>
+      <div class="lane-card">
+        <div class="lane-num">Lane 03</div>
+        <h3 class="font-display font-bold text-xl mt-2">Customer Research</h3>
+        <p class="mt-3 text-ink-500 leading-relaxed">Reviewed 20+ ICP discovery and sales calls. Extracted voice of customer language across pain, objections, desired outcomes, beliefs. Expanded sample via Reddit, native forums, social.</p>
+      </div>
+      <div class="lane-card">
+        <div class="lane-num">Lane 04</div>
+        <h3 class="font-display font-bold text-xl mt-2">Internal Systems</h3>
+        <p class="mt-3 text-ink-500 leading-relaxed">Built and maintained six core Notion databases (Painpoints, Objections, Benefits, Personas, Outcomes, Angles) plus Brand Index and Knowledge Index. Source of truth for the marketing team's messaging strategy.</p>
+      </div>
+      <div class="lane-card">
+        <div class="lane-num">Lane 05</div>
+        <h3 class="font-display font-bold text-xl mt-2">Cross-functional &amp; Dogfooding</h3>
+        <p class="mt-3 text-ink-500 leading-relaxed">Built my own YouAI to feel the product. Built my own app on Passion.io as part of onboarding. Worked with developers, sales, design, and the founders on launch positioning, sales pages, and post-webinar feedback loops.</p>
+      </div>
+      <div class="lane-card" style="background: #f7fbfa;">
+        <div class="lane-num" style="color: #115e59;">The thread</div>
+        <h3 class="font-display font-bold text-xl mt-2">Owned the message, not just the words.</h3>
+        <p class="mt-3 text-ink-500 leading-relaxed">Copy was the medium. The job was figuring out what to say, to whom, when, and why. The selected work below is what that looked like in practice.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SELECTED WORK -->
+<!-- ============================================================ -->
+<section class="py-24 bg-[var(--tint)] border-y border-ink-100">
+  <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl reveal">
+      <p class="eyebrow mb-3">Selected Work</p>
+      <h2 class="font-display text-3xl sm:text-4xl font-bold leading-tight">Cards expand. Click any screenshot to see the full thing.</h2>
+      <p class="mt-5 text-lg text-ink-500 leading-relaxed">
+        Each item is a real piece of work shipped at Passion.io. Screenshots are partial on purpose. Click any one to see it in full.
+      </p>
+    </div>
+
+    <div class="mt-12 grid md:grid-cols-2 gap-8 reveal">
+
+      <!-- 1. BFCM 2024 -->
+      <article class="work-card">
+        <div class="thumb" data-lightbox="images/bfcm-landing.png">
+          <img src="images/bfcm-landing.png" alt="Black Friday 2024 landing page at Passion.io" loading="lazy" />
+        </div>
+        <div class="body">
+          <span class="badge">Launch · Lifecycle</span>
+          <h3>Black Friday 2024. The record campaign.</h3>
+          <p>$256,094 in email revenue inside thirty days. Same list as the year before. The lift came from segmentation, offer rotation, and a copy voice that read like the brand was talking to one person at a time. Owned the email arc, the on-site copy, and the post-purchase sequence.</p>
+          <div class="mt-4 grid grid-cols-2 gap-3">
+            <div class="proof-shot" data-lightbox="images/bfcm-2024-emails-1.png">
+              <img src="images/bfcm-2024-emails-1.png" alt="Black Friday 2024 emails draft 1" loading="lazy" />
+            </div>
+            <div class="proof-shot" data-lightbox="images/bfcm-2024-emails-2.png">
+              <img src="images/bfcm-2024-emails-2.png" alt="Black Friday 2024 emails draft 2" loading="lazy" />
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2. YouAI launch -->
+      <article class="work-card">
+        <div class="thumb" data-lightbox="images/maya-ai-page.png">
+          <img src="images/maya-ai-page.png" alt="Maya AI / YouAI landing page" loading="lazy" />
+        </div>
+        <div class="body">
+          <span class="badge">Launch · Positioning</span>
+          <h3>YouAI go-to-market. From product to launch funnel.</h3>
+          <p>Joined before YouAI existed. Part of the GTM team that took it from internal feature to live webinar funnel. Owned the messaging framework, the value prop hierarchy, the launch landing page copy, and the post-webinar marketing follow-up that turned attendees into leads.</p>
+          <div class="mt-4">
+            <div class="proof-shot" data-lightbox="images/ai-scaling-call.png">
+              <img src="images/ai-scaling-call.png" alt="AI Scaling Call landing page" loading="lazy" />
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 3. Customer research workflow -->
+      <article class="work-card">
+        <div class="thumb" style="background:linear-gradient(135deg,#0f766e 0%,#0a4d5c 100%); display:flex; align-items:center; justify-content:center; cursor:default;">
+          <div class="text-white text-center px-6">
+            <div class="font-display font-bold text-2xl">20+ sales calls.</div>
+            <div class="font-display font-bold text-2xl">3 customer avatars.</div>
+            <div class="font-display font-bold text-2xl">One messaging spine.</div>
+          </div>
+        </div>
+        <div class="body">
+          <span class="badge">Customer Research</span>
+          <h3>How the YouAI personas got built.</h3>
+          <p>Sat in on 20+ ICP discovery and sales calls. Took transcripts. Watched facial cues, pulled vocal patterns, sorted pain points by intensity, mapped objections to the moment they showed up in the funnel. Cross-checked the language against Reddit threads, niche forums, and creator-economy social. Output was three customer avatars with quoted limiting beliefs, sorted by buying stage.</p>
+          <p class="mt-3 text-sm text-ink-400">Ask me about the methodology. The actual avatar docs and the messaging rules page are internal Passion.io property.</p>
+        </div>
+      </article>
+
+      <!-- 4. The $100K to $10M positioning pivot -->
+      <article class="work-card">
+        <div class="thumb" style="background:linear-gradient(135deg,#0a4d5c 0%,#134e4a 100%); display:flex; align-items:center; justify-content:center; cursor:default;">
+          <div class="text-white text-center px-6">
+            <div class="text-teal-200 text-xs uppercase tracking-widest mb-3">The Pivot</div>
+            <div class="font-display font-bold text-3xl">$100K → $10M</div>
+            <div class="text-teal-100 mt-2 text-sm">was the wrong promise.</div>
+          </div>
+        </div>
+        <div class="body">
+          <span class="badge">Strategy · Positioning</span>
+          <h3>The outcome promise that was too big to convert.</h3>
+          <p>YouAI's original positioning promised the ICP they could go from $100K to $10M with a single product. Cross-checked it against how Hormozi, King Kong, and the rest of the high-ticket world actually segment by revenue tier. Nobody was making that jump in one product. They were running smaller, segmented promises tied to the bracket the prospect was actually in.</p>
+          <div class="pivot-callout">
+            <p class="text-ink-700 leading-relaxed">Surfaced the gap. The team subdivided ICPs into revenue brackets ($100K to $300K, $300K to $1M, $1M to $3M, $3M+). Sub-$100K founders got downsold to Passion.io instead of disqualified. The change made it into a system after I left.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 5. Notion DB architecture -->
+      <article class="work-card">
+        <div class="thumb" style="background:linear-gradient(135deg,#5eead4 0%,#0d9488 100%); display:flex; align-items:center; justify-content:center; cursor:default;">
+          <div class="text-white text-center px-6">
+            <div class="font-display font-bold text-3xl">6 databases.</div>
+            <div class="font-display font-bold text-3xl">One messaging OS.</div>
+          </div>
+        </div>
+        <div class="body">
+          <span class="badge">Internal Systems</span>
+          <h3>The Notion stack the marketing team ran on.</h3>
+          <p>Painpoints, Objections, Benefits, Personas, Desired Outcomes, and Angles. Each linked to the next. Painpoints fed Angles. Personas pulled Objections by funnel stage. Benefits surfaced as messaging only when paired with quantified evidence. Plus a Brand Index and a Knowledge Index for product-level facts. The system was the source of truth every campaign got built off.</p>
+          <p class="mt-3 text-sm text-ink-400">Don't have screenshots (no longer have access to the workspace). Happy to walk through the architecture and field rules on a call.</p>
+        </div>
+      </article>
+
+      <!-- 6. Blog SEO -->
+      <article class="work-card">
+        <div class="thumb" data-lightbox="images/blog-1.png">
+          <img src="images/blog-1.png" alt="Passion.io blog post" loading="lazy" />
+        </div>
+        <div class="body">
+          <span class="badge">Content · SEO</span>
+          <h3>Long-form blog content for organic traffic.</h3>
+          <p>Researched, briefed, and wrote SEO-led blog content for the Passion.io platform audience. Each piece tied to a buying stage in the funnel and a primary persona. Click through to see the actual posts.</p>
+          <div class="mt-4 grid grid-cols-3 gap-2">
+            <div class="proof-shot" data-lightbox="images/blog-2.png">
+              <img src="images/blog-2.png" alt="Blog post 2" loading="lazy" />
+            </div>
+            <div class="proof-shot" data-lightbox="images/blog-3.png">
+              <img src="images/blog-3.png" alt="Blog post 3" loading="lazy" />
+            </div>
+            <div class="proof-shot" data-lightbox="images/blog-4.png">
+              <img src="images/blog-4.png" alt="Blog post 4" loading="lazy" />
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 7. Dogfooding YouAI -->
+      <article class="work-card">
+        <div class="thumb" style="background:linear-gradient(135deg,#99f6e4 0%,#2dd4bf 100%); display:flex; align-items:center; justify-content:center; cursor:default;">
+          <div class="text-teal-950 text-center px-6">
+            <div class="text-xs uppercase tracking-widest mb-3 text-teal-800">Dogfooding</div>
+            <div class="font-display font-bold text-2xl">I built my own YouAI</div>
+            <div class="font-display font-bold text-2xl">before writing a word about it.</div>
+          </div>
+        </div>
+        <div class="body">
+          <span class="badge">Dogfooding</span>
+          <h3>YouAI from the customer's seat.</h3>
+          <p>The Head of Marketing asked the team to spend serious time inside the product. I took the lead. Created my own coach avatar against a specific knowledge base, walked through the same onboarding the user would, and audited which features the product team was over-pitching versus under-pitching relative to the actual experience. Other team members built theirs after. The audit fed directly into the launch messaging.</p>
+        </div>
+      </article>
+
+      <!-- 8. Pinayo.app -->
+      <article class="work-card">
+        <div class="thumb" data-lightbox="images/passion-homepage.png">
+          <img src="images/passion-homepage.png" alt="Passion.io homepage" loading="lazy" />
+        </div>
+        <div class="body">
+          <span class="badge">Dogfooding</span>
+          <h3>Built my own app on Passion.io. Pinayo.app.</h3>
+          <p>Part of onboarding. Built a real app on the platform, in the same flow a customer would. The topic was teaching writing. The point was not to ship publicly. The point was to feel the friction, find the spots where positioning and onboarding could be tighter, and bring those notes back into the marketing work.</p>
+        </div>
+      </article>
+
+      <!-- 9. Cross-functional -->
+      <article class="work-card">
+        <div class="thumb" style="background:linear-gradient(135deg,#0f766e 0%,#115e59 100%); display:flex; align-items:center; justify-content:center; cursor:default;">
+          <div class="text-white text-center px-6">
+            <div class="font-display font-bold text-2xl">Sales. Design. Engineering.</div>
+            <div class="font-display font-bold text-2xl">Founders. Every week.</div>
+          </div>
+        </div>
+        <div class="body">
+          <span class="badge">Cross-functional</span>
+          <h3>How the marketing work plugged into the rest of the company.</h3>
+          <p><strong>Engineering:</strong> built my own YouAI with the dev team's help on signup, training, and feature flags. <strong>Sales:</strong> took every recorded discovery and sales call as raw material for VOC and angle work. <strong>Founders:</strong> sat in on Matthias's live workshops every Friday, ran SWOTs on his slide decks, then translated the new positioning beats into our marketing assets the same week. <strong>Designers:</strong> back-and-forth on hero angles and sales page treatments. <strong>Senior copywriter strategist:</strong> partnered on customer avatars. <strong>CRM expert:</strong> partnered on email briefs and campaign architecture.</p>
+        </div>
+      </article>
+
+      <!-- 10. Email List Revival -->
+      <article class="work-card">
+        <div class="thumb" data-lightbox="images/email-list-revival-page.png">
+          <img src="images/email-list-revival-page.png" alt="Email List Revival landing page" loading="lazy" />
+        </div>
+        <div class="body">
+          <span class="badge">Lifecycle · Reactivation</span>
+          <h3>Email list reactivation playbook.</h3>
+          <p>Re-engaged dormant segments inside the Passion.io list. The same playbook that took rev per lead from $13 to $27. Plan and landing page below.</p>
+          <div class="mt-4">
+            <div class="proof-shot" data-lightbox="images/email-list-revival-plan.png">
+              <img src="images/email-list-revival-plan.png" alt="Email List Revival Plan doc" loading="lazy" />
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- REFERENCE -->
+<!-- ============================================================ -->
+<section class="py-24">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="reveal">
+      <p class="eyebrow mb-3">Reference</p>
+      <h2 class="font-display text-3xl sm:text-4xl font-bold leading-tight">My team lead at Passion.io has the same numbers and is happy to back them.</h2>
+    </div>
+
+    <div class="ref-block mt-10 reveal">
+      <div class="flex flex-col sm:flex-row sm:items-start gap-6">
+        <div class="flex-shrink-0">
+          <div class="w-16 h-16 rounded-full bg-teal-700 text-white font-display font-bold text-2xl flex items-center justify-center">OC</div>
+        </div>
+        <div>
+          <h3 class="font-display font-bold text-xl">Oliver Crockett</h3>
+          <p class="text-ink-500 text-sm mt-1">Head of Performance Marketing &amp; Team Lead, Passion.io</p>
+          <blockquote class="mt-5 text-lg text-ink-700 leading-relaxed border-l-4 border-teal-300 pl-5 italic">
+            "Lisa put these numbers together. I've connected on LinkedIn too, and will share a couple top-line stats in a reference."
+          </blockquote>
+          <p class="text-sm text-ink-400 mt-3">Slack thread, Mar 12 2026, sharing the KPI breakdown shown above.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-8 reveal">
+      <p class="text-ink-500 leading-relaxed">
+        For context: Passion.io is a SaaS platform for creators and coaches with $19M raised, backed by Canaan, Khosla Ventures, and angels from Slack, Facebook, Dropbox, and Salesforce. Recognized in Ramp's 2024 data as one of the fastest-growing AI platforms in the US.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- CTA -->
+<!-- ============================================================ -->
+<section class="py-24 bg-[var(--tint)] border-t border-ink-100">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center reveal">
+    <p class="eyebrow mb-3">If you're hiring</p>
+    <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">Looking for a PMM who has done the work, not just the title.</h2>
+    <p class="mt-6 text-lg text-ink-500 leading-relaxed">
+      Open to senior PMM roles at SaaS and AI companies, full-time remote. Also open to consulting on launches, lifecycle, and messaging systems for teams scaling past $1M.
+    </p>
+    <div class="mt-10">
+      <a href="https://calendar.app.google/LEcHPfT7csau1WCQ7" target="_blank" rel="noopener" class="btn btn-primary">Book a call</a>
+    </div>
+    <p class="mt-6 text-sm text-ink-400">Or reach me at <a href="mailto:m.a.rab2012@gmail.com" class="text-teal-700 underline underline-offset-2">m.a.rab2012@gmail.com</a></p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- FOOTER -->
+<!-- ============================================================ -->
+<footer class="py-12 border-t border-ink-100">
+  <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="font-display font-bold text-lg text-teal-950">Muddassir<span class="text-teal-500">.</span></div>
+    <div class="flex gap-6 text-sm text-ink-500">
+      <a href="../index.html" class="hover:text-teal-700">Home</a>
+      <a href="../pages/email-marketing.html" class="hover:text-teal-700">Email &amp; Retention</a>
+      <a href="../pages/creative-strategy.html" class="hover:text-teal-700">Creative Strategy</a>
+      <a href="../pages/blog.html" class="hover:text-teal-700">Blog</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================ -->
+<!-- LIGHTBOX -->
+<!-- ============================================================ -->
+<div class="lightbox" data-lightbox-modal>
+  <button class="lightbox-close" data-lightbox-close aria-label="Close">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+  </button>
+  <img data-lightbox-img src="" alt="" />
+</div>
+
+<script>
+  // Mobile menu
+  (function(){
+    var btn = document.querySelector('[data-menu-btn]');
+    var menu = document.querySelector('.mobile-menu');
+    if (btn && menu) {
+      btn.addEventListener('click', function(){
+        menu.classList.toggle('open');
+        btn.setAttribute('aria-expanded', menu.classList.contains('open') ? 'true' : 'false');
+      });
+    }
+  })();
+
+  // Reveal on scroll
+  (function(){
+    var els = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) { els.forEach(function(el){ el.classList.add('in'); }); return; }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: .12 });
+    els.forEach(function(el){ io.observe(el); });
+  })();
+
+  // Lightbox
+  (function(){
+    var modal = document.querySelector('[data-lightbox-modal]');
+    var imgEl = document.querySelector('[data-lightbox-img]');
+    var closeBtn = document.querySelector('[data-lightbox-close]');
+    if (!modal || !imgEl) return;
+
+    function open(src){
+      imgEl.src = src;
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function close(){
+      modal.classList.remove('open');
+      imgEl.src = '';
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('[data-lightbox]').forEach(function(el){
+      el.addEventListener('click', function(){
+        var src = el.getAttribute('data-lightbox');
+        if (src) open(src);
+      });
+    });
+
+    closeBtn.addEventListener('click', close);
+    modal.addEventListener('click', function(e){
+      if (e.target === modal) close();
+    });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape') close();
+    });
+  })();
+
+  // Olly placeholder swap: if image exists at the path, replace placeholder
+  (function(){
+    var img = new Image();
+    img.onload = function(){
+      var ph = document.getElementById('ollyPlaceholder');
+      if (!ph) return;
+      var parent = ph.parentNode;
+      ph.remove();
+      var el = document.createElement('img');
+      el.src = 'images/olly-slack-kpis.png';
+      el.alt = 'Slack message from Oliver Crockett with the Passion.io KPI breakdown';
+      el.loading = 'lazy';
+      parent.appendChild(el);
+    };
+    img.src = 'images/olly-slack-kpis.png';
+  })();
+</script>
+
+</body>
+</html>
