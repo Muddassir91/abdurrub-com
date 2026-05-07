@@ -459,27 +459,47 @@ footer { padding: 40px 0 32px; background: var(--ink-900); color: rgba(255, 255,
 .footer-fineprint a { color: rgba(255, 255, 255, 0.65); transition: color 0.15s; }
 .footer-fineprint a:hover { color: var(--teal-300); }
 
-/* Stronger card border + project label strip */
-.card { border-width: 2px !important; border-color: var(--ink-200) !important; box-shadow: 0 2px 0 rgba(10, 77, 92, 0.04); }
-.card:hover { border-color: var(--teal-500) !important; box-shadow: 0 32px 64px -20px rgba(10, 77, 92, 0.28); }
+/* Visible teal borders on every card by default */
+.card { border-width: 2px !important; border-color: var(--teal-300) !important; box-shadow: 0 4px 12px -4px rgba(15, 118, 110, 0.08); }
+.card:hover { border-color: var(--teal-600) !important; box-shadow: 0 32px 64px -20px rgba(10, 77, 92, 0.28); }
 .card .card-body { position: relative; }
-.card .project-label-strip {
-  display: flex; align-items: center; gap: 10px;
-  padding: 14px 26px;
-  background: linear-gradient(90deg, var(--teal-50) 0%, var(--teal-100) 60%, white 100%);
-  border-bottom: 1px solid var(--teal-200);
+
+/* Project name as a HEADING above each card (outside the card) */
+.project-heading {
+  display: flex; align-items: baseline; gap: 14px;
   font-family: 'Archivo', sans-serif;
-  font-weight: 800; font-size: 0.78rem;
-  letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--teal-800);
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--teal-700);
+  margin: 0 0 14px 6px;
 }
-@media (min-width: 768px) { .card .project-label-strip { padding: 16px 32px; font-size: 0.82rem; } }
-.card .project-label-strip::before {
-  content: ""; width: 8px; height: 8px;
-  border-radius: 50%; background: var(--teal-500);
+@media (min-width: 768px) { .project-heading { font-size: 0.82rem; margin-bottom: 16px; } }
+.project-heading::before {
+  content: "";
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--teal-500);
   flex-shrink: 0;
-  box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.4);
+  align-self: center;
+  box-shadow: 0 0 0 4px rgba(94, 234, 212, 0.35);
 }
+.project-heading .num {
+  color: var(--teal-500);
+  font-weight: 900;
+}
+.project-heading .name {
+  color: var(--teal-900);
+}
+
+/* Card cell wraps heading + card together */
+.card-cell { display: flex; flex-direction: column; }
+.card-cell .card { flex: 1; }
+
+/* Hide the old inside project-label entirely — heading outside replaces it */
+.card .project-label-strip { display: none !important; }
+.card .project-label { display: none !important; }
 
 /* Premium card lift on hover */
 .card { transition: transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out), border-color 0.35s var(--ease-out); }
