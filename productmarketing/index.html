@@ -35,10 +35,10 @@
       color: var(--teal-700);
       margin-bottom: 8px;
     }
-    .card { border: 2px solid var(--ink-100); }
-    .card:hover { border-color: var(--teal-300); }
-    .cards-grid { gap: 26px; }
-    @media (min-width: 760px) { .cards-grid { gap: 28px; } }
+    .card { border: 2px solid var(--ink-200); box-shadow: 0 1px 0 rgba(10,77,92,0.04); }
+    .card:hover { border-color: var(--teal-400); box-shadow: 0 28px 56px -18px rgba(10,77,92,0.22); }
+    .cards-grid { gap: 32px; }
+    @media (min-width: 760px) { .cards-grid { gap: 36px; } }
     .card .card-tag { background: var(--ink-100); color: var(--ink-700); }
   </style>
 </head>
@@ -169,7 +169,7 @@
   <div class="container">
     <div class="section-head reveal">
       <p class="eyebrow">Selected work</p>
-      <h2>Nine product marketing projects across positioning, lifecycle, research, and systems</h2>
+      <h2>Ten product marketing projects across positioning, lifecycle, research, and systems</h2>
     </div>
 
     <div class="cards-grid">
@@ -266,34 +266,41 @@
       <!-- 4. Positioning pivot -->
       <a href="positioning-pivot/" class="card reveal delay-1">
         <div class="card-visual diagram">
-          <svg class="diagram-svg" viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Repositioned outcome promise into revenue brackets">
-            <g font-family="Inter" font-size="10.5" fill="#0a4d5c" font-weight="600">
-              <rect x="14" y="36" width="332" height="36" rx="10" fill="#ccfbf1" stroke="#5eead4" stroke-width="1"/>
-              <text x="180" y="58" text-anchor="middle" fill="#115e59">Before · "$100K → $10M" with a single product</text>
+          <svg class="diagram-svg" viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Before: one outsized promise. After: four tier-specific promises plus a downsell.">
+            <g font-family="Inter" font-size="9" fill="#9ca3af" font-weight="700" letter-spacing="2">
+              <text x="14" y="22">BEFORE</text>
+              <text x="14" y="118">AFTER</text>
             </g>
-            <g font-family="Inter" font-size="9.5" fill="#0a4d5c" font-weight="600">
-              <rect x="14" y="92" width="80" height="36" rx="8" fill="#f0fdfa" stroke="#0d9488" stroke-width="1"/>
-              <text x="54" y="115" text-anchor="middle">$100K-$300K</text>
-              <rect x="100" y="92" width="80" height="36" rx="8" fill="#f0fdfa" stroke="#0d9488" stroke-width="1"/>
-              <text x="140" y="115" text-anchor="middle">$300K-$1M</text>
-              <rect x="186" y="92" width="80" height="36" rx="8" fill="#f0fdfa" stroke="#0d9488" stroke-width="1"/>
-              <text x="226" y="115" text-anchor="middle">$1M-$3M</text>
-              <rect x="272" y="92" width="74" height="36" rx="8" fill="#f0fdfa" stroke="#0d9488" stroke-width="1"/>
-              <text x="309" y="115" text-anchor="middle">$3M+</text>
+            <g font-family="Inter" font-size="10" fill="#0a4d5c" font-weight="600">
+              <rect x="14" y="32" width="332" height="48" rx="10" fill="#fef2f2" stroke="#fca5a5" stroke-width="1.2"/>
+              <text x="180" y="54" text-anchor="middle" fill="#991b1b" font-weight="800">"$100K → $10M" with one product</text>
+              <text x="180" y="70" text-anchor="middle" fill="#991b1b" font-size="9" font-weight="500">Promise nobody in any tier could believe</text>
             </g>
-            <g font-family="Inter" font-size="10" fill="#0d9488" font-weight="600" letter-spacing="1.4">
-              <text x="180" y="156" text-anchor="middle">SEGMENTED PROMISE PER TIER</text>
+            <g font-family="Inter" font-size="9" fill="#0a4d5c" font-weight="700">
+              <rect x="14" y="128" width="78" height="40" rx="8" fill="#f0fdfa" stroke="#5eead4" stroke-width="1.2"/>
+              <text x="53" y="146" text-anchor="middle">$100K-$300K</text>
+              <text x="53" y="160" text-anchor="middle" font-size="8" fill="#0f766e" font-weight="500">tier 1</text>
+              <rect x="100" y="128" width="78" height="40" rx="8" fill="#ccfbf1" stroke="#2dd4bf" stroke-width="1.2"/>
+              <text x="139" y="146" text-anchor="middle">$300K-$1M</text>
+              <text x="139" y="160" text-anchor="middle" font-size="8" fill="#0f766e" font-weight="500">tier 2</text>
+              <rect x="186" y="128" width="78" height="40" rx="8" fill="#99f6e4" stroke="#0d9488" stroke-width="1.2"/>
+              <text x="225" y="146" text-anchor="middle" fill="#115e59">$1M-$3M</text>
+              <text x="225" y="160" text-anchor="middle" font-size="8" fill="#115e59" font-weight="500">tier 3</text>
+              <rect x="272" y="128" width="74" height="40" rx="8" fill="#5eead4" stroke="#0d9488" stroke-width="1.2"/>
+              <text x="309" y="146" text-anchor="middle" fill="#115e59">$3M+</text>
+              <text x="309" y="160" text-anchor="middle" font-size="8" fill="#115e59" font-weight="500">tier 4</text>
             </g>
-            <g font-family="Archivo" font-size="11" fill="#0a4d5c" font-weight="800">
-              <text x="180" y="196" text-anchor="middle">After · downsell sub-$100K to platform, not disqualify</text>
+            <g font-family="Archivo" font-size="10" fill="#0d9488" font-weight="800">
+              <rect x="14" y="180" width="332" height="30" rx="8" fill="#0d9488"/>
+              <text x="180" y="200" text-anchor="middle" fill="white">+ Sub-$100K → downsell to Passion.io platform</text>
             </g>
           </svg>
         </div>
         <div class="card-body">
           <span class="project-label">YouAI repositioning</span>
           <span class="card-tag">Strategy · Positioning</span>
-          <h3>Repositioned YouAI from one $100K-to-$10M promise into four revenue-tiered offers.</h3>
-          <p class="card-sub">Surfaced the gap that the original promise was misaligned with how the market segments. Click to see the research and the structure that replaced it.</p>
+          <h3>Opened a downsell revenue path that turned disqualified YouAI prospects into Passion.io customers.</h3>
+          <p class="card-sub">Co-led a repositioning that subdivided YouAI offers by revenue tier. Sub-$100K founders started getting routed to the platform instead of disqualified. Click to see the structure.</p>
           <span class="card-link">See the pivot
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </span>
@@ -356,8 +363,8 @@
         <div class="card-body">
           <span class="project-label">Marketing messaging system</span>
           <span class="card-tag">Internal systems</span>
-          <h3>Architected the six-database messaging system the marketing team's strategy ran on.</h3>
-          <p class="card-sub">Updated the team's previous Notion system into Painpoints, Objections, Benefits, Personas, Outcomes, and Angles. Click to see how each one fed campaign work.</p>
+          <h3>Got every team member writing on-message in their first week with a six-database messaging system.</h3>
+          <p class="card-sub">Updated the team's previous Notion setup into Painpoints, Objections, Benefits, Personas, Outcomes, and Angles. Co-owned Offers and Buyer Personas with the team. Click to see the architecture.</p>
           <span class="card-link">See the system
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </span>
@@ -366,24 +373,86 @@
 
       <!-- 7. Dogfooding -->
       <a href="dogfooding/" class="card reveal">
-        <div class="card-visual dark">
-          <div>
-            <div class="visual-stat">2 builds</div>
-            <p style="margin-top: 14px; font-size: 0.9rem; color: rgba(255,250,243,0.7); line-height: 1.5;">Demo app on the Passion.io platform during onboarding.<br/>YouAI coach account before the launch.</p>
-          </div>
+        <div class="card-visual diagram">
+          <svg class="diagram-svg" viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Closed the gap between marketing claim and product reality.">
+            <g font-family="Inter" font-size="9" fill="#9ca3af" font-weight="700" letter-spacing="2">
+              <text x="14" y="20">MARKETING CLAIM</text>
+              <text x="14" y="118">PRODUCT REALITY</text>
+            </g>
+            <g font-family="Inter" font-size="10" fill="#0a4d5c" font-weight="600">
+              <rect x="14" y="30" width="332" height="60" rx="10" fill="#fef2f2" stroke="#fca5a5" stroke-width="1.2"/>
+              <text x="180" y="56" text-anchor="middle" fill="#991b1b" font-weight="800">Some features over-pitched</text>
+              <text x="180" y="74" text-anchor="middle" fill="#991b1b" font-size="9" font-weight="500">Other features barely mentioned</text>
+            </g>
+            <g font-family="Inter" font-size="10" fill="#0a4d5c" font-weight="600">
+              <rect x="14" y="128" width="332" height="60" rx="10" fill="#ccfbf1" stroke="#2dd4bf" stroke-width="1.2"/>
+              <text x="180" y="154" text-anchor="middle" fill="#115e59" font-weight="800">Built both products as a customer</text>
+              <text x="180" y="172" text-anchor="middle" fill="#115e59" font-size="9" font-weight="500">Audit caught the gaps before YouAI launch</text>
+            </g>
+            <g font-family="Archivo" font-size="11" fill="#0d9488" font-weight="800">
+              <text x="180" y="208" text-anchor="middle">→ Rewrote the launch messaging hierarchy</text>
+            </g>
+          </svg>
         </div>
         <div class="card-body">
           <span class="project-label">Product dogfooding</span>
           <span class="card-tag">Dogfooding</span>
-          <h3>Built both products as a customer would. Audit fed onboarding, feature hierarchy, and launch messaging.</h3>
-          <p class="card-sub">Walked the same flows a paying customer would. Brought the friction back into the marketing work.</p>
-          <span class="card-link">See what I learned
+          <h3>Caught feature mis-emphasis in YouAI's launch positioning by building the product first.</h3>
+          <p class="card-sub">Built a demo app on the platform during onboarding. Built a YouAI coach account before launch. Audit found which features marketing was over-pitching versus under-pitching against actual UX.</p>
+          <span class="card-link">See the audit
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </span>
         </div>
       </a>
 
-      <!-- 8. Cross-functional -->
+      <!-- 9. Newsletter funnel intent mapping -->
+      <a href="funnel-intent/" class="card reveal">
+        <div class="card-visual diagram">
+          <svg class="diagram-svg" viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Curiosity-to-intent across funnel stages">
+            <g font-family="Inter" font-size="9" fill="#9ca3af" font-weight="700" letter-spacing="2">
+              <text x="14" y="20">CURIOSITY</text>
+              <text x="280" y="20">INTENT</text>
+            </g>
+            <g>
+              <rect x="14" y="36" width="50" height="42" rx="8" fill="#f0fdfa" stroke="#5eead4" stroke-width="1.2"/>
+              <rect x="78" y="36" width="50" height="42" rx="8" fill="#ccfbf1" stroke="#2dd4bf" stroke-width="1.2"/>
+              <rect x="142" y="36" width="50" height="42" rx="8" fill="#99f6e4" stroke="#0d9488" stroke-width="1.2"/>
+              <rect x="206" y="36" width="50" height="42" rx="8" fill="#5eead4" stroke="#0d9488" stroke-width="1.2"/>
+              <rect x="270" y="36" width="76" height="42" rx="8" fill="#0d9488"/>
+            </g>
+            <g font-family="Inter" font-size="9" fill="#0a4d5c" font-weight="700">
+              <text x="39" y="62" text-anchor="middle">Unaware</text>
+              <text x="103" y="62" text-anchor="middle">Problem</text>
+              <text x="167" y="62" text-anchor="middle">Solution</text>
+              <text x="231" y="62" text-anchor="middle" fill="#115e59">Product</text>
+              <text x="308" y="62" text-anchor="middle" fill="white">Most aware</text>
+            </g>
+            <g font-family="Inter" font-size="9" fill="#0a4d5c" font-weight="600">
+              <text x="14" y="118">Trigger curiosity</text>
+              <text x="14" y="138">Pattern interrupt</text>
+              <text x="180" y="118" text-anchor="middle">Mid intent</text>
+              <text x="180" y="138" text-anchor="middle">Mechanism reveal</text>
+              <text x="346" y="118" text-anchor="end" fill="#0d9488">Remove final doubt</text>
+              <text x="346" y="138" text-anchor="end" fill="#0d9488">Lock the deal</text>
+            </g>
+            <g font-family="Archivo" font-size="11" fill="#0d9488" font-weight="800">
+              <rect x="14" y="170" width="332" height="34" rx="8" fill="#0d9488"/>
+              <text x="180" y="192" text-anchor="middle" fill="white">Detect &amp; trigger at every stage = higher-intent buyers</text>
+            </g>
+          </svg>
+        </div>
+        <div class="card-body">
+          <span class="project-label">Funnel intent mapping · Passion.io</span>
+          <span class="card-tag">Strategy · Funnel</span>
+          <h3>Brought higher-intent subscribers into the Passion.io funnel by mapping curiosity-to-intent at every stage.</h3>
+          <p class="card-sub">Stage-by-stage framework from Unaware to Most Aware. What to detect, what to trigger, and what to change in copy, design, and strategy at each step. Click to see the map.</p>
+          <span class="card-link">See the framework
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </span>
+        </div>
+      </a>
+
+      <!-- 10. Cross-functional -->
       <a href="cross-functional/" class="card reveal delay-1">
         <div class="card-visual diagram">
           <svg class="diagram-svg" viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cross-functional collaboration">
@@ -414,8 +483,8 @@
         <div class="card-body">
           <span class="project-label">Cross-functional collaboration</span>
           <span class="card-tag">Cross-functional</span>
-          <h3>Translated input from engineering, sales, design, and the founders into shipped marketing assets.</h3>
-          <p class="card-sub">Sales calls became messaging fuel. Founder workshops became next-week marketing copy. Click to see the loops.</p>
+          <h3>Cut the lag between founder workshops and shipped marketing assets to one week.</h3>
+          <p class="card-sub">Sales-call recordings became messaging fuel. Friday founder workshops became next-week landing-page copy. Click to see the loops.</p>
           <span class="card-link">See the loops
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </span>
