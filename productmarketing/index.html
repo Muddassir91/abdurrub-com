@@ -20,6 +20,27 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f766e'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='Archivo,sans-serif' font-weight='800' font-size='18' fill='white'%3EM%3C/text%3E%3C/svg%3E" />
 
   <link rel="stylesheet" href="style.css" />
+
+  <style>
+    /* Page-local overrides + new card-tag (project name label) */
+    .nav-cta { background: #0f766e !important; color: #ffffff !important; font-weight: 700; }
+    .nav-cta:hover { background: #115e59 !important; color: #ffffff !important; }
+    .card .project-label {
+      display: inline-block;
+      font-family: 'Archivo', sans-serif;
+      font-weight: 800;
+      font-size: 0.74rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--teal-700);
+      margin-bottom: 8px;
+    }
+    .card { border: 2px solid var(--ink-100); }
+    .card:hover { border-color: var(--teal-300); }
+    .cards-grid { gap: 26px; }
+    @media (min-width: 760px) { .cards-grid { gap: 28px; } }
+    .card .card-tag { background: var(--ink-100); color: var(--ink-700); }
+  </style>
 </head>
 
 <body>
@@ -30,20 +51,14 @@
     <a href="../index.html" class="logo">Muddassir<span>.</span></a>
     <div class="nav-links">
       <div class="menu-trigger">
-        <button aria-haspopup="true">
-          Services
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
+        <button aria-haspopup="true">Services <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
         <div class="menu-dropdown">
           <a href="../pages/email-marketing.html">Email Marketing &amp; Retention<span class="small">Lifecycle systems for businesses past $100K</span></a>
           <a href="../pages/creative-strategy.html">Creative Strategy Operating System<span class="small">Score your creative strategy in 7 questions</span></a>
         </div>
       </div>
       <div class="menu-trigger">
-        <button aria-haspopup="true" class="nav-active">
-          Past Work
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
+        <button aria-haspopup="true" class="nav-active">Past Work <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
         <div class="menu-dropdown">
           <a href="/productmarketing">Product Marketing for SaaS &amp; AI<span class="small">Two years at Passion.io</span></a>
         </div>
@@ -51,9 +66,7 @@
       <a href="../pages/blog.html">Blog</a>
       <a href="https://calendar.app.google/LEcHPfT7csau1WCQ7" target="_blank" rel="noopener" class="nav-cta">Book a call</a>
     </div>
-    <button class="menu-btn-mobile" id="menuBtn" aria-label="Menu" aria-expanded="false">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-    </button>
+    <button class="menu-btn-mobile" id="menuBtn" aria-label="Menu" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
   </div>
   <div class="mobile-menu" id="mobileMenu">
     <p class="section-label">Services</p>
@@ -81,7 +94,7 @@
   </div>
 </section>
 
-<!-- NUMBERS — integrated story, not dumped -->
+<!-- NUMBERS -->
 <section class="section section-tint">
   <div class="container">
     <div class="section-head reveal">
@@ -95,7 +108,7 @@
         <div class="big-figure">$2.44M<span class="big-figure-suffix">in email revenue across 2023, 2024, and 2025.</span></div>
         <div class="breakdown-list">
           <div class="breakdown-row">
-            <div class="label">Webinar follow-ups<span class="small">Largest single line. Live and evergreen funnels.</span></div>
+            <div class="label">Webinar follow-ups<span class="small">Largest single line. Live and evergreen funnels on the platform.</span></div>
             <div class="value">$1,115,407</div>
           </div>
           <div class="breakdown-row">
@@ -140,7 +153,7 @@
       <div class="product-line reveal">
         <span class="pl-tag">Platform</span>
         <h3>Passion.io</h3>
-        <p>The original product. A no-code app builder for coaches and creators to package their courses, communities, and coaching into a branded mobile and web app. Existed before I joined. Email and lifecycle revenue ran here.</p>
+        <p>The original product. A no-code app builder for coaches and creators to package their courses, communities, and coaching into a branded mobile and web app. Existed before I joined. Email and lifecycle revenue ran here. Black Friday and the $1.115M webinar follow-up sequences both lived on this product line.</p>
       </div>
       <div class="product-line reveal delay-1">
         <span class="pl-tag">Launched mid-tenure</span>
@@ -151,13 +164,12 @@
   </div>
 </section>
 
-<!-- SELECTED WORK CARDS -->
+<!-- SELECTED WORK -->
 <section class="section section-tint">
   <div class="container">
     <div class="section-head reveal">
       <p class="eyebrow">Selected work</p>
-      <h2>Eight pieces of product marketing work, end to end</h2>
-      <p class="lead">Each card opens a detail page with the full thinking, the artifacts, and the impact.</p>
+      <h2>Eight product marketing projects across positioning, lifecycle, research, and systems</h2>
     </div>
 
     <div class="cards-grid">
@@ -168,9 +180,10 @@
           <img src="images/bfcm-email-day3.png" alt="Black Friday 2024 email I wrote at Passion.io" loading="lazy" />
         </div>
         <div class="card-body">
+          <span class="project-label">Black Friday 2024 · Passion.io</span>
           <span class="card-tag">Lifecycle · Launch</span>
-          <h3>Drove $256,094 in email revenue across the 2024 Black Friday campaign at Passion.io.</h3>
-          <p class="card-sub">Eleven emails over seven days, segmented to a list that already existed. Click to see the campaign architecture and the actual emails.</p>
+          <h3>Drove $256,094 in email revenue in 30 days, the record campaign in company history.</h3>
+          <p class="card-sub">Eleven emails, seven days, segmented to a list that already existed. Click to see the campaign architecture and the actual emails.</p>
           <span class="card-link">See the campaign breakdown
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </span>
@@ -208,9 +221,10 @@
           </svg>
         </div>
         <div class="card-body">
+          <span class="project-label">Webinar follow-ups · Passion.io</span>
           <span class="card-tag">Lifecycle · Largest line</span>
-          <h3>Built and ran the webinar follow-up sequences that produced $1,115,407 in email revenue.</h3>
-          <p class="card-sub">The single largest revenue line across the engagement. Click to see how the sequences were structured and what made them earn more over time.</p>
+          <h3>Built sequences that produced $1,115,407 in email revenue, the single largest line.</h3>
+          <p class="card-sub">Live and evergreen webinar funnels on the Passion.io platform. Click to see the sequence structure and what made them earn more over time.</p>
           <span class="card-link">See the system
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </span>
@@ -223,9 +237,10 @@
           <img src="images/ai-scaling-call.png" alt="AI Scaling Workshop signup page on Passion.io for the YouAI launch" loading="lazy" />
         </div>
         <div class="card-body">
-          <span class="card-tag">YouAI · Launch</span>
-          <h3>Owned the messaging framework and post-webinar follow-up for the YouAI launch.</h3>
-          <p class="card-sub">From product to live webinar funnel. Click to see the value-prop hierarchy, the launch arc, and the assets I shipped.</p>
+          <span class="project-label">YouAI go-to-market</span>
+          <span class="card-tag">Launch · Positioning</span>
+          <h3>Took YouAI from internal feature to a launch funnel that fed $1.115M in webinar follow-up revenue.</h3>
+          <p class="card-sub">Owned the messaging framework, value-prop hierarchy, and post-webinar follow-up. Click to see the launch arc.</p>
           <span class="card-link">See the launch
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </span>
@@ -259,9 +274,10 @@
           </svg>
         </div>
         <div class="card-body">
+          <span class="project-label">YouAI repositioning</span>
           <span class="card-tag">Strategy · Positioning</span>
-          <h3>Repositioned the YouAI outcome promise around revenue brackets to match how the market actually segments.</h3>
-          <p class="card-sub">The original "$100K to $10M" promise was misaligned. Click to see the research that surfaced the gap and the structure that replaced it.</p>
+          <h3>Repositioned YouAI from one $100K-to-$10M promise into four revenue-tiered offers.</h3>
+          <p class="card-sub">Surfaced the gap that the original promise was misaligned with how the market segments. Click to see the research and the structure that replaced it.</p>
           <span class="card-link">See the pivot
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </span>
@@ -270,32 +286,14 @@
 
       <!-- 5. Customer research -->
       <a href="customer-research/" class="card reveal">
-        <div class="card-visual diagram">
-          <svg class="diagram-svg" viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Customer research methodology">
-            <g>
-              <circle cx="60" cy="110" r="32" fill="#0f766e"/>
-              <text x="60" y="105" font-family="Archivo" font-size="14" fill="white" text-anchor="middle" font-weight="800">20+</text>
-              <text x="60" y="122" font-family="Inter" font-size="9" fill="#ccfbf1" text-anchor="middle">calls</text>
-              <line x1="92" y1="110" x2="142" y2="110" stroke="#0d9488" stroke-width="2"/>
-              <rect x="148" y="60" width="100" height="100" rx="12" fill="#f0fdfa" stroke="#5eead4" stroke-width="1"/>
-              <text x="198" y="92" font-family="Archivo" font-size="11" fill="#0a4d5c" font-weight="800" text-anchor="middle">Transcripts</text>
-              <text x="198" y="110" font-family="Inter" font-size="10" fill="#115e59" text-anchor="middle">Pains</text>
-              <text x="198" y="124" font-family="Inter" font-size="10" fill="#115e59" text-anchor="middle">Objections</text>
-              <text x="198" y="138" font-family="Inter" font-size="10" fill="#115e59" text-anchor="middle">Beliefs</text>
-              <line x1="248" y1="110" x2="298" y2="110" stroke="#0d9488" stroke-width="2"/>
-              <circle cx="320" cy="78" r="20" fill="#0d9488"/>
-              <text x="320" y="83" font-family="Archivo" font-size="13" fill="white" text-anchor="middle" font-weight="800">P1</text>
-              <circle cx="320" cy="110" r="20" fill="#14b8a6"/>
-              <text x="320" y="115" font-family="Archivo" font-size="13" fill="white" text-anchor="middle" font-weight="800">P2</text>
-              <circle cx="320" cy="142" r="20" fill="#5eead4"/>
-              <text x="320" y="147" font-family="Archivo" font-size="13" fill="#0a4d5c" text-anchor="middle" font-weight="800">P3</text>
-            </g>
-          </svg>
+        <div class="card-visual">
+          <img src="images/buyer-persona-system.png" alt="Buyer Persona System for Passion.io built in the team Claude account" loading="lazy" />
         </div>
         <div class="card-body">
+          <span class="project-label">YouAI customer research system</span>
           <span class="card-tag">Customer research</span>
-          <h3>Built the customer research system that informed every messaging decision for the YouAI launch.</h3>
-          <p class="card-sub">Twenty-plus calls turned into three personas with quoted limiting beliefs. Click to see the methodology and the messaging-rules document it produced.</p>
+          <h3>Turned 20+ sales calls into three personas that informed every messaging decision for YouAI.</h3>
+          <p class="card-sub">Sales-call transcripts, Reddit cross-checks, and a Buyer Persona system in the team Claude account. Click to see the methodology.</p>
           <span class="card-link">See the methodology
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </span>
@@ -340,9 +338,10 @@
           </svg>
         </div>
         <div class="card-body">
+          <span class="project-label">Marketing messaging system</span>
           <span class="card-tag">Internal systems</span>
-          <h3>Built the six Notion databases the marketing team's messaging strategy ran on for two years.</h3>
-          <p class="card-sub">Painpoints, Objections, Benefits, Personas, Outcomes, Angles. Click to see how each database was structured and how they fed campaign work.</p>
+          <h3>Architected the six-database messaging system the marketing team's strategy ran on.</h3>
+          <p class="card-sub">Updated the team's previous Notion system into Painpoints, Objections, Benefits, Personas, Outcomes, and Angles. Click to see how each one fed campaign work.</p>
           <span class="card-link">See the system
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </span>
@@ -354,13 +353,14 @@
         <div class="card-visual dark">
           <div>
             <div class="visual-stat">2 builds</div>
-            <p style="margin-top: 14px; font-size: 0.9rem; color: rgba(255,250,243,0.7); line-height: 1.5;">Built a real demo app on the platform during onboarding.<br/>Built a real YouAI coach account before the launch.</p>
+            <p style="margin-top: 14px; font-size: 0.9rem; color: rgba(255,250,243,0.7); line-height: 1.5;">Demo app on the Passion.io platform during onboarding.<br/>YouAI coach account before the launch.</p>
           </div>
         </div>
         <div class="card-body">
+          <span class="project-label">Product dogfooding</span>
           <span class="card-tag">Dogfooding</span>
-          <h3>Used both Passion.io products as a real customer would, twice, to inform the marketing work.</h3>
-          <p class="card-sub">Built a demo app during onboarding. Built a YouAI coach account before its launch. Click to see what each one taught and how it changed the messaging.</p>
+          <h3>Built both products as a customer would. Audit fed onboarding, feature hierarchy, and launch messaging.</h3>
+          <p class="card-sub">Walked the same flows a paying customer would. Brought the friction back into the marketing work.</p>
           <span class="card-link">See what I learned
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </span>
@@ -396,9 +396,10 @@
           </svg>
         </div>
         <div class="card-body">
+          <span class="project-label">Cross-functional collaboration</span>
           <span class="card-tag">Cross-functional</span>
           <h3>Translated input from engineering, sales, design, and the founders into shipped marketing assets.</h3>
-          <p class="card-sub">Sales calls became messaging fuel. Founder workshops became next-week marketing copy. Click to see how the loops worked.</p>
+          <p class="card-sub">Sales calls became messaging fuel. Founder workshops became next-week marketing copy. Click to see the loops.</p>
           <span class="card-link">See the loops
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </span>
@@ -410,16 +411,17 @@
     <!-- BLOG TEASER -->
     <a href="blogs/" class="blog-teaser reveal">
       <div class="blog-teaser-body">
+        <span class="project-label" style="display:block; margin-bottom: 8px;">SEO &amp; long-form content · Passion.io</span>
         <span class="card-tag">Long-form content</span>
-        <h3 style="margin-top: 14px;">Blog articles I wrote for Passion.io</h3>
-        <p>Long-form SEO content tied to specific buying stages and personas. Each piece research-led, briefed against a target keyword, and mapped to a primary persona before a single word was written.</p>
+        <h3 style="margin-top: 14px;">Long-form articles ranked Passion.io alongside Mighty Networks and Kajabi.</h3>
+        <p>I co-led the SEO content project at Passion.io with my team lead. Goal: bring the platform's organic search presence in line with competitors with much larger SEO footprints. The blog was one part. Voice-of-customer mining, competitor research tables, and a writing workflow were the rest.</p>
         <span class="blog-teaser-link">
-          See the blog work
+          See the SEO project and articles
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </span>
       </div>
       <div class="blog-teaser-thumb">
-        <img src="images/blog-decision-fatigue.png" alt="Decision Fatigue blog post on Passion.io written by Muddassir Abdur Rub" loading="lazy" />
+        <img src="images/blog-cards-collage.png" alt="Three of the blog articles I wrote for Passion.io" loading="lazy" />
       </div>
     </a>
   </div>
@@ -430,10 +432,10 @@
   <div class="container">
     <div class="cta-inner reveal">
       <p class="eyebrow">If you're hiring</p>
-      <h2>Looking for a product marketing manager?</h2>
+      <h2>Want a marketer who turns sales calls, founder workshops, and customer research into shipped revenue?</h2>
       <p class="cta-body">Open to product marketing manager roles at SaaS and AI companies, full-time remote. Also open to consulting on launches, lifecycle, and messaging systems for teams scaling past $1M. References available on request.</p>
       <a href="https://calendar.app.google/LEcHPfT7csau1WCQ7" target="_blank" rel="noopener" class="cta-button">Book a call</a>
-      <p class="cta-meta">Or reach me at <a href="mailto:m.a.rab2012@gmail.com">m.a.rab2012@gmail.com</a></p>
+      <p class="cta-meta">Or reach me at <a href="mailto:muddassir@abdurrub.com">muddassir@abdurrub.com</a></p>
     </div>
   </div>
 </section>
