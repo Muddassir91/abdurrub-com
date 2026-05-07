@@ -37,6 +37,42 @@
   els.forEach(function(el){ io.observe(el); });
 })();
 
+// Animated counter on the big-figure when it scrolls into view
+(function(){
+  var el = document.querySelector('.big-figure');
+  if (!el || !('IntersectionObserver' in window)) return;
+  var raw = el.firstChild ? (el.firstChild.textContent || '') : '';
+  var match = raw.match(/\$([\d.]+)([MKB]?)/);
+  if (!match) return;
+  var target = parseFloat(match[1]);
+  var unit = match[2] || '';
+  var prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced) return;
+  var animated = false;
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (!e.isIntersecting || animated) return;
+      animated = true;
+      var start = performance.now();
+      var dur = 1400;
+      function tick(now){
+        var t = Math.min(1, (now - start) / dur);
+        var eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
+        var val = (target * eased).toFixed(target % 1 ? 2 : 0);
+        if (target >= 1) val = parseFloat(val).toFixed(target % 1 ? 2 : 0);
+        el.firstChild.nodeValue = '$' + val + unit;
+        if (t < 1) requestAnimationFrame(tick);
+        else el.firstChild.nodeValue = '$' + target + unit;
+      }
+      requestAnimationFrame(tick);
+      io.unobserve(el);
+    });
+  }, { threshold: 0.4 });
+  // Start the value at 0 so the animation has somewhere to count from
+  el.firstChild.nodeValue = '$0' + unit;
+  io.observe(el);
+})();
+
 // Lightbox
 (function(){
   var modal = document.getElementById('lightbox');
