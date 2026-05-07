@@ -17,42 +17,50 @@
     .article-card {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 24px;
+      gap: 0;
       background: white;
-      border: 2px solid var(--ink-100);
+      border: 2px solid var(--ink-200);
       border-radius: 22px;
       overflow: hidden;
-      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     }
     @media (min-width: 760px) {
-      .article-card { grid-template-columns: 280px 1fr; gap: 0; }
+      .article-card { grid-template-columns: 320px 1fr; }
     }
     .article-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 28px 56px -18px rgba(10, 77, 92, 0.2);
-      border-color: var(--teal-300);
+      transform: translateY(-4px);
+      box-shadow: 0 32px 64px -20px rgba(10, 77, 92, 0.22);
+      border-color: var(--teal-400);
     }
     .article-card .thumb {
-      aspect-ratio: 16 / 10;
+      width: 100%;
+      aspect-ratio: 4 / 3;
       overflow: hidden;
       background: var(--teal-50);
+      border-bottom: 1px solid var(--teal-100);
     }
     @media (min-width: 760px) {
-      .article-card { min-height: 280px; }
-      .article-card .thumb { aspect-ratio: auto; height: auto; min-height: 280px; }
+      .article-card .thumb {
+        aspect-ratio: auto;
+        height: 100%;
+        min-height: 260px;
+        border-bottom: 0;
+        border-right: 1px solid var(--teal-100);
+      }
     }
     .article-card .thumb img {
       width: 100%; height: 100%;
       object-fit: cover; object-position: top center;
-      transition: transform 0.4s ease;
+      transition: transform 0.5s ease;
     }
     .article-card:hover .thumb img { transform: scale(1.04); }
     .article-card .body {
       padding: 28px 28px 32px;
       display: flex; flex-direction: column;
       justify-content: center;
+      min-height: 260px;
     }
-    @media (min-width: 760px) { .article-card .body { padding: 32px 36px; } }
+    @media (min-width: 760px) { .article-card .body { padding: 36px 40px; } }
     .article-card .meta {
       display: inline-block;
       font-size: 0.74rem; font-weight: 700;
@@ -214,8 +222,7 @@
   <div class="container">
     <div class="cta-inner reveal">
       <p class="eyebrow">If you're hiring</p>
-      <h2>Want AI tools and search engines recommending your product to buyers?</h2>
-      <p class="cta-body">Long-form, research-led content is what AI assistants and search engines pull from when buyers ask product questions. The same research stack and writing workflow can put your product in those answers.</p>
+      <h2>Want AI tools and search engines recommending your product?</h2>
       <a href="https://calendar.app.google/LEcHPfT7csau1WCQ7" target="_blank" rel="noopener" class="cta-button">Book a call</a>
       <p class="cta-meta">Or reach me at <a href="mailto:muddassir@abdurrub.com">muddassir@abdurrub.com</a></p>
     </div>
