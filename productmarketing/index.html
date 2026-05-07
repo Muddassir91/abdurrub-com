@@ -283,37 +283,44 @@
         <h4 class="project-heading"><span class="num">05</span><span class="name">Product Positioning</span></h4>
         <a href="positioning-pivot/" class="card reveal delay-1">
         <div class="card-visual diagram">
-          <svg class="diagram-svg" viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Lead routing flowchart: revenue check decides which offer the prospect sees.">
+          <svg class="diagram-svg" viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="YouAI funnel with downsell path to Passion.io platform.">
             <defs>
               <marker id="pp-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
                 <path d="M0 0 L10 5 L0 10 Z" fill="#0d9488"/>
               </marker>
             </defs>
 
-            <rect x="130" y="6" width="100" height="26" rx="8" fill="#0a4d5c"/>
-            <text x="180" y="23" text-anchor="middle" font-family="Inter" font-size="10" font-weight="700" fill="white">Inbound lead</text>
+            <!-- TOP OF FUNNEL: wide bar -->
+            <rect x="20" y="8" width="320" height="26" rx="4" fill="#0a4d5c"/>
+            <text x="180" y="25" text-anchor="middle" font-family="Inter" font-size="10" font-weight="700" fill="white" letter-spacing="0.4">YouAI prospect pool</text>
 
-            <line x1="180" y1="32" x2="180" y2="44" stroke="#0d9488" stroke-width="1.5" marker-end="url(#pp-arr)"/>
+            <!-- FUNNEL NARROWS: trapezoid -->
+            <polygon points="20,38 340,38 260,72 100,72" fill="#0d9488"/>
+            <text x="180" y="58" text-anchor="middle" font-family="Inter" font-size="10" font-weight="700" fill="white">Sales call · revenue tier check</text>
 
-            <polygon points="180,48 240,82 180,116 120,82" fill="#f0fdfa" stroke="#0d9488" stroke-width="1.5"/>
-            <text x="180" y="78" text-anchor="middle" font-family="Inter" font-size="10" font-weight="700" fill="#0a4d5c">Annual</text>
-            <text x="180" y="92" text-anchor="middle" font-family="Inter" font-size="10" font-weight="700" fill="#0a4d5c">revenue?</text>
+            <!-- BOTTOM OF FUNNEL: narrow neck -->
+            <rect x="100" y="72" width="160" height="22" fill="#0f766e"/>
+            <text x="180" y="87" text-anchor="middle" font-family="Inter" font-size="9" font-weight="600" fill="white">Tier-matched offer decision</text>
 
-            <line x1="120" y1="82" x2="78" y2="142" stroke="#0d9488" stroke-width="1.5" marker-end="url(#pp-arr)"/>
-            <line x1="240" y1="82" x2="282" y2="142" stroke="#0d9488" stroke-width="1.5" marker-end="url(#pp-arr)"/>
+            <!-- SPLIT lines from neck to two destinations -->
+            <line x1="120" y1="94" x2="78" y2="138" stroke="#0d9488" stroke-width="1.5" marker-end="url(#pp-arr)"/>
+            <line x1="240" y1="94" x2="282" y2="138" stroke="#0d9488" stroke-width="1.5" marker-end="url(#pp-arr)"/>
 
-            <text x="80" y="120" font-family="Inter" font-size="9" font-weight="700" fill="#0d9488">&lt; $100K</text>
-            <text x="270" y="120" font-family="Inter" font-size="9" font-weight="700" fill="#0d9488">$100K+</text>
+            <!-- Path tags -->
+            <text x="50" y="116" font-family="Inter" font-size="8.5" font-weight="700" fill="#0d9488" letter-spacing="0.6">DOWNSELL · &lt; $100K</text>
+            <text x="270" y="116" font-family="Inter" font-size="8.5" font-weight="700" fill="#0d9488" letter-spacing="0.6">FIT · $100K+</text>
 
-            <rect x="14" y="148" width="146" height="58" rx="10" fill="#5eead4" stroke="#0d9488" stroke-width="1.5"/>
-            <text x="87" y="166" text-anchor="middle" font-family="Archivo" font-size="9.5" font-weight="800" fill="#0a4d5c" letter-spacing="0.5">PASSION.IO PLATFORM</text>
-            <text x="87" y="182" text-anchor="middle" font-family="Inter" font-size="9" font-weight="600" fill="#0f766e">downsell offer</text>
-            <text x="87" y="196" text-anchor="middle" font-family="Inter" font-size="8" font-style="italic" fill="#0f766e">(was: disqualified)</text>
+            <!-- Endpoint 1: Passion.io platform (downsell) -->
+            <rect x="14" y="142" width="146" height="62" rx="10" fill="#5eead4" stroke="#0d9488" stroke-width="1.5"/>
+            <text x="87" y="160" text-anchor="middle" font-family="Archivo" font-size="9.5" font-weight="800" fill="#0a4d5c" letter-spacing="0.5">PASSION.IO PLATFORM</text>
+            <text x="87" y="176" text-anchor="middle" font-family="Inter" font-size="9" font-weight="600" fill="#0f766e">downsell offer</text>
+            <text x="87" y="192" text-anchor="middle" font-family="Inter" font-size="8" font-style="italic" fill="#0f766e">(was: disqualified, lost)</text>
 
-            <rect x="200" y="148" width="146" height="58" rx="10" fill="#0a4d5c"/>
-            <text x="273" y="166" text-anchor="middle" font-family="Archivo" font-size="10" font-weight="800" fill="white" letter-spacing="0.5">YOUAI</text>
-            <text x="273" y="182" text-anchor="middle" font-family="Inter" font-size="9" font-weight="600" fill="#ccfbf1">tier-matched offer</text>
-            <text x="273" y="196" text-anchor="middle" font-family="Inter" font-size="7.5" fill="#5eead4">4 tiers · $100K to $3M+</text>
+            <!-- Endpoint 2: YouAI tier-matched offer -->
+            <rect x="200" y="142" width="146" height="62" rx="10" fill="#0a4d5c"/>
+            <text x="273" y="160" text-anchor="middle" font-family="Archivo" font-size="10" font-weight="800" fill="white" letter-spacing="0.5">YOUAI</text>
+            <text x="273" y="176" text-anchor="middle" font-family="Inter" font-size="9" font-weight="600" fill="#ccfbf1">tier-matched offer</text>
+            <text x="273" y="192" text-anchor="middle" font-family="Inter" font-size="7.5" fill="#5eead4">4 tiers · $100K to $3M+</text>
           </svg>
         </div>
         <div class="card-body">
@@ -397,7 +404,7 @@
 
       <!-- 7. Dogfooding -->
       <div class="card-cell">
-        <h4 class="project-heading"><span class="num">08</span><span class="name">Dogfooding</span></h4>
+        <h4 class="project-heading"><span class="num">08</span><span class="name">Product Dogfooding</span></h4>
         <a href="dogfooding/" class="card reveal">
         <div class="card-visual diagram">
           <svg class="diagram-svg" viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Closed the gap between marketing claim and product reality.">
