@@ -17,7 +17,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Sacramento&family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Sacramento&family=Caveat:wght@400;500;600;700&family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f766e'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='Archivo,sans-serif' font-weight='800' font-size='18' fill='white'%3EM%3C/text%3E%3C/svg%3E" />
 
@@ -490,65 +490,89 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
 
 
 /* =========================================================
-   ABOUT — "message from Muddassir": handwritten letter feel
+   ABOUT — "message from Muddassir": readable serif story card
    ========================================================= */
-.about-letter {
-  font-family: 'Caveat', cursive;
-  font-size: 1.35rem;
-  line-height: 1.7;
-  color: var(--ink-700);
-  max-width: 640px;
+.about-card {
+  background: #ffffff;
+  border: 1px solid var(--ink-200, #e5e7eb);
+  border-radius: 20px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 12px 40px -12px rgba(15, 23, 42, .08);
+  max-width: 720px;
   margin: 0 auto;
+  padding: 40px 32px;
+}
+@media (min-width: 768px) { .about-card { padding: 56px 64px; } }
+
+.about-letter {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 1.08rem;
+  line-height: 1.85;
+  color: var(--ink-700);
+  font-weight: 400;
+  font-style: normal;
   letter-spacing: 0;
 }
-@media (min-width: 768px) { .about-letter { font-size: 1.5rem; } }
-.about-letter p { margin: 0 0 18px; }
+@media (min-width: 768px) { .about-letter { font-size: 1.15rem; } }
+.about-letter p {
+  margin: 0 0 22px;
+  font-style: normal;
+  text-decoration: none;
+}
+.about-letter em, .about-letter i { font-style: normal; }
 .about-letter .lead {
   color: var(--ink-900);
-  font-weight: 600;
-  font-size: 1.55rem;
+  font-weight: 500;
+  font-size: 1.25rem;
+  line-height: 1.6;
+  margin-bottom: 28px;
 }
-@media (min-width: 768px) { .about-letter .lead { font-size: 1.8rem; } }
+@media (min-width: 768px) { .about-letter .lead { font-size: 1.4rem; } }
 .about-letter .creds {
   border-left: 2px solid var(--teal-300);
-  padding: 4px 0 4px 18px;
-  margin: 18px 0;
-  color: var(--teal-900);
+  padding: 8px 0 8px 22px;
+  margin: 24px 0;
+  color: var(--ink-700);
 }
-.about-letter .creds p { margin: 2px 0; }
+.about-letter .creds p {
+  margin: 6px 0;
+  font-size: 1.02rem;
+}
 .about-letter .oneliner {
-  font-family: 'Archivo', sans-serif;
-  font-weight: 700;
-  font-size: 1.9rem;
+  font-family: 'Lora', Georgia, serif;
+  font-weight: 600;
+  font-size: 1.45rem;
   color: var(--teal-800);
-  letter-spacing: -.02em;
-  margin: 26px 0;
-  line-height: 1.15;
+  letter-spacing: 0;
+  margin: 32px 0;
+  line-height: 1.4;
+  text-align: center;
+  font-style: normal;
 }
 .about-letter .mission {
-  font-family: 'Archivo', sans-serif;
-  font-weight: 600;
-  font-size: 1.15rem;
+  font-family: 'Lora', Georgia, serif;
+  font-weight: 500;
+  font-size: 1.08rem;
   color: var(--ink-900);
-  letter-spacing: -.01em;
-  line-height: 1.45;
-  background: linear-gradient(90deg, rgba(45,212,191,.12), transparent);
+  letter-spacing: 0;
+  line-height: 1.75;
+  background: rgba(45, 212, 191, .06);
   border-left: 3px solid var(--teal-500);
-  padding: 16px 20px;
+  padding: 20px 24px;
   border-radius: 0 10px 10px 0;
-  margin: 26px 0;
+  margin: 32px 0;
+  font-style: normal;
 }
 
-/* Signature block */
+/* Signature block — sits inside the card */
 .about-sig {
-  margin-top: 36px;
+  margin-top: 40px;
+  padding-top: 28px;
+  border-top: 1px solid var(--ink-200, #e5e7eb);
   display: flex; flex-direction: column; gap: 2px;
-  max-width: 640px;
-  margin-left: auto; margin-right: auto;
 }
 .about-sig .name {
   font-family: 'Sacramento', cursive;
-  font-size: 3rem;
+  font-size: 2.6rem;
   color: var(--teal-950);
   line-height: 1;
 }
@@ -557,7 +581,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   font-weight: 600;
   font-size: 1rem;
   color: var(--ink-900);
-  margin-top: 4px;
+  margin-top: 6px;
 }
 .about-sig .role {
   font-family: 'Inter', sans-serif;
@@ -1260,41 +1284,43 @@ footer {
       <h2>Who am I, and why you should trust me with your marketing.</h2>
     </div>
 
-    <div class="about-letter reveal">
-      <p class="lead">In 2022, I was in $5,000+ of debt, with no real plan to pay it back.</p>
+    <div class="about-card reveal">
+      <div class="about-letter">
+        <p class="lead">In 2022, I was in $5,000+ of debt, with no real plan to pay it back.</p>
 
-      <p>Which might not seem a lot in USD, but it's more than what 80% of Pakistan's population makes in a year. It could've taken me a lifetime to pay it back with a traditional job.</p>
+        <p>Which might not seem a lot in USD, but it's more than what 80% of Pakistan's population makes in a year. It could've taken me a lifetime to pay it back with a traditional job.</p>
 
-      <p>By every external measure I was supposed to have made it:</p>
+        <p>By every external measure I was supposed to have made it:</p>
 
-      <div class="creds">
-        <p>The first doctor in my family.</p>
-        <p>Cleared Pakistan's most competitive civil services exam on the first attempt.</p>
+        <div class="creds">
+          <p>The first doctor in my family.</p>
+          <p>Cleared Pakistan's most competitive civil services exam on the first attempt.</p>
+        </div>
+
+        <p>I did most things right. It wasn't enough. Or so I thought.</p>
+
+        <p>So I chose to start a freelance marketing service online, which was scary, because ~90% of my colleagues from med school went on to Fellowships. I was the only one not following the herd.</p>
+
+        <p>Three years later, I've helped move over $10 million in client revenue, $2.4 million of it for one company alone, and built marketing systems for founders, brands, and operators who now treat retention the way I do: as the cheapest growth channel they already own. And yes, I paid off all that debt.</p>
+
+        <p>If I could explain my entire life in one sentence, it would be this:</p>
+
+        <p class="oneliner">I can't do average.</p>
+
+        <p>And I bring the same don't-settle-for-average philosophy to the work.</p>
+
+        <div class="mission">
+          My mission is to help 1,000 new businesses scale past $100K. Starting a business has become easier than ever in the age of AI. Growing and scaling one past $100K is about to become harder than ever. That's the gap I want to help founders close.
+        </div>
+
+        <p>If you've stalled past $100K, or you're sitting on a list you barely email, I'd like to be useful.</p>
       </div>
 
-      <p>I did most things right. It wasn't enough. Or so I thought.</p>
-
-      <p>So I chose to start a freelance marketing service online, which was scary, because ~90% of my colleagues from med school went on to Fellowships. I was the only one not following the herd.</p>
-
-      <p>Three years later, I've helped move over $10 million in client revenue, $2.4 million of it for one company alone, and built marketing systems for founders, brands, and operators who now treat retention the way I do: as the cheapest growth channel they already own. And yes, I paid off all that debt.</p>
-
-      <p>If I could explain my entire life in one sentence, it would be this:</p>
-
-      <p class="oneliner">I can't do average.</p>
-
-      <p>And I bring the same don't-settle-for-average philosophy to the work.</p>
-
-      <div class="mission">
-        My mission is to help 1,000 new businesses scale past $100K. Starting a business has become easier than ever in the age of AI. Growing and scaling one past $100K is about to become harder than ever. That's the gap I want to help founders close.
+      <div class="about-sig">
+        <span class="name">Muddassir</span>
+        <span class="surname">Abdur Rub</span>
+        <span class="role">Direct Response Marketer</span>
       </div>
-
-      <p>If you've stalled past $100K, or you're sitting on a list you barely email, I'd like to be useful.</p>
-    </div>
-
-    <div class="about-sig reveal">
-      <span class="name">Muddassir</span>
-      <span class="surname">Abdur Rub</span>
-      <span class="role">Direct Response Marketer</span>
     </div>
   </div>
 </section>
