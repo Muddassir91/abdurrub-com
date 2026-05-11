@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Muddassir Abdur Rub — Direct Response Marketer and Retention Strategist</title>
-  <meta name="description" content="I help SaaS, ecommerce, and coaching brands scale past $100K by finding hidden revenue in the leads and customers they already have. Two years inside a $30M+ SaaS, $2.4M in email revenue.">
+  <title>Muddassir Abdur Rub — Direct Response Marketer</title>
+  <meta name="description" content="I help businesses scale past $100K by making more money from the leads and customers they already have. Retention strategy, lifecycle email, and direct response marketing.">
   <meta name="author" content="Muddassir Abdur Rub">
   <link rel="canonical" href="https://abdurrub.com/">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://abdurrub.com/">
   <meta property="og:title" content="Muddassir Abdur Rub — Direct Response Marketer">
-  <meta property="og:description" content="Most growth comes from the customers you already have. I help businesses past $100K find it.">
+  <meta property="og:description" content="Most growth comes from the customers you already have.">
   <meta property="og:image" content="https://abdurrub.com/images/Mud-website-image.png">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23008080'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='Changa One,Impact,sans-serif' font-weight='400' font-size='18' fill='white'%3EM%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,213 +18,96 @@
   <link href="https://fonts.googleapis.com/css2?family=Changa+One:ital@0;1&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Sacramento&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://adscreativestrategy.com/css/system.css">
   <style>
-    /* abdurrub.com personal skin
-       Loads the shared design system from adscreativestrategy.com/css/system.css
-       Only personal-brand elements live here: avatar, signature wordmark, hero portrait. */
+    .brand-personal { display:inline-flex; align-items:center; gap:12px; text-decoration:none; color:var(--ink); }
+    .brand-photo { width:38px; height:38px; border-radius:50%; overflow:hidden; background:var(--paper-2); border:1.5px solid var(--rule); flex-shrink:0; }
+    .brand-photo img { width:100%; height:100%; object-fit:cover; }
+    .brand-signature { font-family:"Sacramento", cursive; font-size:1.7rem; color:var(--teal-deep); line-height:1; }
+    .brand-signature .dot { color:var(--teal); }
 
-    .brand-personal {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
+    /* Chris-style: short, single-column, generous whitespace */
+    .hero-home { padding: 88px 0 56px; }
+    .hero-home .wrap { max-width: 820px; }
+    .hero-home h1 {
+      font-family: "Changa One", "Impact", sans-serif;
+      font-weight: 400;
+      letter-spacing: 0.005em;
+      line-height: 1.05;
+      font-size: clamp(2.4rem, 5.4vw, 4rem);
+      color: var(--ink);
+      max-width: 700px;
+      margin: 0;
+    }
+    .hero-home h1 .gradient { color: var(--teal); }
+    .hero-home .sub {
+      font-size: 1.18rem;
+      color: var(--ink-soft);
+      margin: 24px 0 0;
+      max-width: 620px;
+    }
+
+    .section-narrow { padding: 56px 0; }
+    .section-narrow .wrap { max-width: 720px; }
+    .section-narrow h2 {
+      font-family: "Changa One", "Impact", sans-serif;
+      font-weight: 400;
+      letter-spacing: 0.005em;
+      line-height: 1.1;
+      font-size: clamp(1.8rem, 3.8vw, 2.6rem);
+      color: var(--ink);
+      margin: 0 0 20px;
+    }
+    .section-narrow p {
+      font-size: 1.12rem;
+      line-height: 1.72;
       color: var(--ink);
     }
-    .brand-photo {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      overflow: hidden;
-      background: var(--paper-2);
-      border: 1.5px solid var(--rule);
-      flex-shrink: 0;
-    }
-    .brand-photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .brand-signature {
-      font-family: "Sacramento", cursive;
-      font-size: 1.7rem;
+    .section-narrow .lede-q {
+      font-family: "Changa One", "Impact", sans-serif;
+      font-size: clamp(1.6rem, 3.4vw, 2.2rem);
       color: var(--teal-deep);
-      line-height: 1;
-    }
-    .brand-signature .dot {
-      color: var(--teal);
+      margin: 32px 0 16px;
     }
 
-    /* Hero */
-    .hero-portfolio {
-      padding: 96px 0 64px;
-      background: var(--paper);
-    }
-    .hero-portfolio .display {
-      font-size: clamp(2.4rem, 5.4vw, 4.4rem);
-      max-width: 880px;
-    }
-    .hero-portfolio .display em {
-      font-style: italic;
-      color: var(--teal);
-    }
-    .hero-portfolio .lede,
-    section .lede { font-style: normal; }
-    .hero-cta-row {
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-      margin-top: 36px;
-    }
-    .hero-portfolio .lede { max-width: 660px; }
-
-    /* Proof strip */
-    .proof-strip {
-      padding: 36px 0 12px;
+    /* Trust strip */
+    .trust-strip {
+      padding: 40px 0;
       border-top: 1px solid var(--rule);
       border-bottom: 1px solid var(--rule);
       background: var(--paper);
     }
-    .proof-row {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 22px;
-      align-items: start;
-    }
-    .proof-item {
-      display: grid;
-      gap: 4px;
-    }
-    .proof-num {
+    .trust-strip .label {
       font-family: "Changa One", "Impact", sans-serif;
-      font-size: 1.9rem;
+      letter-spacing: 0.16em;
       color: var(--teal);
-      line-height: 1.05;
-    }
-    .proof-label {
-      color: var(--ink-soft);
-      font-size: 0.92rem;
-    }
-
-    /* Featured case study */
-    .case-feature {
-      background: var(--paper-2);
-    }
-    .case-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-      gap: 64px;
-      align-items: center;
-    }
-    .case-grid h2.display { font-size: clamp(2rem, 4.2vw, 3rem); }
-    .case-grid p { color: var(--ink-soft); }
-    .case-metric {
-      display: grid;
-      gap: 12px;
-      padding: 28px;
-      background: var(--white);
-      border: 1px solid var(--rule);
-      border-radius: 8px;
-      box-shadow: 0 22px 44px rgba(0, 77, 77, 0.08);
-    }
-    .case-metric .row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--rule);
-    }
-    .case-metric .row:last-child { border-bottom: 0; }
-    .case-metric .label { color: var(--ink-soft); font-size: 0.96rem; }
-    .case-metric .value {
-      font-family: "Changa One", "Impact", sans-serif;
-      color: var(--teal);
-      font-size: 1.5rem;
-      letter-spacing: 0.01em;
-    }
-
-    /* Services */
-    .services-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 24px;
-      margin-top: 36px;
-    }
-    .service-card {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      padding: 32px;
-      background: var(--white);
-      border: 1px solid var(--rule);
-      border-radius: 10px;
-      text-decoration: none;
-      color: var(--ink);
-      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-    }
-    .service-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 30px 60px rgba(0, 77, 77, 0.14);
-      border-color: var(--teal);
-    }
-    .service-card .service-tag {
-      font-family: "Changa One", "Impact", sans-serif;
-      letter-spacing: 0.12em;
-      color: var(--teal);
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       text-transform: uppercase;
-    }
-    .service-card h3.display { font-size: clamp(1.4rem, 2.4vw, 1.8rem); }
-    .service-card p {
-      color: var(--ink-soft);
-      font-size: 1rem;
-      margin: 0;
-      flex: 1;
-    }
-    .service-card .arrow {
-      color: var(--teal);
-      font-family: "Changa One", "Impact", sans-serif;
-      font-size: 0.92rem;
-      letter-spacing: 0.08em;
-    }
-
-    /* Quote / testimonial */
-    .quote-block {
-      max-width: 820px;
-      margin: 0 auto;
+      margin-bottom: 18px;
       text-align: center;
     }
-    .quote-block .mark {
+    .trust-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 32px 56px;
+      color: var(--ink-soft);
       font-family: "Changa One", "Impact", sans-serif;
-      font-size: 4rem;
-      color: var(--teal);
-      line-height: 0.6;
-      margin-bottom: 12px;
-    }
-    .quote-block p {
-      font-size: clamp(1.2rem, 2vw, 1.6rem);
-      line-height: 1.5;
-      color: var(--ink);
-      font-style: italic;
-    }
-    .quote-attr {
-      margin-top: 18px;
-      font-family: "Changa One", "Impact", sans-serif;
-      letter-spacing: 0.08em;
-      color: var(--teal-deep);
-      font-size: 0.9rem;
-      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 0.95rem;
     }
 
-    /* Final CTA */
-    .final-cta { text-align: center; }
-    .final-cta .display { max-width: 760px; margin: 0 auto; }
-
-    @media (max-width: 920px) {
-      .proof-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
-      .case-grid { grid-template-columns: 1fr; gap: 36px; }
-      .services-grid { grid-template-columns: 1fr; }
+    .final-cta { text-align: center; padding: 80px 0; }
+    .final-cta .wrap { max-width: 720px; }
+    .final-cta h2 {
+      font-family: "Changa One", "Impact", sans-serif;
+      font-weight: 400;
+      font-size: clamp(1.8rem, 3.6vw, 2.6rem);
+      color: var(--white);
+      margin: 0 0 12px;
     }
+    .final-cta p { color: rgba(255, 255, 255, 0.82); margin: 0 auto 28px; max-width: 540px; }
+
     @media (max-width: 640px) {
-      .brand-signature { font-size: 1.4rem; }
+      .brand-signature { font-size: 1.3rem; }
       .brand-photo { width: 32px; height: 32px; }
     }
   </style>
@@ -233,14 +116,12 @@
   <nav class="nav" aria-label="Main navigation">
     <div class="wrap nav-inner">
       <a class="brand-personal" href="/">
-        <span class="brand-photo">
-          <img src="/images/Mud-website-image.png" alt="Muddassir Abdur Rub">
-        </span>
+        <span class="brand-photo"><img src="/images/Mud-website-image.png" alt="Muddassir Abdur Rub"></span>
         <span class="brand-signature">Muddassir<span class="dot">.</span></span>
       </a>
       <div class="nav-links">
         <a href="/pages/about.html">About</a>
-        <a href="/pages/work.html">Work</a>
+        <a href="/productmarketing/">Work</a>
         <a href="/pages/blog.html">Blog</a>
         <a href="https://adscreativestrategy.com/" target="_blank" rel="noopener">Products</a>
         <a href="/pages/contact.html">Contact</a>
@@ -250,106 +131,44 @@
   </nav>
 
   <main>
-    <section class="hero-portfolio">
+    <section class="hero-home">
       <div class="wrap">
-        <span class="eyebrow">Direct response marketer · retention strategist</span>
-        <h1 class="display">Most growth comes from the <em>customers you already have</em>.</h1>
-        <p class="lede">I help SaaS, ecommerce, and coaching brands past $100K find hidden revenue in their existing leads and customers. Through email, lifecycle, and creative strategy that doesn't sound like everyone else's.</p>
-        <div class="hero-cta-row">
-          <a class="btn" href="/pages/work-with-me.html">Work With Me</a>
-          <a class="btn btn--ghost" href="/pages/work.html">See past work</a>
-        </div>
+        <span class="eyebrow">Direct Response Marketer</span>
+        <h1>Hey, I'm Muddassir. I help businesses past $100K make more money from the <span class="gradient">customers they already have.</span></h1>
+        <p class="sub">Retention strategy, lifecycle email, and direct response marketing. Three years in. Two of them embedded inside one of the fastest-scaling SaaS in the creator economy.</p>
       </div>
     </section>
 
-    <div class="proof-strip">
-      <div class="wrap proof-row">
-        <div class="proof-item">
-          <div class="proof-num">$2.4M</div>
-          <div class="proof-label">Email revenue at Passion.io across two years</div>
-        </div>
-        <div class="proof-item">
-          <div class="proof-num">$256K</div>
-          <div class="proof-label">Black Friday revenue in 30 days, 2024</div>
-        </div>
-        <div class="proof-item">
-          <div class="proof-num">$13 → $27</div>
-          <div class="proof-label">Revenue per lead doubled across the engagement</div>
-        </div>
-        <div class="proof-item">
-          <div class="proof-num">2 yrs</div>
-          <div class="proof-label">Owned email & lifecycle at a leading creator-economy SaaS</div>
+    <div class="trust-strip">
+      <div class="wrap">
+        <p class="label">Trusted by</p>
+        <div class="trust-row">
+          <span>Passion.io</span>
+          <span>Oshun Goat Milk Soap</span>
+          <span>Osum</span>
+          <span>CallDrive</span>
+          <span>Psychic Sharma</span>
+          <span>Dark Matter</span>
         </div>
       </div>
     </div>
 
-    <section class="case-feature">
-      <div class="wrap case-grid">
-        <div>
-          <span class="kicker">Featured case study · Passion.io</span>
-          <h2 class="display">Two years. $2.4M in email revenue. One list rebuilt from the inside.</h2>
-          <hr class="rule">
-          <p>Two years owning email and lifecycle at Passion.io, a leading creator-economy SaaS. Email moved from a sleepy afterthought to the most predictable revenue channel in the business.</p>
-          <p>The list went from $13 per lead in 2023 to $27 in 2024. Same audience source. What changed was the segmentation, the positioning, the voice subscribers actually recognized, and the lifecycle layer that did not exist before.</p>
-          <p style="margin-bottom: 0;"><a href="/pages/work.html#passionio">Read the full case study →</a></p>
-        </div>
-        <div class="case-metric">
-          <div class="row"><span class="label">2023 email revenue</span><span class="value">$547K</span></div>
-          <div class="row"><span class="label">2024 email revenue</span><span class="value">$1.13M</span></div>
-          <div class="row"><span class="label">Black Friday 2024</span><span class="value">$256K</span></div>
-          <div class="row"><span class="label">Revenue per lead</span><span class="value">2× growth</span></div>
-        </div>
-      </div>
-    </section>
-
-    <section>
+    <section class="section-narrow">
       <div class="wrap">
-        <span class="kicker">Services</span>
-        <h2 class="display">Three ways the work shows up.</h2>
-        <p class="lede">Pick the lens that fits where you are. The work in each overlaps. The conversation in each starts with a free audit.</p>
-        <div class="services-grid">
-
-          <a class="service-card" href="/pages/email-marketing.html">
-            <span class="service-tag">Email · Retention · Lifecycle</span>
-            <h3 class="display">Email Marketing & Retention</h3>
-            <p>Lifecycle systems for businesses past $100K. Built so customers stay, spend more, and bring the next ones in. First cycle hand-written, then scaffolded for the team to run on.</p>
-            <span class="arrow">Book a free email audit →</span>
-          </a>
-
-          <a class="service-card" href="/pages/creative-strategy.html">
-            <span class="service-tag">Creative Strategy</span>
-            <h3 class="display">Creative Strategy & Messaging</h3>
-            <p>Positioning, voice, and creative direction for businesses that sound like every other brand in their feed. Built on customer research, not opinion or trend.</p>
-            <span class="arrow">Book a free messaging audit →</span>
-          </a>
-
-          <a class="service-card" href="/productmarketing/">
-            <span class="service-tag">Product Marketing · SaaS & AI</span>
-            <h3 class="display">Product Marketing for SaaS & AI</h3>
-            <p>Launches, positioning, audience expansion, and customer research systems. Built inside a $30M+ SaaS for two years, now available to ambitious AI and SaaS teams.</p>
-            <span class="arrow">Book a free positioning audit →</span>
-          </a>
-
-        </div>
-      </div>
-    </section>
-
-    <section class="alt">
-      <div class="wrap quote-block">
-        <div class="mark">"</div>
-        <p>The list went from $13 per lead to $27. Same audience source. Better segmentation, sharper positioning, and a voice subscribers recognized.</p>
-        <div class="quote-attr">— Confirmed by Head of Marketing, Passion.io</div>
+        <h2>Tired of leaving revenue on the table every month?</h2>
+        <p>Most businesses past $100K are not stuck because the acquisition channel stopped working. They are stuck because the retention layer underneath was never built. The list goes unused. The customers churn before they renew. The leads sit cold in the CRM.</p>
+        <p>Every new sale costs more than the last one did. New customers are five to seven times harder to convert than existing ones. The cheapest revenue on the board is the next sale to a customer who already bought.</p>
+        <p class="lede-q">My goal with this website is to give you a clearer picture of where that revenue is sitting and how to get it out.</p>
+        <p>If you are running a SaaS, a DTC brand, a coaching business, or an AI product past $100K and the growth curve has flattened, the audit will probably surface something useful inside the first ten minutes. If it does not, I will end the call myself.</p>
       </div>
     </section>
 
     <section class="dark final-cta">
       <div class="wrap">
-        <span class="kicker">Work With Me</span>
-        <h2 class="display">If you are leaving revenue inside the list, the leads, or the customers you already have, the audit will show you where.</h2>
-        <p class="lede" style="margin-top: 22px; max-width: 640px; margin-left: auto; margin-right: auto;">Free 30-minute call. I'll look at one piece of your funnel and tell you the three changes I'd make first.</p>
-        <div style="margin-top: 36px;">
-          <a class="btn" href="/pages/work-with-me.html">Book a free audit</a>
-        </div>
+        <span class="kicker">Book a retention strategy call</span>
+        <h2>Let's find the revenue you are already leaving on the table.</h2>
+        <p>A free 20-minute retention audit. If the first ten minutes don't surface something useful, I'll end the call myself.</p>
+        <a class="btn" href="/pages/work-with-me.html">Book your free retention audit</a>
       </div>
     </section>
   </main>
