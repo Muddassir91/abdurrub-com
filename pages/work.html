@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Work — Muddassir Abdur Rub</title>
-  <meta name="description" content="Selected case studies. Passion.io, UAI, and the systems behind $2.4M in email revenue.">
+  <meta name="description" content="Selected work. Product marketing, customer research, lifecycle revenue, and internal systems built across two years at Passion.io and independent engagements.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Changa+One:ital@0;1&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Sacramento&display=swap" rel="stylesheet">
@@ -15,67 +15,127 @@
     .brand-photo img { width:100%; height:100%; object-fit:cover; }
     .brand-signature { font-family:"Sacramento", cursive; font-size:1.7rem; color:var(--teal-deep); line-height:1; }
     .brand-signature .dot { color:var(--teal); }
-    @media (max-width: 640px) { .brand-signature { font-size: 1.4rem; } .brand-photo { width:32px; height:32px; } }
 
-    .hero-work { padding: 80px 0 56px; }
-    .case-card {
-      padding: 44px;
+    .hero-work { padding: 72px 0 36px; }
+    .hero-work .display { font-size: clamp(2.2rem, 4.6vw, 3.4rem); max-width: 880px; }
+    .stat-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 30px;
+    }
+    .stat-pill {
+      display: inline-flex;
+      gap: 10px;
+      align-items: baseline;
+      padding: 10px 18px;
+      background: var(--paper-2);
+      border: 1px solid var(--rule);
+      border-radius: 999px;
+      font-size: 0.95rem;
+    }
+    .stat-pill .num {
+      font-family: "Changa One", "Impact", sans-serif;
+      color: var(--teal);
+    }
+    .stat-pill .lbl { color: var(--ink-soft); }
+
+    .category-group { padding: 56px 0; border-top: 1px solid var(--rule); }
+    .category-group:first-of-type { border-top: 0; }
+    .category-head { margin-bottom: 36px; }
+    .category-head .label {
+      font-family: "Changa One", "Impact", sans-serif;
+      letter-spacing: 0.16em;
+      color: var(--teal);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: block;
+    }
+    .category-head h2 {
+      font-family: "Changa One", "Impact", sans-serif;
+      font-weight: 400;
+      letter-spacing: 0.005em;
+      line-height: 1.1;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      color: var(--ink);
+      max-width: 720px;
+      margin: 0;
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+    }
+    .project-card {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 28px;
       background: var(--white);
       border: 1px solid var(--rule);
       border-radius: 10px;
-      box-shadow: 0 22px 44px rgba(0, 77, 77, 0.06);
-      margin-bottom: 28px;
+      text-decoration: none;
+      color: var(--ink);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
     }
-    .case-meta {
+    .project-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 22px 44px rgba(0, 77, 77, 0.12);
+      border-color: var(--teal);
+    }
+    .project-head {
       display: flex;
-      flex-wrap: wrap;
-      gap: 18px;
-      color: var(--ink-soft);
-      font-size: 0.95rem;
-      margin-bottom: 14px;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 6px;
     }
-    .case-meta span { padding-right: 18px; border-right: 1px solid var(--rule); }
-    .case-meta span:last-child { border-right: 0; }
-    .case-card h3.display { font-size: clamp(1.6rem, 3.2vw, 2.2rem); margin-bottom: 20px; }
-    .case-card p { color: var(--ink-soft); font-size: 1.04rem; }
-    .case-metrics {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 22px;
-      margin: 28px 0;
-      padding: 22px 0;
-      border-top: 1px solid var(--rule);
-      border-bottom: 1px solid var(--rule);
-    }
-    .case-metrics .num {
+    .project-head .num {
       font-family: "Changa One", "Impact", sans-serif;
       color: var(--teal);
-      font-size: 1.6rem;
-      line-height: 1.05;
+      font-size: 1.05rem;
+      letter-spacing: 0.05em;
     }
-    .case-metrics .lbl {
+    .project-head .name {
+      font-family: "Changa One", "Impact", sans-serif;
+      letter-spacing: 0.08em;
       color: var(--ink-soft);
-      font-size: 0.88rem;
+      font-size: 0.78rem;
+      text-transform: uppercase;
     }
-    @media (max-width: 720px) { .case-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-    .what-did ul {
-      list-style: none;
-      padding: 0;
-      margin: 14px 0 0;
-      display: grid;
-      gap: 14px;
-    }
-    .what-did li {
-      padding-left: 24px;
-      position: relative;
+    .project-card h3 {
+      font-family: "Changa One", "Impact", sans-serif;
+      font-weight: 400;
+      font-size: 1.18rem;
+      line-height: 1.2;
+      margin: 0;
       color: var(--ink);
     }
-    .what-did li::before {
-      content: "▸";
-      position: absolute;
-      left: 0;
-      top: 0;
+    .project-card .kpi {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--rule);
+      color: var(--teal-deep);
+      font-family: "Changa One", "Impact", sans-serif;
+      letter-spacing: 0.04em;
+      font-size: 0.9rem;
+    }
+    .project-card .arrow {
       color: var(--teal);
+      font-family: "Changa One", "Impact", sans-serif;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 920px) {
+      .project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      .project-grid { grid-template-columns: 1fr; }
+      .brand-signature { font-size: 1.3rem; }
+      .brand-photo { width: 32px; height: 32px; }
     }
   </style>
 </head>
@@ -101,70 +161,189 @@
     <section class="hero-work">
       <div class="wrap">
         <span class="eyebrow">Past Work</span>
-        <h1 class="display">Selected case studies.</h1>
-        <p class="lede">Scope, metrics, and what actually moved the number. More cases shipped monthly.</p>
+        <h1 class="display">Two years inside one of the leading creator-economy SaaS businesses, plus independent engagements.</h1>
+        <p class="lede">Ten product marketing projects shipped at Passion.io. Customer research, lifecycle revenue, launch positioning, and the internal systems that made the team faster.</p>
+        <div class="stat-pills">
+          <span class="stat-pill"><span class="num">$2.44M</span><span class="lbl">email revenue, 2 years</span></span>
+          <span class="stat-pill"><span class="num">$256K</span><span class="lbl">Black Friday 2024</span></span>
+          <span class="stat-pill"><span class="num">2×</span><span class="lbl">revenue per lead</span></span>
+          <span class="stat-pill"><span class="num">10</span><span class="lbl">shipped projects</span></span>
+        </div>
       </div>
     </section>
 
-    <section style="padding-top: 0;">
+    <section style="padding-top: 32px; padding-bottom: 32px;">
       <div class="wrap">
 
-        <article class="case-card" id="passionio">
-          <div class="case-meta">
-            <span>Passion.io</span>
-            <span>2023 → 2025</span>
-            <span>Senior Copywriter, Email & Lifecycle</span>
-            <span>Creator economy SaaS</span>
+        <div class="category-group">
+          <div class="category-head">
+            <span class="label">Product Marketing</span>
+            <h2>Turning product capability into offers, funnels, and market-facing narratives.</h2>
           </div>
-          <h3 class="display">Two years. <em>$2.4M</em> in email revenue. One list rebuilt from the inside.</h3>
-          <p>Email moved from a sleepy afterthought to the most predictable revenue channel in the business. Rebuilt the segmentation, the positioning, the voice subscribers actually recognized, and the lifecycle layer that did not exist before.</p>
-          <div class="case-metrics">
-            <div><div class="num">$2.4M</div><div class="lbl">Email revenue, 2 years</div></div>
-            <div><div class="num">$1.13M</div><div class="lbl">2024 email revenue</div></div>
-            <div><div class="num">$256K</div><div class="lbl">Black Friday 2024, 30 days</div></div>
-            <div><div class="num">$13 → $27</div><div class="lbl">Revenue per lead</div></div>
-          </div>
-          <div class="what-did">
-            <b style="font-family: 'Changa One', sans-serif; letter-spacing: 0.1em; color: var(--teal-deep); text-transform: uppercase; font-size: 0.9rem;">What I did</b>
-            <ul>
-              <li>Rebuilt the lifecycle email flows top to bottom. Welcome, onboarding, retention, win-back, and segment-specific broadcasts.</li>
-              <li>Ran voice-of-customer research across support tickets, sales calls, and a recurring two-question email survey. Output: a customer avatar database with pain, objection, and limiting-belief language verbatim.</li>
-              <li>Wrote and shipped the daily email cadence for two years. Sales pages, audience-expansion personas, post-workshop messaging updates, churn and reactivation systems.</li>
-              <li>Recorded the Black Friday 2024 in-house playbook that generated $256K in 30 days.</li>
-            </ul>
-          </div>
-        </article>
+          <div class="project-grid">
 
-        <article class="case-card" id="uai">
-          <div class="case-meta">
-            <span>UAI (Passion.io launch)</span>
-            <span>2024 → 2025</span>
-            <span>Product Marketing, Positioning, Audience Research</span>
-            <span>AI product launch</span>
-          </div>
-          <h3 class="display">Positioning, audience expansion, and the dogfooding loop behind a <em>new AI product launch</em>.</h3>
-          <p>Led the marketing-side research and positioning work for the UAI product launch. Ran the dogfooding workflow that found feature spotlight gaps. Built the audience-expansion methodology that produced refined personas after launch. Proposed the revenue-band sub-segmentation that fed the eventual downsell flow.</p>
-          <div class="what-did">
-            <b style="font-family: 'Changa One', sans-serif; letter-spacing: 0.1em; color: var(--teal-deep); text-transform: uppercase; font-size: 0.9rem;">What I did</b>
-            <ul>
-              <li>Dogfooded the new product, mapped feature spotlight gaps in marketing copy, and proposed where the visibility layer needed to shift.</li>
-              <li>Built and refined three customer personas using an avatar-expansion methodology. Same approach scaled to broader audience work.</li>
-              <li>Ran competitor analysis (CoachVox, MyAI, Lovable, and others) across paid ads, organic, blogs, and landing pages. Output: detailed reports plus 2-minute summaries for weekly team meetings.</li>
-              <li>Spotted the "100K to 10M" outcome promise gap. Proposed sub-segmenting by revenue band, which later seeded the downsell flow.</li>
-            </ul>
-          </div>
-        </article>
+            <a class="project-card" href="/productmarketing/youai-launch/">
+              <div class="project-head">
+                <span class="num">01</span>
+                <span class="name">Product Launch</span>
+              </div>
+              <h3>Took a new coach product from internal feature to launch funnel.</h3>
+              <div class="kpi">UAI launch · positioning, copy, funnel</div>
+              <span class="arrow">Read the project →</span>
+            </a>
 
-        <article class="case-card">
-          <div class="case-meta">
-            <span>Other work</span>
-            <span>Various</span>
-            <span>Email, GTM, list management</span>
+            <a class="project-card" href="/productmarketing/positioning-pivot/">
+              <div class="project-head">
+                <span class="num">02</span>
+                <span class="name">Product Positioning</span>
+              </div>
+              <h3>Opened a downsell revenue path for disqualified prospects.</h3>
+              <div class="kpi">Revenue-band sub-segmentation</div>
+              <span class="arrow">Read the project →</span>
+            </a>
+
+            <a class="project-card" href="/productmarketing/dogfooding/">
+              <div class="project-head">
+                <span class="num">03</span>
+                <span class="name">Product Dogfooding</span>
+              </div>
+              <h3>Caught feature mis-emphasis by building the product first.</h3>
+              <div class="kpi">Marketing-layer audit from inside the product</div>
+              <span class="arrow">Read the project →</span>
+            </a>
+
           </div>
-          <h3 class="display">Earlier engagements and side projects.</h3>
-          <p>Ocean Gold Milk Soap go-to-market. The Original Moon Lamp email list management. Motion.com Creative Strategist cohort. Various advisory and audit engagements with brands past $100K.</p>
-          <p>Detailed case writeups for select engagements available on request.</p>
-        </article>
+        </div>
+
+        <div class="category-group">
+          <div class="category-head">
+            <span class="label">Customer Research</span>
+            <h2>Turning customer language, objections, and funnel intent into messaging decisions.</h2>
+          </div>
+          <div class="project-grid">
+
+            <a class="project-card" href="/productmarketing/customer-research/">
+              <div class="project-head">
+                <span class="num">04</span>
+                <span class="name">Customer Research</span>
+              </div>
+              <h3>Turned 20+ sales calls into three personas.</h3>
+              <div class="kpi">VOC database · pain, objections, language</div>
+              <span class="arrow">Read the project →</span>
+            </a>
+
+            <a class="project-card" href="/productmarketing/funnel-intent/">
+              <div class="project-head">
+                <span class="num">05</span>
+                <span class="name">Customer Intent Mapping</span>
+              </div>
+              <h3>Mapped curiosity-to-intent across the funnel.</h3>
+              <div class="kpi">Intent layer for content + lifecycle</div>
+              <span class="arrow">Read the project →</span>
+            </a>
+
+          </div>
+        </div>
+
+        <div class="category-group">
+          <div class="category-head">
+            <span class="label">Lifecycle Revenue</span>
+            <h2>Increasing revenue from the same list through sequence strategy, nurture, and launch windows.</h2>
+          </div>
+          <div class="project-grid">
+
+            <a class="project-card" href="/productmarketing/webinar-followups/">
+              <div class="project-head">
+                <span class="num">06</span>
+                <span class="name">Webinar Funnel</span>
+              </div>
+              <h3>Built sequences that produced the single largest revenue line.</h3>
+              <div class="kpi">Webinar follow-up flows</div>
+              <span class="arrow">Read the project →</span>
+            </a>
+
+            <a class="project-card" href="/productmarketing/nurture-revenue/">
+              <div class="project-head">
+                <span class="num">07</span>
+                <span class="name">Pure Nurture</span>
+              </div>
+              <h3>Grew pure nurture revenue 4× on the same list.</h3>
+              <div class="kpi">No new acquisition spend</div>
+              <span class="arrow">Read the project →</span>
+            </a>
+
+            <a class="project-card" href="/productmarketing/black-friday/">
+              <div class="project-head">
+                <span class="num">08</span>
+                <span class="name">Black Friday</span>
+              </div>
+              <h3>Drove $256,094 in email revenue in 30 days.</h3>
+              <div class="kpi">Black Friday 2024 playbook</div>
+              <span class="arrow">Read the project →</span>
+            </a>
+
+          </div>
+        </div>
+
+        <div class="category-group">
+          <div class="category-head">
+            <span class="label">Internal Operating System</span>
+            <h2>Building the operating layer that helps teams stay aligned and ship faster.</h2>
+          </div>
+          <div class="project-grid">
+
+            <a class="project-card" href="/productmarketing/notion-system/">
+              <div class="project-head">
+                <span class="num">09</span>
+                <span class="name">Messaging Guidelines</span>
+              </div>
+              <h3>Got team members writing on-message in their first week.</h3>
+              <div class="kpi">Notion messaging-rules system</div>
+              <span class="arrow">Read the project →</span>
+            </a>
+
+            <a class="project-card" href="/productmarketing/cross-functional/">
+              <div class="project-head">
+                <span class="num">10</span>
+                <span class="name">Cross-functional</span>
+              </div>
+              <h3>Cut the lag between founder workshops and shipped assets to one week.</h3>
+              <div class="kpi">Workshop → marketing asset flow</div>
+              <span class="arrow">Read the project →</span>
+            </a>
+
+          </div>
+        </div>
+
+        <div class="category-group">
+          <div class="category-head">
+            <span class="label">Long-form &amp; Lectures</span>
+            <h2>Articles and a working lecture used inside team and partner enablement.</h2>
+          </div>
+          <div class="project-grid">
+
+            <a class="project-card" href="/productmarketing/blogs/">
+              <div class="project-head">
+                <span class="num">11</span>
+                <span class="name">Long-form Blogs</span>
+              </div>
+              <h3>Long-form articles ranked Passion.io alongside Mighty Networks and Kajabi.</h3>
+              <div class="kpi">Comparison + thought leadership posts</div>
+              <span class="arrow">Read the project →</span>
+            </a>
+
+            <a class="project-card" href="/storytemplates/">
+              <div class="project-head">
+                <span class="num">12</span>
+                <span class="name">Working Lecture</span>
+              </div>
+              <h3>Storytelling for Direct Response. A complete working lecture.</h3>
+              <div class="kpi">Frameworks, real examples, story-opening library</div>
+              <span class="arrow">Read the lecture →</span>
+            </a>
+
+          </div>
+        </div>
 
       </div>
     </section>
@@ -172,8 +351,8 @@
     <section class="dark">
       <div class="narrow center">
         <span class="kicker">Work With Me</span>
-        <h2 class="display">Want this kind of work inside <em>your business</em>?</h2>
-        <p class="lede" style="margin-top: 22px;">Free 30-minute audit call. No pitch.</p>
+        <h2 class="display">Want this kind of work inside your business?</h2>
+        <p class="lede" style="margin-top: 22px;">Free 30-minute audit call. No pitch. I look at one piece of your funnel and leave you with three moves to make first.</p>
         <div style="margin-top: 36px;">
           <a class="btn" href="/pages/work-with-me.html">Book a free audit</a>
         </div>
