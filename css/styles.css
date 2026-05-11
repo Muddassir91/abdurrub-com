@@ -1,24 +1,28 @@
 /* =========================================================
    Muddassir | Retention Strategist
-   Design system: white + teal tints. No dark sections.
+   Updated 2026-05-11 to use the shared abdurrub.com / CSOS
+   design system fonts (Changa One + PT Serif) and the true
+   teal #008080 palette. Layout classes unchanged.
    ========================================================= */
+
+@import url("https://fonts.googleapis.com/css2?family=Changa+One:ital@0;1&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Sacramento&display=swap");
 
 :root {
   --teal-50:  #f0fdfa;
   --teal-100: #ccfbf1;
   --teal-200: #99f6e4;
   --teal-300: #5eead4;
-  --teal-400: #2dd4bf;
-  --teal-500: #14b8a6;
-  --teal-600: #0d9488;
-  --teal-700: #0f766e;
-  --teal-800: #115e59;
-  --teal-900: #134e4a;
-  --teal-950: #0a4d5c;
+  --teal-400: #00a8a3;
+  --teal-500: #00a8a3;
+  --teal-600: #008080;
+  --teal-700: #008080;
+  --teal-800: #006666;
+  --teal-900: #004d4d;
+  --teal-950: #004d4d;
 
-  --ink-900: #0a0a0a;
-  --ink-700: #1f2937;
-  --ink-500: #4b5563;
+  --ink-900: #0d0f0e;
+  --ink-700: #2a2f2d;
+  --ink-500: #5d6664;
   --ink-400: #6b7280;
   --ink-300: #9ca3af;
   --ink-200: #e5e7eb;
@@ -39,11 +43,23 @@
 /* ---------- Base ---------- */
 
 html { scroll-behavior: smooth; }
-body { font-feature-settings: "ss01","cv11"; }
+body {
+  font-family: "PT Serif", Georgia, "Times New Roman", serif !important;
+  font-size: 18px !important;
+  line-height: 1.65 !important;
+  color: var(--ink-900);
+}
 
-.font-display   { font-family: 'Archivo', sans-serif; letter-spacing: -0.02em; }
-.font-sans      { font-family: 'Inter', sans-serif; }
-.font-signature { font-family: 'Sacramento', cursive; letter-spacing: 0; }
+h1, h2, h3, h4, h5 {
+  font-family: "Changa One", "Impact", sans-serif !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.005em !important;
+  line-height: 1.1 !important;
+}
+
+.font-display   { font-family: "Changa One", "Impact", sans-serif !important; letter-spacing: 0.005em !important; font-weight: 400 !important; }
+.font-sans      { font-family: "PT Serif", Georgia, serif !important; }
+.font-signature { font-family: "Sacramento", cursive; letter-spacing: 0; }
 
 /* ---------- Logo (photo + signature) ---------- */
 .logo-photo {
