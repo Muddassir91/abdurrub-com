@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How marketers think about competitor research</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: #ffffff;
+    color: #111111;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    padding: 48px 20px 96px;
+  }
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .header {
+    margin-bottom: 56px;
+  }
+  .header h1 {
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 14px;
+    color: #111;
+  }
+  .header p {
+    color: #555;
+    font-size: 16px;
+  }
+  .question-block {
+    margin-bottom: 56px;
+    padding-top: 8px;
+    scroll-margin-top: 24px;
+  }
+  .qnum {
+    color: #888;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    letter-spacing: 0.04em;
+  }
+  .intro {
+    color: #444;
+    font-size: 16px;
+    margin-bottom: 20px;
+    padding: 16px 18px;
+    background: #f7f7f7;
+    border-left: 2px solid #ccc;
+    border-radius: 2px;
+  }
+  .question {
+    font-size: 19px;
+    font-weight: 500;
+    line-height: 1.4;
+    margin-bottom: 6px;
+    color: #111;
+  }
+  .helper {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .option {
+    display: block;
+    padding: 12px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    font-size: 16px;
+    user-select: none;
+  }
+  .option:hover { border-color: #888; background: #fafafa; }
+  .option:focus { outline: none; border-color: #111; }
+  .option.selected {
+    border-color: #111;
+    background: #111;
+    color: #fff;
+  }
+  .alloc {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .alloc-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .alloc-label { flex: 1; font-size: 16px; }
+  .alloc-input {
+    width: 90px;
+    padding: 10px 12px;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    font-size: 16px;
+    text-align: right;
+    font-family: inherit;
+  }
+  .alloc-input:focus { outline: none; border-color: #111; }
+  .alloc-total {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #666;
+    text-align: right;
+  }
+  .alloc-total.valid { color: #0a7c2f; }
+  .alloc-total.invalid { color: #b53f3f; }
+  textarea {
+    width: 100%;
+    min-height: 130px;
+    padding: 14px 16px;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    font-size: 16px;
+    line-height: 1.55;
+    font-family: inherit;
+    resize: vertical;
+    color: #111;
+  }
+  textarea:focus { outline: none; border-color: #111; }
+  .hidden { display: none; }
+  .submit-area {
+    margin-top: 64px;
+    padding-top: 32px;
+    border-top: 1px solid #eee;
+  }
+  .submit-error {
+    color: #b53f3f;
+    font-size: 14px;
+    margin-bottom: 16px;
+    display: none;
+  }
+  button.submit {
+    font-family: inherit;
+    font-size: 16px;
+    padding: 14px 32px;
+    background: #111;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  button.submit:hover { background: #000; }
+  button.submit:disabled { background: #ccc; cursor: not-allowed; }
+  .question-block.error .question { color: #b53f3f; }
+  .question-block.error .option,
+  .question-block.error .alloc-input,
+  .question-block.error textarea { border-color: #b53f3f; }
+  .thanks {
+    text-align: center;
+    padding: 120px 20px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .thanks h1 { font-size: 28px; font-weight: 500; margin-bottom: 16px; }
+  .thanks p { color: #555; margin-bottom: 12px; }
+  .submitting {
+    text-align: center;
+    padding: 120px 20px;
+    color: #666;
+  }
+  @media (max-width: 640px) {
+    body { padding: 28px 16px 80px; }
+    .question { font-size: 18px; }
+    .question-block { margin-bottom: 44px; }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwnxFrAJCh--uTv3jAZZkX0VvlJNoP8fdrf-4BJbzab6Ek6siyhXtHgktHZ-zvnkSrJ/exec';
+
+const QUESTIONS = [
+  { id: 1, type: "single", required: true,
+    text: "What best describes your primary role in marketing or advertising right now?",
+    options: ["Creative Strategist","Copywriter","Media Buyer","Founder / CEO","Growth Marketer","Performance Marketer","Email Marketer","CRO Specialist","Product Marketer","Agency Owner","Freelancer / Consultant","Other"] },
+
+  { id: 2, type: "multi", required: true,
+    text: "What type of businesses do you work with most often these days?",
+    helper: "Select all that apply.",
+    options: ["DTC / Ecommerce","SaaS","Coaching / Info Products","Agencies","B2B Services","Mobile Apps","Local Businesses","Lead Generation Businesses","Enterprise","Other"] },
+
+  { id: 3, type: "single", required: true,
+    text: "Over the last six months, roughly how many campaigns, funnels, or major creative projects have you concepted or shipped per month on average?",
+    options: ["1 to 3","4 to 10","11 to 25","26+"] },
+
+  { id: 4, type: "single", required: true,
+    text: "How many years have you worked in marketing or advertising professionally?",
+    options: ["Less than 1 year","1 to 3 years","4 to 7 years","8 to 12 years","13+ years"] },
+
+  { id: 5, type: "multi", required: true,
+    intro: "Think about the last paid social campaign or major creative project you concepted from scratch. Try to fix that specific campaign in mind. The next four questions will all ask about that same campaign.",
+    text: "For that campaign, which research sources did you open or review during the research phase, before writing your first creative idea?",
+    helper: "Select all that apply.",
+    options: ["Competitor ads","Competitor landing pages","Competitor emails","Customer interviews","Sales call recordings","Customer reviews and testimonials","Reddit, forums, or community discussions","Analytics or performance data","Support tickets or customer support logs","Product demos","Internal team or founder discussions","Existing customer surveys","Market trends or reports","Other"] },
+
+  { id: 6, type: "allocation", required: true,
+    text: "Thinking about the same campaign, roughly how was your research time divided across these categories?",
+    helper: "Please divide 100% across these. The total must equal 100.",
+    categories: ["Competitor research","Customer research","Analytics or performance data","Product, offer, or business research","Internal team discussions","Other"] },
+
+  { id: 7, type: "single", required: true,
+    text: "Thinking about the same campaign, which research activity happened first in your workflow?",
+    options: ["Looking at competitor ads","Looking at competitor landing pages","Reviewing customer feedback or reviews","Reviewing analytics or performance data","Reviewing sales calls","Talking to the founder or team","Reviewing previous winning creatives","Product or offer understanding","Other"] },
+
+  { id: 8, type: "single", required: true,
+    text: "Thinking about the same campaign, which single research source most shaped the first creative direction or angle you proposed?",
+    options: ["Competitor ads","Competitor landing pages","Customer interviews","Reviews or testimonials","Sales calls","Analytics or performance data","Founder or team input","Existing winning creatives","Product or offer understanding","Other"] },
+
+  { id: 9, type: "single", required: true,
+    intro: "Now imagine a different scenario. A client briefs you on a paid social campaign on Monday morning, and the first creative idea is due Wednesday morning. That gives you 48 hours from kickoff to first creative. You realize you cannot do all the research you would normally do.",
+    text: "In this 48-hour scenario, which one research activity would you cut first?",
+    options: ["Customer interviews","Sales call reviews","Customer review mining","Product or offer research","Analytics or performance review","Competitor research","Internal team discussions","Other"] },
+
+  { id: 10, type: "single", required: true,
+    text: "In that same 48-hour scenario, which one research activity would you keep no matter what?",
+    options: ["Customer interviews","Sales call reviews","Customer review mining","Product or offer research","Analytics or performance review","Competitor research","Internal team discussions","Other"] },
+
+  { id: 11, type: "long_text", required: false,
+    text: "In the 48-hour scenario above, what makes some research activities feel essential and others feel optional?",
+    helper: "A few sentences on the reasoning. Time, deadline pressure, perceived value, habit, whatever feels true." },
+
+  { id: 12, type: "multi", required: true,
+    text: "Thinking about your last two or three campaigns where you reviewed competitor ads, landing pages, or emails, what did you actually take or use from their work in your own creative?",
+    helper: "Select all that apply.",
+    options: ["Hooks","Angles","Claims or promises","Offer structure","Landing page structure","Creative formats","CTAs","Objections to address","Market language and phrasing","Positioning","Pricing benchmarks","Testimonials or proof patterns","Visual styles","Funnel structure","Other"] },
+
+  { id: 13, type: "long_text", required: false,
+    text: "In your own words, what do you think competitor research is most useful for?",
+    helper: "A sentence or two is plenty." },
+
+  { id: 14, type: "long_text", required: false,
+    text: "In your own words, what do you think competitor research is not very useful for, or where does it tend to mislead marketers?",
+    helper: "A sentence or two is plenty." },
+
+  { id: 15, type: "long_text", required: false,
+    text: "In your experience, what kinds of insights tend to come only from direct customer research, and not from looking at competitors?",
+    helper: "A sentence or two is plenty." },
+
+  { id: 16, type: "single", required: true,
+    text: "Think back to a specific recent campaign where competitor research strongly shaped the creative direction. How did that campaign perform once it launched?",
+    options: ["Strongly outperformed expectations","Performed above average","Performed average","Underperformed expectations","Failed quickly","Produced mixed results","No clear data available"] },
+
+  { id: 17, type: "long_text", required: false,
+    text: "Thinking about the campaign you just described, what do you think most influenced how it performed?",
+    helper: "A sentence or two is plenty." },
+
+  { id: 18, type: "single", required: true,
+    text: "Thinking about the same campaign, did you do direct customer research (interviews, sales calls, review mining, surveys, support tickets, customer onboarding calls) before the creative was concepted?",
+    options: ["Yes","No","Somewhat","Not sure"] },
+
+  { id: 19, type: "multi", required: false,
+    text: "What kind of customer research did you do for that campaign?",
+    helper: "Select all that apply.",
+    options: ["Customer interviews","Sales calls","Customer surveys","Review mining","Community or forum discussions","Support tickets","Product usage behavior","Customer onboarding calls","Other"],
+    showIf: function(answers){ return answers[18] === "Yes"; } },
+
+  { id: 20, type: "single", required: true,
+    text: "Over the last 12 months, have you seen campaigns or creatives in your space become too similar to competitors, because of common research patterns or shared tools like Foreplay, AdSpy, or Meta Ad Library?",
+    options: ["Frequently","Occasionally","Rarely","Never","Not sure"] },
+
+  { id: 21, type: "multi", required: false,
+    text: "When you have seen campaigns become too similar to competitors, what specifically tended to be similar?",
+    helper: "Select all that apply.",
+    options: ["Hooks","Angles","Claims","Visual style","Offer structure","Landing page flow","Headlines","Ad concepts","Tone or language","Positioning","Funnel structure","Other"] },
+
+  { id: 22, type: "long_text", required: false,
+    text: "What do you think most causes that similarity?",
+    helper: "A few sentences in your own words." },
+
+  { id: 23, type: "long_text", required: false,
+    text: "From your experience, what is one thing most marketers misunderstand or get wrong about competitor research?",
+    helper: "A sentence or two is plenty." },
+
+  { id: 24, type: "long_text", required: false,
+    text: "From your experience, what is one thing that direct customer research reveals which competitor research usually cannot?",
+    helper: "A sentence or two is plenty." },
+
+  { id: 25, type: "long_text", required: false,
+    text: "Thinking about the last campaign you concepted, if you had been given double the research time before concepting, where would you have spent that extra time?",
+    helper: "A few sentences." },
+
+  { id: 26, type: "long_text", required: false,
+    text: "Anything else you would like to share?",
+    helper: "An anonymous story or observation about a specific campaign where competitor research either helped or hurt would be especially welcome." }
+];
+
+const STORAGE_KEY = 'cr_survey_v2';
+let answers = {};
+
+(function loadAnswers(){
+  try {
+    const saved = sessionStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && typeof parsed === 'object') answers = parsed;
+    }
+  } catch(e) {}
+})();
+
+function saveAnswers(){
+  try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(answers)); } catch(e) {}
+}
+function clearAnswers(){
+  try { sessionStorage.removeItem(STORAGE_KEY); } catch(e) {}
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+function renderQuestionHtml(q, qnum){
+  const ans = answers[q.id];
+  let html = '<div class="question-block" id="q-' + q.id + '" data-qid="' + q.id + '">';
+  html += '<div class="qnum">QUESTION ' + qnum + '</div>';
+  if (q.intro) html += '<div class="intro">' + escapeHtml(q.intro) + '</div>';
+  html += '<div class="question">' + escapeHtml(q.text) + '</div>';
+  if (q.helper) html += '<div class="helper">' + escapeHtml(q.helper) + '</div>';
+
+  if (q.type === 'single') {
+    html += '<div class="options" data-qid="' + q.id + '" data-qtype="single">';
+    q.options.forEach(function(opt){
+      const sel = ans === opt;
+      html += '<div class="option' + (sel ? ' selected' : '') + '" data-value="' + escapeHtml(opt) + '" role="button" tabindex="0">'
+            + escapeHtml(opt) + '</div>';
+    });
+    html += '</div>';
+  } else if (q.type === 'multi') {
+    const selected = Array.isArray(ans) ? ans : [];
+    html += '<div class="options" data-qid="' + q.id + '" data-qtype="multi">';
+    q.options.forEach(function(opt){
+      const sel = selected.indexOf(opt) !== -1;
+      html += '<div class="option' + (sel ? ' selected' : '') + '" data-value="' + escapeHtml(opt) + '" role="button" tabindex="0">'
+            + escapeHtml(opt) + '</div>';
+    });
+    html += '</div>';
+  } else if (q.type === 'long_text') {
+    html += '<textarea data-qid="' + q.id + '" placeholder="Type your answer here">' + escapeHtml(ans || '') + '</textarea>';
+  } else if (q.type === 'allocation') {
+    const current = (ans && typeof ans === 'object') ? ans : {};
+    html += '<div class="alloc" data-qid="' + q.id + '">';
+    q.categories.forEach(function(cat){
+      const v = (typeof current[cat] === 'number') ? current[cat] : '';
+      html += '<div class="alloc-row">'
+            + '<div class="alloc-label">' + escapeHtml(cat) + '</div>'
+            + '<input type="number" min="0" max="100" step="1" class="alloc-input" data-cat="' + escapeHtml(cat) + '" data-qid="' + q.id + '" value="' + escapeHtml(v) + '"> %'
+            + '</div>';
+    });
+    html += '</div>';
+    html += '<div class="alloc-total" data-qid="' + q.id + '">Current total: 0 / 100</div>';
+  }
+
+  html += '</div>';
+  return html;
+}
+
+function renderForm(){
+  const app = document.getElementById('app');
+  let html = '<div class="container">';
+  html += '<div class="header">';
+  html += '<h1>How marketers think about competitor research</h1>';
+  html += '<p>Anonymous. 26 questions. Takes about 6 to 8 minutes if you give it some thought.</p>';
+  html += '</div>';
+
+  let qnum = 0;
+  QUESTIONS.forEach(function(q){
+    qnum++;
+    html += renderQuestionHtml(q, qnum);
+  });
+
+  html += '<div class="submit-area">';
+  html += '<div class="submit-error" id="submit-error"></div>';
+  html += '<button type="button" class="submit" id="submit-btn">Submit</button>';
+  html += '</div>';
+
+  html += '</div>';
+  app.innerHTML = html;
+
+  applyConditionalVisibility();
+  Array.prototype.forEach.call(document.querySelectorAll('.alloc'), function(el){
+    updateAllocTotalForQid(parseInt(el.getAttribute('data-qid'), 10));
+  });
+}
+
+function applyConditionalVisibility(){
+  QUESTIONS.forEach(function(q){
+    if (typeof q.showIf !== 'function') return;
+    const el = document.getElementById('q-' + q.id);
+    if (!el) return;
+    if (q.showIf(answers)) {
+      el.classList.remove('hidden');
+    } else {
+      el.classList.add('hidden');
+      if (answers[q.id] !== undefined) {
+        delete answers[q.id];
+        saveAnswers();
+      }
+    }
+  });
+}
+
+function updateAllocTotalForQid(qid){
+  const inputs = document.querySelectorAll('.alloc-input[data-qid="' + qid + '"]');
+  let total = 0;
+  Array.prototype.forEach.call(inputs, function(inp){
+    const n = parseFloat(inp.value);
+    if (!isNaN(n)) total += n;
+  });
+  const totalEl = document.querySelector('.alloc-total[data-qid="' + qid + '"]');
+  if (!totalEl) return;
+  totalEl.textContent = 'Current total: ' + total + ' / 100';
+  totalEl.classList.remove('valid', 'invalid');
+  if (total === 100) totalEl.classList.add('valid');
+  else if (total > 100) totalEl.classList.add('invalid');
+}
+
+function handleOptionClick(optEl){
+  const opts = optEl.parentElement;
+  const qid = parseInt(opts.getAttribute('data-qid'), 10);
+  const qtype = opts.getAttribute('data-qtype');
+  const val = optEl.getAttribute('data-value');
+
+  if (qtype === 'single') {
+    answers[qid] = val;
+    Array.prototype.forEach.call(opts.querySelectorAll('.option'), function(e){ e.classList.remove('selected'); });
+    optEl.classList.add('selected');
+  } else if (qtype === 'multi') {
+    let cur = Array.isArray(answers[qid]) ? answers[qid].slice() : [];
+    const i = cur.indexOf(val);
+    if (i === -1) cur.push(val); else cur.splice(i, 1);
+    answers[qid] = cur;
+    optEl.classList.toggle('selected');
+  }
+
+  const block = document.getElementById('q-' + qid);
+  if (block) block.classList.remove('error');
+  applyConditionalVisibility();
+  saveAnswers();
+}
+
+function visibleQuestions(){
+  return QUESTIONS.filter(function(q){ return typeof q.showIf !== 'function' || q.showIf(answers); });
+}
+
+function validate(){
+  Array.prototype.forEach.call(document.querySelectorAll('.question-block'), function(el){
+    el.classList.remove('error');
+  });
+
+  const visible = visibleQuestions();
+  const missing = [];
+
+  visible.forEach(function(q){
+    if (!q.required) return;
+    const a = answers[q.id];
+    let bad = false;
+    if (q.type === 'single' && !a) bad = true;
+    else if (q.type === 'multi' && (!Array.isArray(a) || a.length === 0)) bad = true;
+    else if (q.type === 'long_text' && (!a || !a.trim())) bad = true;
+    else if (q.type === 'allocation') {
+      if (!a || typeof a !== 'object') bad = true;
+      else {
+        let t = 0;
+        q.categories.forEach(function(cat){
+          const n = a[cat];
+          if (typeof n === 'number' && !isNaN(n)) t += n;
+        });
+        if (t !== 100) bad = true;
+      }
+    }
+    if (bad) missing.push(q);
+  });
+
+  if (missing.length === 0) return true;
+
+  missing.forEach(function(q){
+    const el = document.getElementById('q-' + q.id);
+    if (el) el.classList.add('error');
+  });
+
+  const errEl = document.getElementById('submit-error');
+  if (missing.length === 1) {
+    errEl.textContent = 'One question above needs an answer.';
+  } else {
+    errEl.textContent = missing.length + ' questions above need an answer.';
+  }
+  errEl.style.display = 'block';
+
+  const first = document.getElementById('q-' + missing[0].id);
+  if (first) first.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  return false;
+}
+
+function submit(){
+  if (!validate()) return;
+  const btn = document.getElementById('submit-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; }
+
+  const payload = {
+    submittedAt: new Date().toISOString(),
+    answers: answers
+  };
+
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload)
+  }).then(function(){
+    renderThanks();
+  }).catch(function(){
+    const app = document.getElementById('app');
+    app.innerHTML = '<div class="thanks"><h1>Something went wrong.</h1><p>Please refresh and try submitting again. Your answers are saved on this device.</p></div>';
+  });
+}
+
+function renderThanks(){
+  clearAnswers();
+  const app = document.getElementById('app');
+  app.innerHTML = '<div class="thanks"><h1>Thank you.</h1><p>Genuinely appreciated.</p><p>I will share the interesting patterns once the form closes.</p></div>';
+  window.scrollTo(0, 0);
+}
+
+document.addEventListener('click', function(e){
+  const target = e.target;
+  if (!target) return;
+  if (target.id === 'submit-btn') { submit(); return; }
+  const opt = target.closest && target.closest('.option');
+  if (opt) { handleOptionClick(opt); return; }
+});
+
+document.addEventListener('input', function(e){
+  const target = e.target;
+  if (!target) return;
+  if (target.tagName === 'TEXTAREA' && target.getAttribute('data-qid')) {
+    const qid = parseInt(target.getAttribute('data-qid'), 10);
+    answers[qid] = target.value;
+    const block = document.getElementById('q-' + qid);
+    if (block) block.classList.remove('error');
+    saveAnswers();
+    return;
+  }
+  if (target.classList && target.classList.contains('alloc-input')) {
+    const cat = target.getAttribute('data-cat');
+    const qid = parseInt(target.getAttribute('data-qid'), 10);
+    const n = parseFloat(target.value);
+    if (!answers[qid] || typeof answers[qid] !== 'object') answers[qid] = {};
+    if (isNaN(n)) delete answers[qid][cat];
+    else answers[qid][cat] = n;
+    updateAllocTotalForQid(qid);
+    const block = document.getElementById('q-' + qid);
+    if (block) block.classList.remove('error');
+    saveAnswers();
+    return;
+  }
+});
+
+document.addEventListener('keydown', function(e){
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  if (e.target && e.target.tagName === 'TEXTAREA') return;
+  const opt = e.target && e.target.closest && e.target.closest('.option');
+  if (opt) {
+    e.preventDefault();
+    handleOptionClick(opt);
+  }
+});
+
+renderForm();
+</script>
+</body>
+</html>
