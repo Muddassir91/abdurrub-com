@@ -29,8 +29,10 @@
     .hero-figure img { width: 100%; height: auto; display: block; border-radius: 12px; border: 1px solid var(--rule); box-shadow: 0 18px 40px -18px rgba(10,77,92,.28); }
     .hero-figure-cap { margin-top: 10px; font-size: 0.82rem; color: var(--ink-soft); line-height: 1.45; }
     .hero-copy { flex: 1 1 auto; min-width: 0; }
+    .hero-stats-band { padding: 6px 0 30px; border-bottom: 1px solid var(--rule); }
+    .hero-stats-band .kpi-strip { margin-top: 0; }
     @media (max-width: 860px) {
-      .hero-split { flex-direction: column-reverse; align-items: stretch; gap: 26px; }
+      .hero-split { flex-direction: column; align-items: stretch; gap: 26px; }
       .hero-figure { flex-basis: auto; max-width: 100%; }
     }
 
@@ -201,21 +203,26 @@
     <section class="hero-em">
       <div class="wrap">
         <div class="hero-split">
-          <div class="hero-figure">
-            <img src="/productmarketing/images/olly-slack-kpis.png" alt="Slack message from team lead sharing the KPI breakdown" loading="lazy">
-            <p class="hero-figure-cap">Slack message from my team lead, sharing the KPI breakdown for references.</p>
-          </div>
           <div class="hero-copy">
             <span class="eyebrow">Email &amp; Lifecycle Marketing · Passion.io</span>
             <h1 class="display">Two years. $2.4M in email revenue. One list rebuilt from the inside.</h1>
             <p class="lede">Embedded inside Passion.io's acquisition squad, building the messaging, lifecycle work, and operating systems behind one of the fastest-scaling AI products for coaches.</p>
-            <div class="kpi-strip">
-              <div class="kpi"><div class="num">$2.4M+</div><div class="label">Email revenue, 2 years</div></div>
-              <div class="kpi"><div class="num">+336%</div><div class="label">Newsletter revenue, 2023 to 2025</div></div>
-              <div class="kpi"><div class="num">$256K</div><div class="label">Record Black Friday window, 2024</div></div>
-              <div class="kpi"><div class="num">2×</div><div class="label">Revenue per lead, $13 to $27</div></div>
-            </div>
           </div>
+          <div class="hero-figure">
+            <img src="/productmarketing/images/olly-slack-kpis.png" alt="Slack message from team lead sharing the KPI breakdown" loading="lazy">
+            <p class="hero-figure-cap">Slack message from my team lead, sharing the KPI breakdown for references.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero-stats-band">
+      <div class="wrap">
+        <div class="kpi-strip">
+          <div class="kpi"><div class="num">$2.4M+</div><div class="label">Email revenue, 2 years</div></div>
+          <div class="kpi"><div class="num">+336%</div><div class="label">Newsletter revenue, 2023 to 2025</div></div>
+          <div class="kpi"><div class="num">$256K</div><div class="label">Record Black Friday window, 2024</div></div>
+          <div class="kpi"><div class="num">2×</div><div class="label">Revenue per lead, $13 to $27</div></div>
         </div>
       </div>
     </section>
