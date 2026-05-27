@@ -17,6 +17,7 @@
       + '.nav-mobile-panel{display:none}'
       + '@media(max-width:768px){'
       + '.nav-inner{position:relative}'
+      + '.nav .dropdown-menu{display:none!important}' // hide desktop hover submenu (replaced by mobile panel)
       + '.nav-burger{display:inline-flex;align-items:center;justify-content:center;'
       + 'width:44px;height:44px;margin-left:4px;padding:0;border:0;background:transparent;'
       + 'cursor:pointer;color:var(--ink,#14323a);-webkit-tap-highlight-color:transparent}'
