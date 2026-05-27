@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Curiosity-to-Intent funnel mapping | Muddassir Abdur Rub</title>
+  <meta name="description" content="The stage-by-stage curiosity-to-intent framework I built for the Passion.io funnel. What to detect, what to trigger, and what to change at each step." />
+  <link rel="canonical" href="https://abdurrub.com/product-marketing/funnel-intent" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f766e'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='Archivo,sans-serif' font-weight='800' font-size='18' fill='white'%3EM%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../style.css" />
+  <style>.nav-cta{background:#0f766e !important;color:#ffffff !important;font-weight:700;}.nav-cta:hover{background:#115e59 !important;color:#ffffff !important;}</style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Changa+One:ital@0;1&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Sacramento&display=swap" rel="stylesheet">
+  <style>
+    /* abdurrub.com design system overlay — forces shared fonts and palette */
+    :root {
+      --teal-700: #008080 !important;
+      --teal-800: #006666 !important;
+      --teal-900: #004d4d !important;
+      --teal-950: #004d4d !important;
+      --teal-500: #00a8a3 !important;
+      --teal-400: #00a8a3 !important;
+    }
+    body, p, li, td, th, input, button, textarea, .font-sans {
+      font-family: "PT Serif", Georgia, "Times New Roman", serif !important;
+    }
+    h1, h2, h3, h4, h5, h6, .font-display, .font-heading {
+      font-family: "Changa One", "Impact", sans-serif !important;
+      font-weight: 400 !important;
+      letter-spacing: 0.005em !important;
+    }
+    .font-signature, .signature, .signature-caption, .logo-name {
+      font-family: "Sacramento", cursive !important;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="container nav-inner">
+    <a href="/" aria-label="Muddassir Abdur Rub — home" style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;"><span style="width:38px;height:38px;border-radius:50%;overflow:hidden;border:1.5px solid rgba(0,0,0,0.12);flex-shrink:0;display:inline-block;background:#ececec;"><img src="/images/Mud-website-image.png" alt="Muddassir Abdur Rub" style="width:100%;height:100%;object-fit:cover;display:block;"></span><span style="font-family:'Sacramento',cursive;font-size:1.7rem;color:#134e4a;line-height:1;white-space:nowrap;">Muddassir<span style="color:#0f766e;">.</span></span></a>
+    <div class="nav-links">
+      <div class="menu-trigger">
+        <button aria-haspopup="true">Services <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="menu-dropdown">
+          <a href="/email-marketing/">Email Marketing &amp; Retention<span class="small">Lifecycle systems for businesses past $100K</span></a>
+          <a href="/creative-strategy/">Creative Strategy Operating System<span class="small">Score your creative strategy in 7 questions</span></a>
+        </div>
+      </div>
+      <div class="menu-trigger">
+        <button aria-haspopup="true" class="nav-active">Past Work <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="menu-dropdown">
+          <a href="/product-marketing">Product Marketing for SaaS &amp; AI<span class="small">Two years at Passion.io</span></a>
+        </div>
+      </div>
+      <a href="/blog/">Blog</a>
+      <a href="https://calendar.app.google/LEcHPfT7csau1WCQ7" target="_blank" rel="noopener" class="nav-cta">Book a call</a>
+    </div>
+    <button class="menu-btn-mobile" id="menuBtn" aria-label="Menu" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <p class="section-label">Services</p>
+    <a href="/email-marketing/">Email Marketing &amp; Retention</a>
+    <a href="/creative-strategy/">Creative Strategy Operating System</a>
+    <p class="section-label">Past Work</p>
+    <a href="/product-marketing" style="color: var(--teal-700); font-weight: 600;">Product Marketing for SaaS &amp; AI</a>
+    <p class="section-label">More</p>
+    <a href="/blog/">Blog</a>
+    <a href="https://calendar.app.google/LEcHPfT7csau1WCQ7" target="_blank" rel="noopener" class="nav-cta">Book a call</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <a href="../" class="hero-back reveal"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back to Past Work</a>
+    <p class="eyebrow reveal" style="color: var(--teal-300); margin-top: 36px;">Strategy · Funnel · Passion.io</p>
+    <h1 class="reveal delay-1">Brought higher-intent subscribers into the Passion.io funnel by mapping the <span class="gradient-text">curiosity-to-intent</span> shift at every stage</h1>
+    <p class="hero-sub reveal delay-2">
+      The funnel was bleeding curious browsers who never converted into qualified buyers. I built a stage-by-stage framework that named what to detect, what to trigger, and what to change in copy, design, and strategy at each step from cold ad click through post-purchase.
+        </p>
+    <div class="detail-hero-side reveal delay-2" style="margin-top: 28px;"><strong>5 awareness stages</strong> mapped · curiosity-to-intent triggers in copy, design, and strategy at every step.</div>
+  </div>
+</section>
+
+<section class="detail-section">
+  <div class="container">
+
+    <div class="detail-block reveal">
+      <h2>The problem</h2>
+      <p>The funnel was producing high traffic and decent opt-ins, but the deeper conversions kept stalling. Webinar registrants who did not show up. Webinar attendees who clicked through but did not buy. Sales-page visitors who hovered on pricing and bounced.</p>
+      <p>Pure curiosity was being treated like buying intent across the funnel. The two are not the same. Someone reading because they are interested needs different copy, design, and strategy than someone who is ready to act. We were treating both groups the same and losing the deeper-intent buyers because the messaging never gave them what they needed to commit.</p>
+    </div>
+
+    <div class="detail-block reveal">
+      <h2>The framework I built</h2>
+      <p>Two layers. The first mapped every funnel step (ad click, landing page, opt-in, webinar registration, webinar watch, checkout, upsell, post-purchase) against three columns: how to spot pure curiosity, what to improve in copy, and what to improve in design and strategy.</p>
+      <p>The second mapped the customer journey by awareness stage (Unaware, Problem-Aware, Solution-Aware, Product-Aware, Most Aware) against the curiosity-vs-intent balance at each stage and the specific tactics to convert curiosity into commitment.</p>
+    </div>
+
+    <div class="detail-figure reveal">
+      <svg viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg" style="width:100%; display:block; background: white; padding: 32px;">
+        <defs>
+          <linearGradient id="fi-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#5eead4"/>
+            <stop offset="100%" stop-color="#0d9488"/>
+          </linearGradient>
+        </defs>
+        <g font-family="Inter" font-size="10" fill="#9ca3af" font-weight="700" letter-spacing="2">
+          <text x="40" y="32">CURIOSITY</text>
+          <text x="680" y="32" text-anchor="end">INTENT</text>
+        </g>
+        <g font-family="Inter" font-size="11" font-weight="700" fill="#0a4d5c">
+          <rect x="40" y="50" width="120" height="60" rx="10" fill="#f0fdfa" stroke="#5eead4" stroke-width="1.4"/>
+          <text x="100" y="78" text-anchor="middle">Unaware</text>
+          <text x="100" y="96" text-anchor="middle" font-size="9" font-weight="500" fill="#0f766e">Pattern interrupt</text>
+
+          <rect x="170" y="50" width="120" height="60" rx="10" fill="#ccfbf1" stroke="#2dd4bf" stroke-width="1.4"/>
+          <text x="230" y="78" text-anchor="middle">Problem-aware</text>
+          <text x="230" y="96" text-anchor="middle" font-size="9" font-weight="500" fill="#0f766e">Cost-of-inaction</text>
+
+          <rect x="300" y="50" width="120" height="60" rx="10" fill="#99f6e4" stroke="#0d9488" stroke-width="1.4"/>
+          <text x="360" y="78" text-anchor="middle" fill="#115e59">Solution-aware</text>
+          <text x="360" y="96" text-anchor="middle" font-size="9" font-weight="500" fill="#115e59">Mechanism reveal</text>
+
+          <rect x="430" y="50" width="120" height="60" rx="10" fill="#5eead4" stroke="#0d9488" stroke-width="1.4"/>
+          <text x="490" y="78" text-anchor="middle" fill="#115e59">Product-aware</text>
+          <text x="490" y="96" text-anchor="middle" font-size="9" font-weight="500" fill="#115e59">Identity alignment</text>
+
+          <rect x="560" y="50" width="120" height="60" rx="10" fill="url(#fi-grad)"/>
+          <text x="620" y="78" text-anchor="middle" fill="white">Most aware</text>
+          <text x="620" y="96" text-anchor="middle" font-size="9" font-weight="500" fill="#ccfbf1">Lock the deal</text>
+        </g>
+
+        <g font-family="Inter" font-size="10.5" fill="#0a4d5c">
+          <text x="40" y="146" font-weight="700" fill="#0f766e">Detect</text>
+          <text x="40" y="166">Short visit, zero engagement</text>
+          <text x="40" y="186">Hover on pain, no CTA click</text>
+          <text x="40" y="206">Scroll through solution, no signup</text>
+          <text x="40" y="226">Hovers on pricing, FAQ checks</text>
+          <text x="40" y="246">Mouse freeze near CTAs</text>
+        </g>
+
+        <g font-family="Inter" font-size="10.5" fill="#0a4d5c">
+          <text x="380" y="146" font-weight="700" fill="#0f766e">Trigger</text>
+          <text x="380" y="166">Pattern-interrupt headlines</text>
+          <text x="380" y="186">Cost-of-inaction stories</text>
+          <text x="380" y="206">Unique mechanism, 3-step reveal</text>
+          <text x="380" y="226">Identity-aligned audience copy</text>
+          <text x="380" y="246">Low-friction signup, lock-in CTAs</text>
+        </g>
+
+        <g font-family="Archivo" font-size="11" fill="#0d9488" font-weight="800">
+          <rect x="40" y="296" width="640" height="44" rx="10" fill="#0d9488"/>
+          <text x="360" y="316" text-anchor="middle" fill="white">Each stage detects curiosity, then triggers the move that converts it to intent</text>
+          <text x="360" y="334" text-anchor="middle" fill="#ccfbf1" font-family="Inter" font-size="10" font-weight="500">Output: high-intent subscribers entering the deeper funnel, not just opt-ins</text>
+        </g>
+
+        <g font-family="Inter" font-size="11" fill="#9ca3af" font-weight="500">
+          <text x="40" y="380">Curiosity is being interested. Intent is being ready to act.</text>
+          <text x="40" y="396">The framework names which one a visitor is in, then moves them across the line.</text>
+        </g>
+      </svg>
+      <p class="caption">The five-stage curiosity-to-intent map. At every stage the question is the same: is the visitor here out of curiosity, or are they ready to act? The answer determines the move.</p>
+    </div>
+
+    <div class="detail-block reveal">
+      <h2>Specific moves that came out of it</h2>
+      <ul>
+        <li><strong>Ad to landing page.</strong> Reframed ad copy to lead with outcome, not just an open loop. Hero image on the landing page had to deliver the visual payoff the ad promised, not tease it again.</li>
+        <li><strong>Opt-in form.</strong> Form headers shifted from "Sign up" to "Get [desired result]." Extra fields removed. Built desire before the opt-in instead of after, with a mini case study or testimonial above the form.</li>
+        <li><strong>Webinar registration to attendance.</strong> Pre-frame sequence promised exactly what the registrant would win by attending, with countdowns and attendee social proof on the registration page.</li>
+        <li><strong>Webinar watch.</strong> Opening 90 seconds reframed to "what's in it for you," then visual changes every 10-15 seconds to retain attention. Payoff promised early, stakes anchored.</li>
+        <li><strong>Checkout.</strong> Headline shifted from "Complete purchase" to "Claim my transformation now." Distractions removed. Pre-framed price and guarantee before the checkout page so there were no surprises.</li>
+        <li><strong>Post-purchase.</strong> Onboarding emails reaffirmed the transformation and future-paced the next outcomes. Friendly milestone design tied to behavioral cues from product use.</li>
+      </ul>
+    </div>
+
+    <div class="detail-block reveal">
+      <h2>Why this counts as product marketing work</h2>
+      <p>Funnel optimization is usually treated as growth or paid media work. The framework above sits earlier than that. It defines what the messaging needs to do at every stage based on where the visitor's mind is, not where the funnel says they are. That is a positioning and product marketing job, not a paid media one. The output rolled into copy, design, and strategy decisions across the team.</p>
+    </div>
+
+    <div class="detail-meta reveal">
+      <div class="meta-row">
+        <div class="key">Product line</div><div class="val">Passion.io platform</div>
+        <div class="key">My role</div><div class="val">Built the framework end to end. Mapped the stages, named the detection signals, and specified the triggers</div>
+        <div class="key">Output</div><div class="val">Funnel-stage and awareness-stage matrices that informed copy, design, and strategy across the team</div>
+        <div class="key">Impact</div><div class="val">Higher-intent subscribers entering the deeper funnel, not just front-of-funnel opt-ins</div>
+      </div>
+    </div>
+
+    <div class="detail-cta reveal">
+      <h3>Tired of a funnel that produces opens but not buyers?</h3>
+      <a href="https://calendar.app.google/LEcHPfT7csau1WCQ7" target="_blank" rel="noopener" class="cta-button">Book a call</a>
+      <p style="margin-top: 16px; font-size: 0.9rem; color: var(--ink-400);">Or reach me at <a href="mailto:muddassir@abdurrub.com" style="color: var(--teal-700); text-decoration: underline; text-underline-offset: 3px;">muddassir@abdurrub.com</a></p>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">Muddassir<span>.</span></div>
+      <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="../">Past Work</a>
+        <a href="/email-marketing/">Email &amp; Retention</a>
+        <a href="/blog/">Blog</a>
+      </div>
+    </div>
+      <div class="footer-fineprint">
+        <span>&copy; 2026 Muddassir Abdur Rub. All rights reserved.</span>
+        <span>Words and case studies on this site are my own. Do not reproduce without permission. Reach me at <a href="mailto:muddassir@abdurrub.com">muddassir@abdurrub.com</a>.</span>
+      </div>
+  </div>
+</footer>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+  <img id="lightboxImg" src="" alt="" />
+</div>
+<script src="../script.js"></script>
+</body>
+</html>

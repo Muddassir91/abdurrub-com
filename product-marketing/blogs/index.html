@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SEO and long-form content for Passion.io | Muddassir Abdur Rub</title>
+  <meta name="description" content="The SEO project I co-led at Passion.io. Negative-review mining, competitor research tables, a writing workflow, and the long-form articles that came out of it." />
+  <link rel="canonical" href="https://abdurrub.com/product-marketing/blogs" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f766e'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='Archivo,sans-serif' font-weight='800' font-size='18' fill='white'%3EM%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../style.css" />
+  <style>
+    .nav-cta { background: #0f766e !important; color: #ffffff !important; font-weight: 700; }
+    .nav-cta:hover { background: #115e59 !important; color: #ffffff !important; }
+    .article-card {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+      background: white;
+      border: 2px solid var(--ink-200);
+      border-radius: 22px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    @media (min-width: 760px) {
+      .article-card { grid-template-columns: 320px 1fr; }
+    }
+    .article-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 32px 64px -20px rgba(10, 77, 92, 0.22);
+      border-color: var(--teal-400);
+    }
+    .article-card .thumb {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      background: var(--teal-50);
+      border-bottom: 1px solid var(--teal-100);
+    }
+    @media (min-width: 760px) {
+      .article-card .thumb {
+        aspect-ratio: auto;
+        height: 100%;
+        min-height: 260px;
+        border-bottom: 0;
+        border-right: 1px solid var(--teal-100);
+      }
+    }
+    .article-card .thumb img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: top center;
+      transition: transform 0.5s ease;
+    }
+    .article-card:hover .thumb img { transform: scale(1.04); }
+    .article-card .body {
+      padding: 28px 28px 32px;
+      display: flex; flex-direction: column;
+      justify-content: center;
+      min-height: 260px;
+    }
+    @media (min-width: 760px) { .article-card .body { padding: 36px 40px; } }
+    .article-card .meta {
+      display: inline-block;
+      font-size: 0.74rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--teal-700); margin-bottom: 10px;
+    }
+    .article-card h3 {
+      font-size: clamp(1.2rem, 2vw, 1.45rem);
+      line-height: 1.25; color: var(--ink-900);
+    }
+    .article-card .excerpt {
+      margin-top: 12px;
+      color: var(--ink-500);
+      line-height: 1.6;
+      font-size: 0.97rem;
+    }
+    .article-card .open-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-top: 16px;
+      color: var(--teal-700); font-weight: 600; font-size: 0.9rem;
+      transition: gap 0.2s ease, color 0.15s;
+    }
+    .article-card:hover .open-link { gap: 10px; color: var(--teal-900); }
+    .seo-project {
+      background: linear-gradient(135deg, var(--teal-50) 0%, white 100%);
+      border: 2px solid var(--teal-200);
+      border-radius: 22px;
+      padding: 32px;
+      margin-bottom: 36px;
+    }
+    @media (min-width: 768px) { .seo-project { padding: 44px; } }
+    .seo-project h3 { font-size: clamp(1.3rem, 2.4vw, 1.7rem); }
+    .seo-project p { color: var(--ink-700); margin-top: 14px; line-height: 1.7; font-size: 1rem; }
+    .seo-project ul { margin-top: 20px; padding-left: 0; list-style: none; }
+    .seo-project ul li { position: relative; padding-left: 26px; margin-top: 12px; color: var(--ink-700); font-size: 0.98rem; line-height: 1.6; }
+    .seo-project ul li::before { content: ""; position: absolute; left: 0; top: 11px; width: 14px; height: 2px; background: var(--teal-500); border-radius: 2px; }
+    .articles-grid { display: grid; gap: 20px; }
+    @media (min-width: 768px) { .articles-grid { gap: 22px; } }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Changa+One:ital@0;1&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Sacramento&display=swap" rel="stylesheet">
+  <style>
+    /* abdurrub.com design system overlay — forces shared fonts and palette */
+    :root {
+      --teal-700: #008080 !important;
+      --teal-800: #006666 !important;
+      --teal-900: #004d4d !important;
+      --teal-950: #004d4d !important;
+      --teal-500: #00a8a3 !important;
+      --teal-400: #00a8a3 !important;
+    }
+    body, p, li, td, th, input, button, textarea, .font-sans {
+      font-family: "PT Serif", Georgia, "Times New Roman", serif !important;
+    }
+    h1, h2, h3, h4, h5, h6, .font-display, .font-heading {
+      font-family: "Changa One", "Impact", sans-serif !important;
+      font-weight: 400 !important;
+      letter-spacing: 0.005em !important;
+    }
+    .font-signature, .signature, .signature-caption, .logo-name {
+      font-family: "Sacramento", cursive !important;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="container nav-inner">
+    <a href="/" aria-label="Muddassir Abdur Rub — home" style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;"><span style="width:38px;height:38px;border-radius:50%;overflow:hidden;border:1.5px solid rgba(0,0,0,0.12);flex-shrink:0;display:inline-block;background:#ececec;"><img src="/images/Mud-website-image.png" alt="Muddassir Abdur Rub" style="width:100%;height:100%;object-fit:cover;display:block;"></span><span style="font-family:'Sacramento',cursive;font-size:1.7rem;color:#134e4a;line-height:1;white-space:nowrap;">Muddassir<span style="color:#0f766e;">.</span></span></a>
+    <div class="nav-links">
+      <div class="menu-trigger">
+        <button aria-haspopup="true">Services <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="menu-dropdown">
+          <a href="/email-marketing/">Email Marketing &amp; Retention<span class="small">Lifecycle systems for businesses past $100K</span></a>
+          <a href="/creative-strategy/">Creative Strategy Operating System<span class="small">Score your creative strategy in 7 questions</span></a>
+        </div>
+      </div>
+      <div class="menu-trigger">
+        <button aria-haspopup="true" class="nav-active">Past Work <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="menu-dropdown">
+          <a href="/product-marketing">Product Marketing for SaaS &amp; AI<span class="small">Two years at Passion.io</span></a>
+        </div>
+      </div>
+      <a href="/blog/">Blog</a>
+      <a href="https://calendar.app.google/LEcHPfT7csau1WCQ7" target="_blank" rel="noopener" class="nav-cta">Book a call</a>
+    </div>
+    <button class="menu-btn-mobile" id="menuBtn" aria-label="Menu" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <p class="section-label">Services</p>
+    <a href="/email-marketing/">Email Marketing &amp; Retention</a>
+    <a href="/creative-strategy/">Creative Strategy Operating System</a>
+    <p class="section-label">Past Work</p>
+    <a href="/product-marketing" style="color: var(--teal-700); font-weight: 600;">Product Marketing for SaaS &amp; AI</a>
+    <p class="section-label">More</p>
+    <a href="/blog/">Blog</a>
+    <a href="https://calendar.app.google/LEcHPfT7csau1WCQ7" target="_blank" rel="noopener" class="nav-cta">Book a call</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <a href="../" class="hero-back reveal"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back to Past Work</a>
+    <p class="eyebrow reveal" style="color: var(--teal-300); margin-top: 36px;">SEO &amp; long-form content · Passion.io</p>
+    <h1 class="reveal delay-1">Long-form articles that put Passion.io alongside <span class="gradient-text">Mighty Networks and Kajabi</span> in organic search</h1>
+    <p class="hero-sub reveal delay-2">
+      Co-led the SEO project at Passion.io with my team lead. The goal was to close the search-presence gap with competitors who had much larger SEO footprints. Articles were one piece of the project. Voice-of-customer mining, negative-review research, and a writing workflow were the rest.
+    </p>
+  </div>
+</section>
+
+<section class="section section-tint">
+  <div class="container">
+    <div class="seo-project reveal">
+      <p class="eyebrow" style="margin-bottom: 8px;">The SEO project</p>
+      <h3>Built the research and writing workflow that produced every article on this page</h3>
+      <p>The project ran across two layers. The first was research-heavy: pull negative reviews from Reddit, niche forums, and review sites; turn the language into a problem table; then build a competitor feature comparison so each article had a real differentiator to lean on. The second was the writing workflow itself, briefed against a target keyword and a primary persona, mapped to a buying stage in the funnel.</p>
+      <ul>
+        <li>Mined negative reviews of competing platforms (Skool, Mighty Networks, Kajabi, Circle) for voice-of-customer language. The result was a problem-table reference every article pulled from.</li>
+        <li>Built a competitor feature research table covering pricing, gamification, course UX, branding, payments, automation, and community moderation across the same competitors.</li>
+        <li>Wrote the articles below against that research. Each piece tied to a target keyword, a primary persona, and a funnel stage.</li>
+        <li>Why it matters in 2026: the same long-form content is now the source AI tools draw from when answering buyer questions. Investing in deep, original research-led articles is how Passion.io shows up alongside the competitors with bigger SEO footprints.</li>
+      </ul>
+    </div>
+
+    <div class="articles-grid">
+
+      <a href="https://passion.io/blog/passion-io-news/decision-fatigue-costs-creators-money-in-2025" target="_blank" rel="noopener" class="article-card reveal">
+        <div class="thumb">
+          <img src="../images/blog-card-decision-fatigue.png" alt="Decision Fatigue Hits All-Time High in 2025 article on the Passion.io blog" loading="lazy" />
+        </div>
+        <div class="body">
+          <span class="meta">Awareness · Coach &amp; creator persona</span>
+          <h3>Decision Fatigue Hits All-Time High in 2025 (Smart Creators Are Fighting Back)</h3>
+          <p class="excerpt">Long-form awareness piece against decision-fatigue keywords. Frames automation as the way out, then routes the reader toward Passion.io as the platform that removes those decisions.</p>
+          <span class="open-link">Read on Passion.io →</span>
+        </div>
+      </a>
+
+      <a href="https://passion.io/blog/passion-io-news/coaching-burnout-crisis-2025-smart-solutions" target="_blank" rel="noopener" class="article-card reveal">
+        <div class="thumb">
+          <img src="../images/blog-card-coaching-burnout.png" alt="Coaching Burnout Crisis Hits Record Levels article on the Passion.io blog" loading="lazy" />
+        </div>
+        <div class="body">
+          <span class="meta">Industry insights · Coach persona</span>
+          <h3>Coaching Burnout Crisis Hits Record Levels (Smart Solutions Inside)</h3>
+          <p class="excerpt">67% of coaches face severe burnout within 3 years. Long-form piece against high-volume burnout keywords. Routes the reader toward systems that take routine work off the coach's plate.</p>
+          <span class="open-link">Read on Passion.io →</span>
+        </div>
+      </a>
+
+      <a href="https://passion.io/blog/small-list-big-impact-monetization-strategies-for-creators-with-under-1000-followers" target="_blank" rel="noopener" class="article-card reveal">
+        <div class="thumb">
+          <img src="../images/blog-card-small-list.png" alt="Small List, Big Impact article on the Passion.io blog" loading="lazy" />
+        </div>
+        <div class="body">
+          <span class="meta">Awareness · Emerging creator persona</span>
+          <h3>Small List, Big Impact: Monetization Strategies for Creators with Under 1,000 Followers</h3>
+          <p class="excerpt">Pulled from the persona research showing that early-stage creators were getting de-prioritized in market messaging. Article addresses the pain directly and routes them toward the platform tier that fits.</p>
+          <span class="open-link">Read on Passion.io →</span>
+        </div>
+      </a>
+
+      <a href="https://passion.io/blog/easy-content-production-for-your-monthly-content-calendar-turn-one-idea-into-a-month-of-content" target="_blank" rel="noopener" class="article-card reveal">
+        <div class="thumb">
+          <img src="../images/blog-card-content-production.png" alt="Easy Content Production article on the Passion.io blog" loading="lazy" />
+        </div>
+        <div class="body">
+          <span class="meta">How-to · Creator persona</span>
+          <h3>Easy Content Production for Your Monthly Content Calendar: Turn One Idea Into A Month Of Content</h3>
+          <p class="excerpt">Hub-and-spoke content model for creators against the "how to plan content calendar" keyword cluster. Practical how-to piece that ties back to the platform's content tooling.</p>
+          <span class="open-link">Read on Passion.io →</span>
+        </div>
+      </a>
+
+    </div>
+
+    <p style="text-align: center; margin-top: 36px; color: var(--ink-400); font-size: 0.92rem;">More published pieces available on request.</p>
+  </div>
+</section>
+
+<section class="section section-dark">
+  <div class="container">
+    <div class="cta-inner reveal">
+      <p class="eyebrow">If you're hiring</p>
+      <h2>Want AI tools and search engines recommending your product?</h2>
+      <a href="https://calendar.app.google/LEcHPfT7csau1WCQ7" target="_blank" rel="noopener" class="cta-button">Book a call</a>
+      <p class="cta-meta">Or reach me at <a href="mailto:muddassir@abdurrub.com">muddassir@abdurrub.com</a></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">Muddassir<span>.</span></div>
+      <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="../">Past Work</a>
+        <a href="/email-marketing/">Email &amp; Retention</a>
+        <a href="/blog/">Blog</a>
+      </div>
+    </div>
+      <div class="footer-fineprint">
+        <span>&copy; 2026 Muddassir Abdur Rub. All rights reserved.</span>
+        <span>Words and case studies on this site are my own. Do not reproduce without permission. Reach me at <a href="mailto:muddassir@abdurrub.com">muddassir@abdurrub.com</a>.</span>
+      </div>
+  </div>
+</footer>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Close">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+  </button>
+  <img id="lightboxImg" src="" alt="" />
+</div>
+
+<script src="../script.js"></script>
+</body>
+</html>

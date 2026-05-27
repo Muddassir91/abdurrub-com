@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email & Lifecycle Marketing — Muddassir Abdur Rub</title>
+  <meta name="description" content="$2.4M in email revenue across two years at Passion.io. Revenue per lead doubled. A record $256K Black Friday. The same systems can run inside your business.">
+  <link rel="canonical" href="https://abdurrub.com/email-marketing/">
+  <meta property="og:title" content="Email & Lifecycle Marketing — Muddassir Abdur Rub">
+  <meta property="og:description" content="Two years. $2.4M in email revenue. One list rebuilt from the inside.">
+  <meta property="og:image" content="https://abdurrub.com/images/Mud-website-image.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Changa+One:ital@0;1&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Sacramento&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://adscreativestrategy.com/css/system.css">
+  <style>
+    .brand-personal { display:inline-flex; align-items:center; gap:12px; text-decoration:none; color:var(--ink); }
+    .brand-photo { width:38px; height:38px; border-radius:50%; overflow:hidden; background:var(--paper-2); border:1.5px solid var(--rule); flex-shrink:0; }
+    .brand-photo img { width:100%; height:100%; object-fit:cover; }
+    .brand-signature { font-family:"Sacramento", cursive; font-size:1.7rem; color:var(--teal-deep); line-height:1; }
+    .brand-signature .dot { color:var(--teal); }
+
+    .hero-em { padding: 72px 0 36px; }
+    .hero-em .wrap { max-width: 1060px; }
+    .hero-em h1.display { font-size: clamp(2.2rem, 4.6vw, 3.4rem); }
+
+    .hero-split { display: flex; align-items: center; gap: 48px; }
+    .hero-copy { flex: 1 1 auto; min-width: 0; }
+    .hero-figure { flex: 0 0 auto; }
+    .hero-figure img { display: block; width: auto; height: clamp(240px, 24vw, 300px); max-width: 42vw; border-radius: 12px; border: 1px solid var(--rule); box-shadow: 0 18px 40px -18px rgba(10,77,92,.28); }
+    .hero-figure-cap { margin-top: 10px; font-size: 0.8rem; color: var(--ink-soft); line-height: 1.4; max-width: 230px; }
+    .hero-stats-band { padding: 6px 0 30px; border-bottom: 1px solid var(--rule); }
+    .hero-stats-band .kpi-strip { margin-top: 0; }
+    @media (max-width: 860px) {
+      .hero-split { flex-direction: column; align-items: flex-start; gap: 24px; }
+      .hero-figure { max-width: 100%; }
+      .hero-figure img { height: auto; width: 100%; max-width: 340px; }
+    }
+
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      padding: 28px 0;
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      margin-top: 28px;
+    }
+    .kpi .num { font-family: "Changa One", "Impact", sans-serif; font-size: 1.6rem; color: var(--teal); line-height: 1.05; }
+    .kpi .label { font-size: 0.86rem; color: var(--ink-soft); margin-top: 4px; }
+    @media (max-width: 640px) { .kpi-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+    .cs-section {
+      padding: 32px;
+      background: var(--white);
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      margin-bottom: 22px;
+      max-width: 980px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .cs-section h2 {
+      font-family: "Changa One", "Impact", sans-serif;
+      font-weight: 400;
+      font-size: clamp(1.4rem, 2.6vw, 2rem);
+      color: var(--ink);
+      margin: 8px 0 10px;
+      line-height: 1.15;
+    }
+    .cs-section p { color: var(--ink-soft); }
+    .cs-pull {
+      margin-top: 18px;
+      padding: 16px 20px;
+      background: var(--paper-2);
+      border-left: 4px solid var(--teal);
+      border-radius: 0 6px 6px 0;
+      color: var(--teal-deep);
+      font-family: "Changa One", "Impact", sans-serif;
+      font-size: 1.04rem;
+    }
+    .kpi-strip-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .kpi-strip-3 .kpi { padding: 18px; background: var(--paper-2); border-radius: 8px; }
+    @media (max-width: 640px) { .kpi-strip-3 { grid-template-columns: 1fr; } }
+
+    .donut-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: center;
+      margin-top: 20px;
+    }
+    .legend-row { display: flex; flex-direction: column; gap: 10px; }
+    .legend-row .item {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      background: var(--paper-2);
+      border-radius: 6px;
+    }
+    .legend-row .sw { width: 12px; height: 12px; border-radius: 3px; flex: 0 0 12px; }
+    .legend-row .meta { flex: 1; font-size: 0.94rem; }
+    .legend-row .meta b { font-family: "Changa One", "Impact", sans-serif; font-weight: 400; color: var(--ink); display: block; }
+    .legend-row .meta span { font-size: 0.8rem; color: var(--muted); }
+    .legend-row .val { font-family: "Changa One", "Impact", sans-serif; color: var(--teal-deep); }
+    @media (max-width: 720px) { .donut-row { grid-template-columns: 1fr; } }
+
+    .founder-quote {
+      padding: 28px;
+      background: var(--paper-2);
+      border: 1px solid var(--teal-bright);
+      border-radius: 10px;
+      margin: 28px auto;
+      max-width: 980px;
+    }
+    .founder-quote blockquote {
+      font-family: "PT Serif", serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: var(--ink);
+      margin: 10px 0 18px;
+    }
+    .founder-quote .who { display: flex; align-items: center; gap: 12px; }
+    .founder-quote .av {
+      width: 44px; height: 44px; border-radius: 999px;
+      background: var(--teal); color: white;
+      font-family: "Changa One", "Impact", sans-serif; font-size: 0.95rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .ss-wall {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+      margin-top: 36px;
+    }
+    .ss-card {
+      background: var(--white);
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 14px 30px rgba(0, 77, 77, 0.06);
+    }
+    .ss-card img { width: 100%; height: auto; display: block; }
+    .ss-card .ss-meta {
+      padding: 14px 18px;
+      border-top: 1px solid var(--rule);
+      color: var(--ink-soft);
+      font-size: 0.88rem;
+    }
+    .ss-card .ss-meta b {
+      font-family: "Changa One", "Impact", sans-serif;
+      color: var(--teal-deep);
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    @media (max-width: 640px) { .ss-wall { grid-template-columns: 1fr; } }
+
+    .ops-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      gap: 56px;
+      align-items: start;
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+    .ops-narrative h3.display { font-size: clamp(1.6rem, 3vw, 2.2rem); }
+    .ops-narrative .ops-lede { font-size: 1.08rem; color: var(--ink-soft); margin-top: 18px; }
+    .ops-narrative .ops-bridge { color: var(--ink); margin-top: 14px; }
+    .ops-principles { display: grid; gap: 22px; margin: 28px 0; }
+    .ops-principle { display: grid; grid-template-columns: 44px 1fr; gap: 16px; }
+    .ops-principle .num { font-family: "Changa One", "Impact", sans-serif; color: var(--teal); font-size: 1.1rem; }
+    .ops-principle h4 { font-family: "Changa One", "Impact", sans-serif; font-weight: 400; font-size: 1.1rem; color: var(--ink); margin: 0 0 6px; }
+    .ops-principle p { font-size: 0.98rem; color: var(--ink-soft); margin: 0; }
+    .ops-dbgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .ops-db { padding: 22px; background: var(--paper-2); border: 1px solid var(--rule); border-radius: 8px; }
+    .ops-db .t { font-family: "Changa One", "Impact", sans-serif; letter-spacing: 0.06em; color: var(--teal-deep); font-size: 0.95rem; margin-bottom: 6px; }
+    .ops-db .d { color: var(--ink-soft); font-size: 0.92rem; }
+    @media (max-width: 920px) { .ops-grid { grid-template-columns: 1fr; gap: 36px; } .ops-dbgrid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <nav class="nav" aria-label="Main navigation">
+    <div class="wrap nav-inner">
+      <a class="brand-personal" href="/">
+        <span class="brand-photo"><img src="/images/Mud-website-image.png" alt="Muddassir Abdur Rub"></span>
+        <span class="brand-signature">Muddassir<span class="dot">.</span></span>
+      </a>
+      <div class="nav-links">
+        <a href="/about/">About</a>
+        <div class="nav-dropdown"><a class="active" href="/product-marketing/">Work</a><div class="dropdown-menu"><a href="/product-marketing/">Product Marketing</a><a href="/email-marketing/">Email &amp; Lifecycle</a></div></div>
+        <a href="/blog/">Blog</a>
+        <a href="https://adscreativestrategy.com/">Products</a>
+        <a href="/contact/">Contact</a>
+        <a class="nav-cta" href="/work-with-me/">Work With Me</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero-em">
+      <div class="wrap">
+        <div class="hero-split">
+          <div class="hero-copy">
+            <span class="eyebrow">Email &amp; Lifecycle Marketing · Passion.io</span>
+            <h1 class="display">How to find $2.4M in revenue hiding in your existing email list.</h1>
+            <p class="lede">A Customer-First email system that earns more from subscribers you already paid to acquire.</p>
+          </div>
+          <div class="hero-figure">
+            <img src="/product-marketing/images/olly-slack-kpis.png" alt="Slack message from team lead sharing the KPI breakdown" loading="lazy">
+            <p class="hero-figure-cap">Slack message from my team lead, sharing the KPI breakdown for references.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero-stats-band">
+      <div class="wrap">
+        <div class="kpi-strip">
+          <div class="kpi"><div class="num">$2.4M+</div><div class="label">Email revenue, 2 years</div></div>
+          <div class="kpi"><div class="num">+336%</div><div class="label">Newsletter revenue, 2023 to 2025</div></div>
+          <div class="kpi"><div class="num">$256K</div><div class="label">Record Black Friday window, 2024</div></div>
+          <div class="kpi"><div class="num">2×</div><div class="label">Revenue per lead, $13 to $27</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section style="padding-top: 32px;">
+      <div class="wrap">
+
+        <div class="cs-section">
+          <span class="eyebrow">By the year</span>
+          <h2>Email revenue more than doubled in year two.</h2>
+          <p>$547K in 2023. $1.13M in 2024. Year three (partial) was on the same trajectory before the engagement closed.</p>
+          <div style="margin-top: 20px">
+            <svg viewBox="0 0 600 290" style="width:100%;height:auto" role="img" aria-label="Email revenue by year">
+              <defs>
+                <linearGradient id="yg" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0" stop-color="#00a8a3"/>
+                  <stop offset="1" stop-color="#008080"/>
+                </linearGradient>
+              </defs>
+              <line x1="60" y1="240" x2="580" y2="240" stroke="#e5e7eb"/>
+              <g>
+                <rect x="100" y="140" width="120" height="100" rx="10" fill="url(#yg)" opacity=".55"/>
+                <text x="160" y="130" text-anchor="middle" font-family="Changa One" font-size="22" fill="#004d4d">$547K</text>
+                <text x="160" y="262" text-anchor="middle" font-family="PT Serif" font-size="12" fill="#6b7280">2023</text>
+                <text x="160" y="278" text-anchor="middle" font-family="PT Serif" font-size="10" fill="#9ca3af">$13 / lead</text>
+              </g>
+              <g>
+                <rect x="240" y="40" width="120" height="200" rx="10" fill="url(#yg)"/>
+                <text x="300" y="30" text-anchor="middle" font-family="Changa One" font-size="24" fill="#004d4d">$1.13M</text>
+                <text x="300" y="262" text-anchor="middle" font-family="PT Serif" font-size="12" fill="#6b7280">2024 · peak year</text>
+                <text x="300" y="278" text-anchor="middle" font-family="PT Serif" font-size="10" fill="#9ca3af">$20 / lead</text>
+              </g>
+              <g>
+                <rect x="380" y="100" width="120" height="140" rx="10" fill="url(#yg)" opacity=".75"/>
+                <text x="440" y="90" text-anchor="middle" font-family="Changa One" font-size="22" fill="#004d4d">$768K</text>
+                <text x="440" y="262" text-anchor="middle" font-family="PT Serif" font-size="12" fill="#6b7280">2025 · partial</text>
+                <text x="440" y="278" text-anchor="middle" font-family="PT Serif" font-size="10" fill="#9ca3af">$27 / lead</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <div class="cs-section">
+          <span class="eyebrow">By campaign type</span>
+          <h2>Where the $2.4M actually came from.</h2>
+          <p>The biggest line item was automated webinar follow-ups. The lifecycle sequence the team built and rewrote repeatedly across the engagement.</p>
+          <div class="donut-row">
+            <div style="display:flex;justify-content:center">
+              <svg viewBox="0 0 240 240" style="width:100%;max-width:280px;height:auto" role="img" aria-label="Campaign type breakdown donut chart">
+                <circle cx="120" cy="120" r="80" fill="none" stroke="#f0fdfa" stroke-width="32"/>
+                <g transform="rotate(-90 120 120)">
+                  <circle cx="120" cy="120" r="80" fill="none" stroke="#004d4d" stroke-width="32" stroke-dasharray="232.48 502.65" stroke-dashoffset="0"/>
+                  <circle cx="120" cy="120" r="80" fill="none" stroke="#008080" stroke-width="32" stroke-dasharray="134.64 502.65" stroke-dashoffset="-232.48"/>
+                  <circle cx="120" cy="120" r="80" fill="none" stroke="#00a8a3" stroke-width="32" stroke-dasharray="128.79 502.65" stroke-dashoffset="-367.12"/>
+                  <circle cx="120" cy="120" r="80" fill="none" stroke="#99f6e4" stroke-width="32" stroke-dasharray="14.22 502.65" stroke-dashoffset="-495.91"/>
+                </g>
+                <text x="120" y="114" text-anchor="middle" font-family="Changa One" font-size="28" fill="#004d4d">$2.4M</text>
+                <text x="120" y="138" text-anchor="middle" font-family="PT Serif" font-size="11" fill="#6b7280">email revenue</text>
+              </svg>
+            </div>
+            <div class="legend-row">
+              <div class="item">
+                <span class="sw" style="background:#004d4d"></span>
+                <div class="meta"><b>Webinar follow-ups</b><span>Automated lifecycle sequences</span></div>
+                <div class="val">$1.11M</div>
+              </div>
+              <div class="item">
+                <span class="sw" style="background:#008080"></span>
+                <div class="meta"><b>Promo cycles</b><span>Mini promos across the calendar</span></div>
+                <div class="val">$643K</div>
+              </div>
+              <div class="item">
+                <span class="sw" style="background:#00a8a3"></span>
+                <div class="meta"><b>Black Friday windows</b><span>Three peak campaigns</span></div>
+                <div class="val">$615K</div>
+              </div>
+              <div class="item">
+                <span class="sw" style="background:#99f6e4"></span>
+                <div class="meta"><b>Newsletter</b><span>Nurture, +336% in three years</span></div>
+                <div class="val">$68K</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cs-section">
+          <span class="eyebrow">Impact on the email list</span>
+          <h2>Revenue per lead doubled in two years.</h2>
+          <p>The list went from $13 per lead in 2023 to $27 in 2025. Same audience source. Better segmentation, sharper positioning, and a voice subscribers recognized.</p>
+          <div style="margin-top:20px">
+            <svg viewBox="0 0 560 240" style="width:100%;height:auto" role="img" aria-label="Revenue per lead chart">
+              <defs>
+                <linearGradient id="rpl" x1="0" x2="1"><stop offset="0" stop-color="#008080"/><stop offset="1" stop-color="#00a8a3"/></linearGradient>
+              </defs>
+              <line x1="40" y1="200" x2="540" y2="200" stroke="#e5e7eb"/>
+              <path d="M60,170 Q 240,140 280,100 T 520,30" fill="none" stroke="url(#rpl)" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="60"  cy="170" r="6" fill="#008080"/>
+              <circle cx="280" cy="100" r="6" fill="#008080"/>
+              <circle cx="520" cy="30"  r="7" fill="#008080" stroke="#fff" stroke-width="2"/>
+              <text x="60"  y="158" text-anchor="middle" font-family="Changa One" font-size="14" fill="#004d4d">$13</text>
+              <text x="280" y="88"  text-anchor="middle" font-family="Changa One" font-size="14" fill="#004d4d">$20</text>
+              <text x="520" y="18"  text-anchor="middle" font-family="Changa One" font-size="14" fill="#004d4d">$27</text>
+              <g font-family="PT Serif" font-size="11" fill="#9ca3af">
+                <text x="60" y="220" text-anchor="middle">2023</text>
+                <text x="280" y="220" text-anchor="middle">2024</text>
+                <text x="520" y="220" text-anchor="middle">2025</text>
+              </g>
+            </svg>
+          </div>
+          <div class="cs-pull">"Revenue per lead doubled, $13 to $27, on the same acquisition channels."</div>
+        </div>
+
+        <div class="cs-section">
+          <span class="eyebrow">Impact on Black Friday</span>
+          <h2>$256K from a single 30-day window.</h2>
+          <p>A record campaign for the team in 2024. Built on segmentation, behavior triggers, and offers that changed across the window instead of one discount blast.</p>
+          <div class="kpi-strip-3" style="margin-top: 20px;">
+            <div class="kpi"><div class="num">$168K</div><div class="label">2023 Black Friday</div></div>
+            <div class="kpi"><div class="num">$256K</div><div class="label">2024 · record</div></div>
+            <div class="kpi"><div class="num">$191K</div><div class="label">2025 Black Friday</div></div>
+          </div>
+        </div>
+
+        <div class="founder-quote">
+          <span class="eyebrow">From the founder</span>
+          <blockquote>"Muddassir has been a key player in crafting some of Passion.io's most impactful marketing campaigns. Whether it was the high-stakes urgency of our Black Friday email launch or the carefully timed sequences for our AI Coach waitlist, he consistently produced copy that impressed our marketing team. What sets Muddassir apart is his unique blend of speed, strategic insight, and genuine talent. I wholeheartedly recommend him to any company that values the power of well-crafted words."</blockquote>
+          <div class="who">
+            <div class="av">MB</div>
+            <div>
+              <div style="font-weight:700;color:var(--ink)">Matthias Bellmann</div>
+              <div style="font-size:0.85rem;color:var(--ink-soft)">Founder, Passion.io</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="alt">
+      <div class="wrap">
+        <div class="ops-grid">
+          <div class="ops-narrative">
+            <span class="eyebrow">Operations</span>
+            <h3 class="display">Building and owning marketing operations.</h3>
+            <p class="ops-lede">Most marketing teams ship fast and forget faster. Messaging lives in Slack threads, testimonials live in one person's head, and every campaign starts from a blank page.</p>
+            <p class="ops-bridge">At Passion.io I built the opposite. A messaging system the whole acquisition team opens before they write a single line.</p>
+            <div class="ops-principles">
+              <div class="ops-principle">
+                <span class="num">01</span>
+                <div>
+                  <h4>Organized by what the info does, not where it came from.</h4>
+                  <p>Six Notion databases. Pain, objection, benefit, persona, outcome, output. Each with a clear role in the writing process.</p>
+                </div>
+              </div>
+              <div class="ops-principle">
+                <span class="num">02</span>
+                <div>
+                  <h4>Real customer language, sorted by ICP.</h4>
+                  <p>Any writer can pull sentences the customer would actually say, rather than guessing.</p>
+                </div>
+              </div>
+              <div class="ops-principle">
+                <span class="num">03</span>
+                <div>
+                  <h4>One output database turns the rest into shipped work.</h4>
+                  <p>Angles pulls from the other five to produce ready-to-ship hooks, headlines, and openings.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="ops-dbgrid">
+              <div class="ops-db"><div class="t">Pain Points</div><div class="d">Real customer pain language, sorted by ICP.</div></div>
+              <div class="ops-db"><div class="t">Objections</div><div class="d">Sales-call and webinar objections with handlers.</div></div>
+              <div class="ops-db"><div class="t">Benefits</div><div class="d">Product benefits in customer words.</div></div>
+              <div class="ops-db"><div class="t">Personas</div><div class="d">ICP profiles, refreshed quarterly.</div></div>
+              <div class="ops-db"><div class="t">Desired Outcomes</div><div class="d">What ICPs actually want.</div></div>
+              <div class="ops-db"><div class="t">Angles · output</div><div class="d">Hooks and openings ready for any format.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="center" style="margin-bottom: 24px;">
+          <span class="eyebrow">What clients say</span>
+          <h2 class="display">Real screenshots, not paraphrased.</h2>
+        </div>
+        <div class="ss-wall">
+          <div class="ss-card">
+            <img src="/images/testimonials/raw/linkedin-matthias-passion-io.png" alt="LinkedIn recommendation from Matthias Bellmann, Passion.io founder">
+            <div class="ss-meta"><b>LinkedIn</b><br>Matthias Bellmann · Founder, Passion.io</div>
+          </div>
+          <div class="ss-card">
+            <img src="/images/testimonials/raw/upwork-saas-email-strategy.png" alt="Upwork review: SaaS email strategy engagement">
+            <div class="ss-meta"><b>Upwork</b><br>SaaS email strategy engagement</div>
+          </div>
+          <div class="ss-card">
+            <img src="/images/testimonials/raw/upwork-saas-email-copywriter.png" alt="Upwork review: SaaS email copywriter engagement">
+            <div class="ss-meta"><b>Upwork</b><br>SaaS email copywriter engagement</div>
+          </div>
+          <div class="ss-card">
+            <img src="/images/testimonials/raw/upwork-convertkit.png" alt="Upwork review: ConvertKit / Kit email engagement">
+            <div class="ss-meta"><b>Upwork</b><br>ConvertKit / Kit engagement</div>
+          </div>
+          <div class="ss-card">
+            <img src="/images/testimonials/raw/upwork-fb-ads-brainhive.png" alt="Upwork review: Brainhive Facebook ads engagement">
+            <div class="ss-meta"><b>Upwork</b><br>Brainhive Facebook ads engagement</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="dark">
+      <div class="narrow center">
+        <span class="kicker">Work With Me</span>
+        <h2 class="display">Want this kind of work inside your business?</h2>
+        <p class="lede" style="margin-top: 22px;">Free 20-minute email audit. No pitch. I look at one piece of your funnel and leave you with three moves to make first.</p>
+        <div style="margin-top: 36px;">
+          <a class="btn" href="/work-with-me/">Book a free email audit</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>© Muddassir Abdur Rub</span>
+      <span>
+        <a href="https://adscreativestrategy.com/">CSOS</a>
+        &nbsp;·&nbsp;
+        <a href="https://www.linkedin.com/in/muddassir-abdur-rub/">LinkedIn</a>
+        &nbsp;·&nbsp;
+        <a href="/contact/">Contact</a>
+      </span>
+    </div>
+  </footer>
+</body>
+</html>
