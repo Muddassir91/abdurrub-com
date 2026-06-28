@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 190 48" role="img" aria-label="Substack">
+  <rect width="190" height="48" fill="none"/>
+  <path d="M8 8h30v5H8V8Zm0 9h30v5H8v-5Zm0 9h30v16L23 34 8 42V26Z" fill="#ff6719"/>
+  <text x="48" y="34" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="800">Substack</text>
+</svg>

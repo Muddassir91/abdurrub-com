@@ -156,25 +156,6 @@ p, h1, h2, h3 { margin: 0; }
   align-items: center;
 }
 
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
-  color: var(--teal);
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.eyebrow::before {
-  content: "";
-  width: 28px;
-  height: 2px;
-  background: var(--teal);
-}
-
 h1, h2, h3, .display {
   font-family: "Archivo", Arial, sans-serif;
   line-height: 1.05;
@@ -270,44 +251,56 @@ h3 {
 
 .logo-strip {
   max-width: 100%;
-  padding: 26px 0;
+  padding: 16px 0;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   background: var(--paper);
   overflow: hidden;
 }
 
+.logo-label {
+  width: min(1120px, calc(100% - 40px));
+  margin: 0 auto 10px;
+  color: var(--teal);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
 .logo-track {
   display: flex;
-  gap: 14px;
+  align-items: center;
+  gap: 34px;
   width: max-content;
-  animation: strip-move 34s linear infinite;
+  animation: strip-move 28s linear infinite;
 }
 
 .logo-strip:hover .logo-track { animation-play-state: paused; }
 
-.logo-pill {
-  min-width: 148px;
-  height: 62px;
+.logo-mark {
+  min-width: 150px;
+  height: 38px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--bg);
-  font-family: "Archivo", Arial, sans-serif;
-  font-weight: 800;
-  font-size: 0.9rem;
-  color: var(--ink);
+  filter: grayscale(1);
+  opacity: 0.78;
+}
+
+.logo-mark img {
+  width: auto;
+  max-width: 140px;
+  max-height: 28px;
+  object-fit: contain;
 }
 
 @keyframes strip-move {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .logo-track { animation: none; flex-wrap: wrap; width: auto; }
+  .logo-track { animation: none; }
 }
 
 .grid-3 {
@@ -551,17 +544,10 @@ h3 {
     min-width: 0;
     max-width: 100%;
   }
-  .logo-track {
-    animation: none;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    width: min(300px, calc(100vw - 32px));
-    margin: 0 auto;
-  }
-  .logo-pill {
-    min-width: 0;
-    width: 100%;
-  }
+  .logo-label { width: min(300px, calc(100vw - 32px)); }
+  .logo-track { gap: 24px; animation-duration: 22s; }
+  .logo-mark { min-width: 132px; height: 34px; }
+  .logo-mark img { max-width: 124px; max-height: 24px; }
 }
 
 @media (max-width: 430px) {
