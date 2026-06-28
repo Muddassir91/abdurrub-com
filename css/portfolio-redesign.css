@@ -414,6 +414,27 @@ h3 {
   color: var(--muted);
 }
 
+.note-card-with-photo {
+  display: grid;
+  grid-template-columns: 112px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.note-card-with-photo p {
+  grid-column: 2;
+}
+
+.message-photo {
+  grid-row: 1 / span 2;
+  width: 112px;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  object-fit: cover;
+  object-position: center top;
+  border: 1px solid var(--line);
+}
+
 .visual-ladder {
   display: grid;
   gap: 10px;
@@ -525,7 +546,15 @@ h3 {
   .section { padding: 54px 0; }
   .section-head { display: block; }
   .section-head p { margin-top: 12px; }
-  .cta-row .btn { width: 100%; }
+  .cta-row {
+    width: 100%;
+    justify-content: center;
+  }
+  .cta-row .btn {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
   .wrap { width: min(300px, calc(100vw - 32px)); }
   h1 { font-size: clamp(1.8rem, 7vw, 2.45rem); line-height: 1.08; }
   h2 { font-size: clamp(1.55rem, 6vw, 2rem); line-height: 1.12; }
@@ -548,6 +577,16 @@ h3 {
   .logo-track { gap: 24px; animation-duration: 22s; }
   .logo-mark { min-width: 132px; height: 34px; }
   .logo-mark img { max-width: 124px; max-height: 24px; }
+  .note-card-with-photo {
+    grid-template-columns: 1fr;
+  }
+  .note-card-with-photo p {
+    grid-column: auto;
+  }
+  .message-photo {
+    grid-row: auto;
+    width: 92px;
+  }
 }
 
 @media (max-width: 430px) {
