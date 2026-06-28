@@ -841,6 +841,8 @@ h3 {
   background:
     radial-gradient(circle at 78% 18%, rgba(20, 184, 166, 0.22), transparent 30%),
     linear-gradient(135deg, var(--teal-soft), var(--paper));
+  box-shadow: 0 14px 32px rgba(20, 35, 33, 0.08);
+  overflow: hidden;
 }
 
 .mini-creative span {
@@ -858,22 +860,38 @@ h3 {
   line-height: 1.05;
 }
 
-.creative-screenshot {
-  margin: 0;
-  border: 1px solid rgba(15, 118, 110, 0.2);
-  border-radius: 8px;
-  background: var(--paper-2);
-  overflow: hidden;
-  box-shadow: 0 14px 32px rgba(20, 35, 33, 0.08);
-  aspect-ratio: 16 / 10;
+.designed-ad {
+  position: relative;
+  min-height: 190px;
+  padding: 22px;
+  isolation: isolate;
 }
 
-.creative-screenshot img {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
-  object-position: center;
+.designed-ad::before,
+.designed-ad::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.designed-ad::before {
+  width: 120px;
+  height: 120px;
+  right: -34px;
+  top: -28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.designed-ad::after {
+  width: 72px;
+  height: 72px;
+  right: 26px;
+  bottom: 20px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.16);
+  transform: rotate(10deg);
 }
 
 .mini-creative i,
@@ -1050,6 +1068,28 @@ h3 {
   background: rgba(255, 255, 255, 0.24);
 }
 
+.ugc-ad .ad-avatar {
+  box-shadow:
+    42px 8px 0 -10px rgba(255, 255, 255, 0.28),
+    82px 2px 0 -14px rgba(255, 255, 255, 0.18);
+}
+
+.founder-ad .ad-play {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+}
+
+.founder-ad .ad-play::after {
+  content: "";
+  width: 0;
+  height: 0;
+  margin-left: 4px;
+  border-top: 11px solid transparent;
+  border-bottom: 11px solid transparent;
+  border-left: 16px solid #fff;
+}
+
 .static-ad b,
 .testimonial-ad b,
 .offer-ad b {
@@ -1064,6 +1104,9 @@ h3 {
 .demo-ad {
   grid-template-columns: 1fr 1fr;
   align-items: center;
+  background:
+    radial-gradient(circle at 70% 30%, rgba(20, 184, 166, 0.18), transparent 32%),
+    linear-gradient(135deg, #f8fffd, var(--teal-soft));
 }
 
 .demo-ad i {
@@ -1079,6 +1122,9 @@ h3 {
 
 .variants-ad {
   grid-template-columns: repeat(3, 1fr);
+  background:
+    linear-gradient(135deg, #f8fffd, var(--paper)),
+    var(--paper);
 }
 
 .variants-ad i {
@@ -1099,6 +1145,8 @@ h3 {
 
 .compare-ad {
   grid-template-columns: 1fr 1fr;
+  background:
+    linear-gradient(135deg, #fff7ed, #effdf9);
 }
 
 .compare-ad i {
