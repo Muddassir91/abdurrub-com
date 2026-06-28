@@ -531,6 +531,30 @@ h3 {
   font-size: 0.9rem;
 }
 
+.testimonial-wall {
+  columns: 3 280px;
+  column-gap: 18px;
+}
+
+.testimonial-wall .quote-card {
+  display: inline-block;
+  width: 100%;
+  margin: 0 0 18px;
+  break-inside: avoid;
+}
+
+.testimonial-wall .quote-card blockquote {
+  font-size: 0.98rem;
+}
+
+.testimonial-wall .quote-card:nth-child(3n + 1) {
+  background: var(--paper-2);
+}
+
+.testimonial-wall .quote-card:nth-child(4n) {
+  border-color: rgba(15, 118, 110, 0.28);
+}
+
 .dark-cta {
   background: #0b2f2c;
   color: #fff;
