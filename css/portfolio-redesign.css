@@ -2092,6 +2092,76 @@ h3 {
   .logo-track { gap: 24px; animation-duration: 22s; }
   .logo-mark { min-width: 132px; height: 34px; }
   .logo-mark img { max-width: 124px; max-height: 24px; }
+  .home-page .hero {
+    padding: 44px 0 34px;
+  }
+  .home-page .hero-grid {
+    gap: 22px;
+  }
+  .home-page .hero h1 {
+    max-width: 350px;
+    font-size: clamp(2.05rem, 9vw, 2.55rem);
+    line-height: 1.02;
+  }
+  .home-page .hero .lede {
+    max-width: 340px;
+    margin-top: 18px;
+    line-height: 1.55;
+  }
+  .home-page .hero-visual {
+    display: none;
+  }
+  .home-page .logo-strip {
+    padding: 14px 0;
+    mask-image: linear-gradient(to right, transparent 0, black 12%, black 88%, transparent 100%);
+  }
+  .home-page .section {
+    padding: 46px 0;
+  }
+  .home-page .note-card {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+  .home-page .message-photo {
+    width: 76px;
+    margin-bottom: 4px;
+  }
+  .home-page .work-card {
+    padding: 18px;
+  }
+  .home-page .work-card .bullet-list {
+    margin-top: 16px;
+  }
+  .home-page .testimonials-section {
+    padding-bottom: 42px;
+  }
+  .home-page .testimonial-wall {
+    display: flex;
+    gap: 14px;
+    margin-left: -16px;
+    margin-right: -16px;
+    overflow-x: auto;
+    padding: 4px 16px 18px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .home-page .testimonial-wall .quote-card {
+    flex: 0 0 min(82vw, 320px);
+    min-height: 0;
+    padding: 18px;
+    scroll-snap-align: start;
+    transform: none;
+  }
+  .home-page .testimonial-wall .quote-card blockquote {
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+  .home-page .testimonial-wall .quote-card cite {
+    margin-top: 16px;
+    font-size: 0.86rem;
+  }
   .note-card-with-photo {
     grid-template-columns: 1fr;
   }

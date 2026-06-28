@@ -911,6 +911,40 @@ img {
   text-transform: uppercase;
 }
 
+.sp-footer {
+  border-top: 1px solid var(--sp-line);
+  background: #fff;
+  padding: 44px 0;
+}
+
+.sp-footer-grid {
+  display: grid;
+  grid-template-columns: 1.15fr repeat(3, minmax(0, 0.7fr));
+  gap: 28px;
+}
+
+.sp-footer h3 {
+  margin: 0 0 12px;
+  color: var(--sp-ink);
+  font-size: 1rem;
+  font-weight: 950;
+  letter-spacing: -0.02em;
+}
+
+.sp-footer a,
+.sp-footer p {
+  display: block;
+  margin: 7px 0;
+  color: var(--sp-muted);
+  font-size: 0.94rem;
+  line-height: 1.45;
+  text-decoration: none;
+}
+
+.sp-footer a:hover {
+  color: var(--sp-teal);
+}
+
 .sp-final {
   padding: 96px 0;
   text-align: center;
@@ -1029,6 +1063,7 @@ img {
   .sp-proof-row,
   .sp-ops-grid,
   .sp-screenshot-wall,
+  .sp-footer-grid,
   .sp-faq-grid {
     grid-template-columns: 1fr;
   }
