@@ -435,6 +435,36 @@ h3 {
   color: var(--orange);
 }
 
+.work-card .tag {
+  width: 100%;
+  min-height: 48px;
+  margin-top: auto;
+  justify-content: center;
+  gap: 9px;
+  border-radius: 3px;
+  border: 1px solid rgba(15, 118, 110, 0.35);
+  background: var(--paper);
+  color: var(--teal-dark);
+  box-shadow: 0 10px 20px rgba(20, 35, 33, 0.08);
+  font-size: 0.92rem;
+  line-height: 1.15;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.work-card .tag::after {
+  content: "→";
+  font-size: 1.08em;
+  line-height: 1;
+  transform: translateY(-1px);
+}
+
+.work-card:hover .tag {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: #fff;
+}
+
 .case-card p,
 .quote-card p,
 .note-card p {
