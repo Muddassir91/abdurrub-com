@@ -268,18 +268,58 @@ img {
   font-size: 0.9rem;
 }
 
-.sp-logo-strip,
-.sp-metrics {
+.sp-logo-strip {
+  max-width: 100%;
+  padding: 16px 0;
   border-top: 1px solid var(--sp-line);
   border-bottom: 1px solid var(--sp-line);
-  background: #fff;
+  background: var(--sp-paper);
+  overflow: hidden;
 }
 
-.sp-logo-strip {
-  padding: 30px 0;
+.sp-logo-label {
+  width: min(1120px, calc(100vw - 40px));
+  margin: 0 auto 10px;
+  color: var(--sp-teal);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
 }
 
-.sp-logo-row,
+.sp-logo-track {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+  width: max-content;
+  animation: sp-strip-move 28s linear infinite;
+}
+
+.sp-logo-strip:hover .sp-logo-track {
+  animation-play-state: paused;
+}
+
+.sp-logo-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 150px;
+  height: 38px;
+  filter: grayscale(1);
+  opacity: 0.78;
+}
+
+.sp-logo-mark img {
+  width: auto;
+  max-width: 140px;
+  max-height: 28px;
+  object-fit: contain;
+}
+
+@keyframes sp-strip-move {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
 .sp-metric-row {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -287,20 +327,10 @@ img {
   align-items: center;
 }
 
-.sp-logo-row span {
-  display: grid;
-  place-items: center;
-  min-height: 64px;
-  border: 1px solid var(--sp-line);
-  border-radius: 12px;
-  color: var(--sp-teal-dark);
-  font-size: 0.8rem;
-  font-weight: 950;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 .sp-metrics {
+  border-top: 1px solid var(--sp-line);
+  border-bottom: 1px solid var(--sp-line);
+  background: #fff;
   padding: 42px 0;
 }
 
@@ -590,7 +620,6 @@ img {
     font-size: 0.72rem;
   }
 
-  .sp-logo-row,
   .sp-metric-row,
   .sp-two-col,
   .sp-comparison {
@@ -613,10 +642,33 @@ img {
     width: 164px;
     height: 292px;
   }
+
+  .sp-logo-label {
+    width: min(300px, calc(100vw - 32px));
+  }
+
+  .sp-logo-track {
+    gap: 24px;
+    animation-duration: 22s;
+  }
+
+  .sp-logo-mark {
+    min-width: 132px;
+    height: 34px;
+  }
+
+  .sp-logo-mark img {
+    max-width: 124px;
+    max-height: 24px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .sp-marquee-track {
+    animation: none;
+  }
+
+  .sp-logo-track {
     animation: none;
   }
 }
