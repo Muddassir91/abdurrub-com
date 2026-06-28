@@ -519,6 +519,141 @@ img {
   font-size: 0.95rem;
 }
 
+.sp-case-hero {
+  padding: 86px 0 44px;
+}
+
+.sp-case-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+  gap: 48px;
+  align-items: end;
+}
+
+.sp-back-link {
+  display: inline-flex;
+  margin-bottom: 22px;
+  color: var(--sp-teal-dark);
+  font-size: 0.78rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.sp-back-link::before {
+  content: "←";
+  margin-right: 8px;
+}
+
+.sp-case-hero h1 {
+  margin: 0;
+  color: var(--sp-ink);
+  font-size: clamp(2.8rem, 6.2vw, 5.6rem);
+  font-weight: 950;
+  letter-spacing: -0.055em;
+  line-height: 0.94;
+}
+
+.sp-case-hero p {
+  margin: 24px 0 0;
+  max-width: 720px;
+  color: var(--sp-muted);
+  font-size: clamp(1rem, 1.4vw, 1.2rem);
+  line-height: 1.55;
+}
+
+.sp-case-result-card {
+  border: 1px solid var(--sp-line);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(16, 24, 23, 0.08);
+  padding: 28px;
+}
+
+.sp-case-result-card strong {
+  display: block;
+  color: var(--sp-teal);
+  font-size: clamp(3rem, 5vw, 5rem);
+  font-weight: 950;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+}
+
+.sp-case-result-card span {
+  display: block;
+  margin-top: 12px;
+  color: var(--sp-muted);
+  font-weight: 850;
+  line-height: 1.35;
+}
+
+.sp-case-body {
+  padding: 36px 0 86px;
+}
+
+.sp-case-section {
+  border-top: 1px solid var(--sp-line);
+  padding: 34px 0;
+}
+
+.sp-case-section h2 {
+  margin: 0 0 18px;
+  color: var(--sp-ink);
+  font-size: clamp(1.8rem, 3vw, 3.1rem);
+  font-weight: 950;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+.sp-case-section p {
+  max-width: 760px;
+  margin: 0;
+  color: var(--sp-muted);
+  font-size: 1.02rem;
+  line-height: 1.65;
+}
+
+.sp-case-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.sp-case-list div {
+  border: 1px solid var(--sp-line);
+  border-radius: 14px;
+  background: #fff;
+  padding: 18px;
+}
+
+.sp-case-list b {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--sp-teal-dark);
+  font-size: 0.78rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sp-case-list span {
+  color: var(--sp-muted);
+  line-height: 1.45;
+}
+
+.sp-case-quote {
+  margin-top: 20px;
+  border-left: 4px solid var(--sp-teal);
+  background: var(--sp-soft);
+  padding: 20px;
+  color: var(--sp-ink);
+  font-size: 1.2rem;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
 .sp-final {
   padding: 96px 0;
   text-align: center;
@@ -622,14 +757,25 @@ img {
 
   .sp-metric-row,
   .sp-two-col,
+  .sp-case-hero-grid,
   .sp-comparison {
     grid-template-columns: 1fr;
   }
 
   .sp-services-grid,
   .sp-case-grid,
+  .sp-case-list,
   .sp-faq-grid {
     grid-template-columns: 1fr;
+  }
+
+  .sp-case-hero {
+    padding-top: 58px;
+  }
+
+  .sp-case-hero h1 {
+    font-size: clamp(2.2rem, 11vw, 3rem);
+    line-height: 0.98;
   }
 
   .sp-email-card {
