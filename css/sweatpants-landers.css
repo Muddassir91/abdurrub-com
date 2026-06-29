@@ -303,9 +303,9 @@ img {
 .sp-logo-track {
   display: flex;
   align-items: center;
-  gap: 34px;
+  gap: 42px;
   width: max-content;
-  animation: sp-strip-move 28s linear infinite;
+  animation: sp-strip-move 34s linear infinite;
 }
 
 .sp-logo-strip:hover .sp-logo-track {
@@ -316,15 +316,15 @@ img {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 150px;
-  height: 38px;
+  min-width: 230px;
+  height: 46px;
   opacity: 0.9;
 }
 
 .sp-logo-mark img {
   width: auto;
-  max-width: 140px;
-  max-height: 28px;
+  max-width: 220px;
+  max-height: 34px;
   object-fit: contain;
 }
 
@@ -562,10 +562,12 @@ img {
 .sp-case-hero h1 {
   margin: 0;
   color: var(--sp-ink);
-  font-size: clamp(2.8rem, 6.2vw, 5.6rem);
+  font-size: clamp(2.7rem, 6vw, 5rem);
   font-weight: 950;
-  letter-spacing: -0.055em;
-  line-height: 0.94;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+  overflow-wrap: normal;
+  text-wrap: balance;
 }
 
 .sp-case-hero p {
@@ -574,6 +576,7 @@ img {
   color: var(--sp-muted);
   font-size: clamp(1rem, 1.4vw, 1.2rem);
   line-height: 1.55;
+  overflow-wrap: break-word;
 }
 
 .sp-case-result-card {
@@ -681,10 +684,10 @@ img {
 .sp-saas-hero h1 {
   margin: 0;
   color: var(--sp-ink);
-  font-size: clamp(3.2rem, 6.8vw, 6.2rem);
+  font-size: clamp(2.7rem, 6vw, 5rem);
   font-weight: 950;
-  letter-spacing: -0.06em;
-  line-height: 0.9;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
 }
 
 .sp-saas-hero p:not(.sp-eyebrow) {
@@ -1079,7 +1082,7 @@ img {
   }
 
   .sp-saas-hero h1 {
-    font-size: clamp(2.25rem, 11vw, 3.1rem);
+    font-size: clamp(1.95rem, 9vw, 2.35rem);
     line-height: 0.98;
   }
 
@@ -1096,9 +1099,55 @@ img {
     padding-top: 58px;
   }
 
+  .sp-case-hero .sp-wrap,
+  .sp-case-body .sp-wrap {
+    width: calc(100vw - 32px);
+    max-width: calc(100vw - 32px);
+    overflow-x: hidden;
+  }
+
+  .sp-case-hero-grid,
+  .sp-case-body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .sp-case-hero-grid > *,
+  .sp-case-section,
+  .sp-case-result-card,
+  .sp-case-list > div {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .sp-case-result-card {
+    width: 100%;
+  }
+
   .sp-case-hero h1 {
-    font-size: clamp(2.2rem, 11vw, 3rem);
-    line-height: 0.98;
+    font-size: clamp(1.68rem, 7.6vw, 2.05rem);
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+    overflow-wrap: anywhere;
+  }
+
+  .sp-case-hero p,
+  .sp-case-section p {
+    display: block;
+    width: min(33ch, 100%);
+    max-width: min(33ch, 100%);
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+
+  .sp-case-list span,
+  .sp-case-result-card span {
+    display: block;
+    width: min(29ch, 100%);
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: normal;
   }
 
   .sp-email-card {
@@ -1117,18 +1166,18 @@ img {
   }
 
   .sp-logo-track {
-    gap: 24px;
-    animation-duration: 22s;
+    gap: 30px;
+    animation-duration: 28s;
   }
 
   .sp-logo-mark {
-    min-width: 132px;
-    height: 34px;
+    min-width: 214px;
+    height: 40px;
   }
 
   .sp-logo-mark img {
-    max-width: 124px;
-    max-height: 24px;
+    max-width: 204px;
+    max-height: 30px;
   }
 }
 
