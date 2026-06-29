@@ -1007,9 +1007,18 @@ img {
   .sp-hero h1,
   .sp-section-head h2,
   .sp-final h2 {
-    font-size: clamp(1.95rem, 9vw, 2.35rem);
-    letter-spacing: -0.045em;
-    line-height: 1;
+    font-size: clamp(1.82rem, 8.1vw, 2.16rem);
+    letter-spacing: -0.032em;
+    line-height: 1.04;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  .sp-hero h1.sp-rotating-headline {
+    font-size: clamp(1.55rem, 7vw, 1.82rem);
+    max-width: calc(100vw - 32px);
+    letter-spacing: -0.032em;
   }
 
   .sp-mobile-break {
@@ -1017,7 +1026,6 @@ img {
   }
 
   .sp-rotating-headline {
-    font-size: clamp(1.38rem, 5.8vw, 1.62rem);
     gap: 0.14em;
     max-width: min(340px, calc(100vw - 32px));
   }
@@ -1031,6 +1039,13 @@ img {
     height: 100%;
     line-height: 1.08;
     white-space: nowrap;
+  }
+
+  .sp-two-col .sp-section-head h2,
+  .sp-quote-card blockquote {
+    font-size: clamp(1.68rem, 7.6vw, 2rem);
+    letter-spacing: -0.032em;
+    line-height: 1.05;
   }
 
   .sp-hero p {
@@ -1064,6 +1079,42 @@ img {
   .sp-donut-layout,
   .sp-comparison {
     grid-template-columns: 1fr;
+  }
+
+  .sp-section-head,
+  .sp-two-col > *,
+  .sp-quote-card,
+  .sp-comparison-card,
+  .sp-proof-card,
+  .sp-service-card,
+  .sp-faq-card {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .sp-section-head {
+    width: min(330px, 100%);
+  }
+
+  .sp-section-head h2,
+  .sp-quote-card blockquote {
+    max-width: 12ch;
+  }
+
+  .sp-section-head p,
+  .sp-quote-card cite {
+    max-width: 32ch;
+  }
+
+  .sp-section-head p,
+  .sp-quote-card blockquote,
+  .sp-service-card h3,
+  .sp-service-card p,
+  .sp-proof-card h3,
+  .sp-proof-card small,
+  .sp-faq-card h3,
+  .sp-faq-card p {
+    overflow-wrap: anywhere;
   }
 
   .sp-services-grid,
