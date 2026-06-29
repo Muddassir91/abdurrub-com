@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 170 48" role="img" aria-label="Allfemme">
+  <rect width="170" height="48" fill="none"/>
+  <circle cx="24" cy="24" r="17" fill="#ffffff" opacity="0.12"/>
+  <path d="M15 31 24 12l9 19M19 25h10" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="52" y="32" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="900">Allfemme</text>
+</svg>

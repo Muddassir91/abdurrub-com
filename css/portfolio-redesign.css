@@ -460,20 +460,21 @@ h3 {
 
 .logo-strip {
   max-width: 100%;
-  padding: 16px 0;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  background: var(--paper);
+  padding: 20px 0;
+  border-top: 0;
+  border-bottom: 0;
+  background: #050706;
   overflow: hidden;
 }
 
 .logo-label {
   width: min(1120px, calc(100% - 40px));
-  margin: 0 auto 10px;
-  color: var(--teal);
+  margin: 0 auto 14px;
+  color: rgba(255, 255, 255, 0.72);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.16em;
+  text-align: center;
 }
 
 .logo-track {
@@ -492,8 +493,7 @@ h3 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  filter: grayscale(1);
-  opacity: 0.78;
+  opacity: 0.9;
 }
 
 .logo-mark img {
@@ -2088,7 +2088,7 @@ h3 {
     min-width: 0;
     max-width: 100%;
   }
-  .logo-label { width: min(300px, calc(100vw - 32px)); }
+  .logo-label { width: min(340px, calc(100vw - 32px)); }
   .logo-track { gap: 24px; animation-duration: 22s; }
   .logo-mark { min-width: 132px; height: 34px; }
   .logo-mark img { max-width: 124px; max-height: 24px; }

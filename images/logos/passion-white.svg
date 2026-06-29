@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 178 48" role="img" aria-label="Passion.io">
+  <rect width="178" height="48" fill="none"/>
+  <circle cx="26" cy="24" r="16" fill="#ffffff"/>
+  <path d="M20 16h8c6 0 10 4 10 9s-4 9-10 9h-2v-7h2c2 0 3-1 3-2s-1-2-3-2h-8v-7Z" fill="#111111"/>
+  <text x="52" y="33" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="800">Passion.io</text>
+</svg>
