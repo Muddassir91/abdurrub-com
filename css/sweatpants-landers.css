@@ -158,16 +158,8 @@ img {
   letter-spacing: 0;
 }
 
-.sp-rotating-stack {
+.sp-rotating-text {
   display: block;
-  position: relative;
-  height: 100%;
-}
-
-.sp-rotating-stack span {
-  display: block;
-  position: absolute;
-  inset: 0;
   height: 100%;
   line-height: 1.04;
   white-space: nowrap;
@@ -175,27 +167,41 @@ img {
   background: linear-gradient(90deg, var(--sp-teal-dark), #17b8a6, var(--sp-teal));
   -webkit-background-clip: text;
   background-clip: text;
-  opacity: 0;
-  transform: translateY(72%);
-  animation: sp-phrase-cycle 8s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  will-change: opacity, transform;
 }
 
-.sp-rotating-stack span:nth-child(2) {
-  animation-delay: 2s;
+.sp-rotating-text.is-leaving {
+  animation: sp-phrase-out 420ms ease forwards;
 }
 
-.sp-rotating-stack span:nth-child(3) {
-  animation-delay: 4s;
+.sp-rotating-text.is-entering {
+  animation: sp-phrase-in 520ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-.sp-rotating-stack span:nth-child(4) {
-  animation-delay: 6s;
+@keyframes sp-phrase-out {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(0, -0.75em, 0);
+  }
 }
 
-@keyframes sp-phrase-cycle {
-  0%, 22% { opacity: 1; transform: translateY(0); }
-  28%, 99.9% { opacity: 0; transform: translateY(-72%); }
-  100% { opacity: 0; transform: translateY(72%); }
+@keyframes sp-phrase-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 .sp-hero p {
@@ -221,6 +227,67 @@ img {
   font-weight: 950;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+
+.sp-csos-hero {
+  padding-top: 76px;
+  text-align: left;
+}
+
+.sp-hero-test-grid {
+  display: grid;
+  grid-template-columns: minmax(190px, 260px) minmax(0, 1fr);
+  gap: 44px;
+  align-items: center;
+}
+
+.sp-csos-hero .sp-rotating-headline {
+  font-size: clamp(2.45rem, 4.3vw, 3.85rem);
+}
+
+.sp-hero-copy {
+  min-width: 0;
+  text-align: center;
+}
+
+.sp-hero-testimonials {
+  position: relative;
+  height: 390px;
+  overflow: hidden;
+  border-radius: 18px;
+  mask-image: linear-gradient(to bottom, transparent 0, black 18%, black 82%, transparent 100%);
+}
+
+.sp-hero-testimonial-track {
+  display: grid;
+  gap: 18px;
+  animation: sp-testimonial-up 34s linear infinite;
+}
+
+.sp-hero-testimonials:hover .sp-hero-testimonial-track {
+  animation-play-state: paused;
+}
+
+.sp-hero-testimonials figure {
+  margin: 0;
+  border: 1px solid var(--sp-line);
+  border-radius: 14px;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 18px 42px rgba(16, 24, 23, 0.07);
+}
+
+.sp-hero-testimonials img {
+  display: block;
+  width: 100%;
+  height: 168px;
+  object-fit: cover;
+  object-position: top;
+}
+
+@keyframes sp-testimonial-up {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
 }
 
 .sp-marquee {
@@ -461,6 +528,68 @@ img {
 .sp-service-card p,
 .sp-proof-card p,
 .sp-faq-card p {
+  margin: 12px 0 0;
+  color: var(--sp-muted);
+  line-height: 1.45;
+}
+
+.sp-csos-faq-grid {
+  width: min(860px, 100%);
+  margin: 0 auto;
+  grid-template-columns: 1fr;
+}
+
+.sp-csos-faq-grid .sp-faq-card {
+  padding: 26px 28px;
+  border-radius: 16px;
+}
+
+.sp-csos-faq-grid .sp-faq-card h3 {
+  margin: 0;
+  font-size: 1.08rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1.25;
+}
+
+.sp-csos-faq-grid .sp-faq-card p {
+  margin-top: 10px;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.sp-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.sp-step-card {
+  min-width: 0;
+  padding: 26px;
+  border: 1px solid var(--sp-line);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 18px 42px rgba(16, 24, 23, 0.06);
+}
+
+.sp-step-card span {
+  color: var(--sp-teal);
+  font-size: 0.74rem;
+  font-weight: 950;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.sp-step-card h3 {
+  margin: 12px 0 0;
+  color: var(--sp-ink);
+  font-size: 1.32rem;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+}
+
+.sp-step-card p {
   margin: 12px 0 0;
   color: var(--sp-muted);
   line-height: 1.45;
@@ -984,6 +1113,10 @@ img {
   padding: 10px 0 24px;
 }
 
+.sp-testimonial-marquee-left {
+  mask-image: linear-gradient(to right, transparent 0, black 8%, black 92%, transparent 100%);
+}
+
 .sp-testimonial-track {
   display: flex;
   width: max-content;
@@ -993,6 +1126,21 @@ img {
 
 .sp-testimonial-marquee:hover .sp-testimonial-track {
   animation-play-state: paused;
+}
+
+.sp-testimonial-marquee-left .sp-testimonial-track {
+  animation-name: sp-marquee-left;
+}
+
+.sp-testimonial-marquee-left .sp-testimonial-track figure {
+  width: min(430px, 86vw);
+}
+
+.sp-testimonial-marquee-left .sp-testimonial-track img {
+  height: 270px;
+  object-fit: contain;
+  object-position: center;
+  background: #fff;
 }
 
 .sp-testimonial-track figure {
@@ -1105,6 +1253,23 @@ img {
     padding-top: 70px;
   }
 
+  .sp-csos-hero {
+    text-align: center;
+  }
+
+  .sp-hero-test-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .sp-hero-testimonials {
+    display: none;
+  }
+
+  .sp-hero-copy {
+    text-align: center;
+  }
+
   .sp-hero h1,
   .sp-section-head h2,
   .sp-final h2 {
@@ -1136,7 +1301,7 @@ img {
     height: 1.24em;
   }
 
-  .sp-rotating-stack span {
+  .sp-rotating-text {
     height: 100%;
     line-height: 1.08;
     white-space: nowrap;
@@ -1178,7 +1343,8 @@ img {
   .sp-chart-panel,
   .sp-chart-grid,
   .sp-donut-layout,
-  .sp-comparison {
+  .sp-comparison,
+  .sp-steps-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1188,7 +1354,8 @@ img {
   .sp-comparison-card,
   .sp-proof-card,
   .sp-service-card,
-  .sp-faq-card {
+  .sp-faq-card,
+  .sp-step-card {
     min-width: 0;
     max-width: 100%;
   }
@@ -1215,8 +1382,23 @@ img {
   .sp-proof-card p,
   .sp-proof-card small,
   .sp-faq-card h3,
-  .sp-faq-card p {
+  .sp-faq-card p,
+  .sp-step-card h3,
+  .sp-step-card p {
     overflow-wrap: anywhere;
+  }
+
+  .sp-csos-faq-grid .sp-faq-card h3 {
+    font-size: 1rem;
+  }
+
+  .sp-csos-faq-grid .sp-faq-card p,
+  .sp-step-card p {
+    font-size: 0.94rem;
+  }
+
+  .sp-testimonial-marquee-left .sp-testimonial-track img {
+    height: 230px;
   }
 
   .sp-proof-card-wide {
@@ -1370,6 +1552,11 @@ img {
   }
 
   .sp-logo-track {
+    animation: none;
+  }
+
+  .sp-hero-testimonial-track,
+  .sp-testimonial-track {
     animation: none;
   }
 }
