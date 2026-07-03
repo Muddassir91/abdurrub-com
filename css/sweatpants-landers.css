@@ -683,40 +683,24 @@ img {
 .sp-symptom-map {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(130px, 0.72fr) minmax(220px, 1fr);
-  gap: 24px 36px;
-  align-items: center;
-  min-height: 410px;
+  grid-template-rows: auto 80px auto auto;
+  gap: 0;
+  min-height: 430px;
   border: 1px solid var(--sp-line);
   border-radius: 18px;
   background: #fff;
   box-shadow: 0 18px 42px rgba(16, 24, 23, 0.06);
-  padding: 62px 34px 34px;
+  padding: 34px 28px 30px;
   overflow: hidden;
-}
-
-.sp-map-label {
-  position: absolute;
-  top: 24px;
-  color: var(--sp-teal);
-  font-size: 0.68rem;
-  font-weight: 950;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-}
-
-.sp-map-label-left {
-  left: 34px;
-}
-
-.sp-map-label-right {
-  right: 34px;
 }
 
 .sp-map-core {
   position: relative;
   display: grid;
-  min-height: 104px;
+  justify-self: center;
+  gap: 6px;
+  width: min(260px, 100%);
+  min-height: 92px;
   place-items: center;
   border: 1px solid rgba(15, 118, 110, 0.22);
   border-radius: 14px;
@@ -730,55 +714,108 @@ img {
   box-shadow: none;
 }
 
-.sp-map-core::after {
+.sp-map-core span {
+  color: var(--sp-teal);
+  font-size: 0.62rem;
+  font-weight: 950;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.sp-map-core b {
+  color: var(--sp-teal-dark);
+  font-size: 1.34rem;
+  font-weight: 950;
+  letter-spacing: -0.04em;
+}
+
+.sp-branch-line {
+  position: relative;
+  width: 100%;
+  height: 92px;
+}
+
+.sp-branch-line::before {
   content: "";
   position: absolute;
-  left: calc(100% + 6px);
-  top: 50%;
-  width: 34px;
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 48px;
+  background: rgba(15, 118, 110, 0.36);
+  transform: translateX(-50%);
+}
+
+.sp-branch-line::after {
+  content: "";
+  position: absolute;
+  top: 48px;
+  left: 9%;
+  right: 9%;
   height: 2px;
-  background: rgba(15, 118, 110, 0.34);
+  background: rgba(15, 118, 110, 0.36);
 }
 
 .sp-map-items {
   display: grid;
-  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.sp-map-row-label {
+  margin: -10px 0 14px;
+  color: var(--sp-teal);
+  font-size: 0.62rem;
+  font-weight: 950;
+  letter-spacing: 0.13em;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 .sp-map-items div {
   position: relative;
-  min-height: 62px;
-  padding: 14px 16px 14px 24px;
+  display: grid;
+  place-items: center;
+  min-height: 96px;
+  padding: 20px 14px;
   border: 1px solid rgba(15, 118, 110, 0.18);
   border-radius: 14px;
   background: #fff;
   color: var(--sp-ink);
-  font-size: 0.98rem;
-  font-weight: 850;
   line-height: 1.22;
   box-shadow: 0 14px 30px rgba(16, 24, 23, 0.06);
+  text-align: center;
 }
 
 .sp-map-items div::before {
   content: "";
   position: absolute;
-  top: 50%;
-  left: -28px;
-  width: 28px;
-  height: 2px;
+  top: -46px;
+  left: 50%;
+  width: 2px;
+  height: 38px;
   background: rgba(15, 118, 110, 0.34);
+  transform: translateX(-50%);
 }
 
 .sp-map-items div::after {
   content: "";
   position: absolute;
-  top: calc(50% - 4px);
-  left: -8px;
-  width: 8px;
-  height: 8px;
+  top: -13px;
+  left: 50%;
+  width: 9px;
+  height: 9px;
   border-top: 2px solid var(--sp-teal);
   border-right: 2px solid var(--sp-teal);
-  transform: rotate(45deg);
+  transform: translateX(-50%) rotate(135deg);
+}
+
+.sp-map-items b {
+  color: var(--sp-ink);
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
 }
 
 .sp-services-grid,
@@ -1704,23 +1741,8 @@ img {
     grid-template-columns: 1fr;
     min-height: 0;
     gap: 14px;
-    padding: 54px 18px 18px;
-  }
-
-  .sp-map-label {
-    top: 18px;
-    max-width: calc(50% - 20px);
-    font-size: 0.58rem;
-    line-height: 1.2;
-  }
-
-  .sp-map-label-left {
-    left: 18px;
-  }
-
-  .sp-map-label-right {
-    right: 18px;
-    text-align: right;
+    grid-template-rows: auto 36px auto;
+    padding: 18px;
   }
 
   .sp-map-core {
@@ -1728,10 +1750,29 @@ img {
     border-radius: 16px;
   }
 
-  .sp-map-core::after,
+  .sp-branch-line {
+    height: 28px;
+  }
+
+  .sp-branch-line::before {
+    height: 28px;
+  }
+
+  .sp-branch-line::after,
   .sp-map-items div::before,
   .sp-map-items div::after {
     display: none;
+  }
+
+  .sp-map-items {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .sp-map-items div {
+    min-height: 0;
+    padding: 14px;
+    text-align: left;
   }
 
   .sp-section-head,
