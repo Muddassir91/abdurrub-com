@@ -543,111 +543,92 @@ img {
 
 .sp-cycle-card {
   position: relative;
-  display: grid;
-  gap: 12px;
+  min-height: 540px;
   border: 1px solid var(--sp-line);
   border-radius: 18px;
   background: #fff;
   box-shadow: 0 18px 42px rgba(16, 24, 23, 0.06);
   overflow: hidden;
-  padding: 24px;
+  padding: 18px;
 }
 
 .sp-cycle-card::before {
-  content: "";
-  position: absolute;
-  top: 54px;
-  bottom: 92px;
-  left: 52px;
-  width: 2px;
-  background: rgba(15, 118, 110, 0.18);
+  display: none;
 }
 
 .sp-cycle-card::after {
   display: none;
 }
 
+.sp-cycle-arrows {
+  position: absolute;
+  inset: 12px;
+  color: rgba(15, 118, 110, 0.55);
+}
+
+.sp-cycle-arrows path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+}
+
 .sp-cycle-step {
-  position: relative;
-  display: grid;
-  grid-template-columns: 56px minmax(0, 1fr);
-  gap: 14px;
-  align-items: center;
-  width: auto;
-  min-height: 0;
-  padding: 14px 16px 14px 0;
-  border: 0;
-  border-radius: 0;
+  position: absolute;
+  display: block;
+  width: 132px;
+  padding: 0;
   background: transparent;
   box-shadow: none;
+  text-align: center;
 }
 
 .sp-cycle-step b {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  width: 56px;
-  height: 42px;
-  place-items: center;
-  border: 1px solid rgba(15, 118, 110, 0.22);
-  border-radius: 999px;
-  background: #fff;
-  color: var(--sp-teal);
-  font-size: 0.72rem;
-  font-weight: 950;
-  letter-spacing: 0.12em;
+  display: none;
 }
 
 .sp-cycle-step span {
   color: var(--sp-ink);
-  font-size: 1.02rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.24;
+  font-size: 0.9rem;
+  font-weight: 850;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
 }
 
 .sp-cycle-step-1 {
-  top: auto;
-  left: auto;
-  transform: none;
+  top: 34px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .sp-cycle-step-2 {
-  top: auto;
-  right: auto;
+  top: 142px;
+  right: 18px;
+  text-align: left;
 }
 
 .sp-cycle-step-3 {
-  right: auto;
-  bottom: auto;
+  right: 32px;
+  bottom: 124px;
+  text-align: left;
 }
 
 .sp-cycle-step-4 {
-  bottom: auto;
-  left: auto;
-  transform: none;
+  bottom: 34px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .sp-cycle-step-5 {
-  bottom: auto;
-  left: auto;
+  bottom: 124px;
+  left: 24px;
+  text-align: right;
 }
 
 .sp-cycle-step-6 {
-  top: auto;
-  left: auto;
-}
-
-.sp-cycle-outcome {
-  margin-top: 6px;
-  padding: 18px 20px;
-  border-radius: 14px;
-  background: var(--sp-teal);
-  color: #fff;
-  font-size: 1.16rem;
-  font-weight: 950;
-  letter-spacing: -0.03em;
-  text-align: center;
+  top: 142px;
+  left: 18px;
+  text-align: right;
 }
 
 .sp-symptom-list {
@@ -1704,27 +1685,22 @@ img {
     padding: 18px;
   }
 
+  .sp-cycle-arrows,
   .sp-cycle-card::before,
   .sp-cycle-card::after {
     display: none;
   }
 
-  .sp-cycle-center,
   .sp-cycle-step {
     position: static;
     width: 100%;
     min-height: 0;
     transform: none;
-  }
-
-  .sp-cycle-center {
-    height: auto;
-    min-height: 86px;
+    padding: 14px;
+    border: 1px solid rgba(15, 118, 110, 0.16);
     border-radius: 16px;
-  }
-
-  .sp-cycle-center span {
-    max-width: 100%;
+    background: #fff;
+    text-align: left;
   }
 
   .sp-cycle-step {
