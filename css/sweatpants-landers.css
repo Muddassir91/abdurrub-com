@@ -2251,6 +2251,7 @@ img {
   font-weight: 400;
   font-size: 1.17em;
   letter-spacing: -0.02em;
+  white-space: nowrap;
 }
 
 .obz-subhead {
@@ -2409,6 +2410,10 @@ img {
   color: inherit;
   font-size: clamp(2.25rem, 4.2vw, 3.125rem);
   line-height: 1.1;
+}
+
+.obz-designs .obz-section-head {
+  width: min(960px, 100%);
 }
 
 .obz-section-head span {
