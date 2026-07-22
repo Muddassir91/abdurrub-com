@@ -2430,39 +2430,9 @@ img {
 }
 
 .obz-quote-marquee,
-.obz-screenshot-wall,
 .obz-email-wall {
   overflow: hidden;
   mask-image: linear-gradient(to right, transparent 0, black 7%, black 93%, transparent 100%);
-}
-
-.obz-screenshot-wall {
-  display: grid;
-  gap: 18px;
-  margin: 6px 0 42px;
-}
-
-.obz-screenshot-track {
-  display: flex;
-  width: max-content;
-  gap: 18px;
-  animation: obz-marquee-left 52s linear infinite;
-}
-
-.obz-screenshot-track-reverse {
-  animation-name: obz-marquee-right;
-  animation-duration: 58s;
-}
-
-.obz-screenshot-track img {
-  width: 430px;
-  height: 230px;
-  border: 1px solid rgba(15, 118, 110, 0.16);
-  border-radius: 8px;
-  background: #fff;
-  object-fit: cover;
-  object-position: top;
-  box-shadow: 0 24px 64px rgba(15, 118, 110, 0.14);
 }
 
 .obz-quote-track {
@@ -2862,21 +2832,6 @@ img {
     padding: 20px;
   }
 
-  .obz-screenshot-wall {
-    gap: 12px;
-    margin-bottom: 34px;
-  }
-
-  .obz-screenshot-track {
-    gap: 12px;
-    animation-duration: 38s;
-  }
-
-  .obz-screenshot-track img {
-    width: 300px;
-    height: 176px;
-  }
-
   .obz-email-wall {
     gap: 12px;
   }
@@ -2911,7 +2866,6 @@ img {
 
 @media (prefers-reduced-motion: reduce) {
   .obz-trust-track,
-  .obz-screenshot-track,
   .obz-quote-track,
   .obz-email-track {
     animation: none;
