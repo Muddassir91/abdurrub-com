@@ -12,6 +12,8 @@
   var previousIndex = 0;
   var locked = false;
   var initialized = false;
+  var autoTimer = null;
+  var autoMs = 4000;
 
   if (total) total.textContent = String(slides.length).padStart(2, '0');
 
@@ -22,10 +24,23 @@
       button.type = 'button';
       button.setAttribute('aria-label', 'Show flow ' + (dotIndex + 1));
       button.addEventListener('click', function () {
-        show(dotIndex);
+        go(dotIndex);
       });
       dotsWrap.appendChild(button);
     });
+  }
+
+  function scheduleAuto() {
+    window.clearTimeout(autoTimer);
+    autoTimer = window.setTimeout(function () {
+      if (!document.hidden) show(index + 1);
+      scheduleAuto();
+    }, autoMs);
+  }
+
+  function go(nextIndex) {
+    show(nextIndex);
+    scheduleAuto();
   }
 
   function show(nextIndex) {
@@ -55,7 +70,9 @@
   }
 
   makeDots();
-  if (prev) prev.addEventListener('click', function () { show(index - 1); });
-  if (next) next.addEventListener('click', function () { show(index + 1); });
+  if (prev) prev.addEventListener('click', function () { go(index - 1); });
+  if (next) next.addEventListener('click', function () { go(index + 1); });
+  document.addEventListener('visibilitychange', scheduleAuto);
   show(0);
+  scheduleAuto();
 })();
