@@ -27,7 +27,7 @@ export default {
 
 function normalizeLead(data) {
   const answers = data.answers || {};
-  const revenueQualified = ['1m_3m', '3m_10m', '10m_plus'].includes(answers.annual_revenue);
+  const revenueQualified = ['500k_1m', '1m_3m', '3m_10m', '10m_plus'].includes(answers.annual_revenue);
   const teamQualified = ['2_5', '6_15', '16_50', '51_plus'].includes(answers.team_size);
   const urlQualified = isStoreUrl(answers.website_url);
   const qualified = revenueQualified && teamQualified && urlQualified;

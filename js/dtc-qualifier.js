@@ -143,7 +143,7 @@
   }
 
   function isQualified() {
-    var revenueQualified = ['1m_3m', '3m_10m', '10m_plus'].indexOf(answers.annual_revenue) > -1;
+    var revenueQualified = ['500k_1m', '1m_3m', '3m_10m', '10m_plus'].indexOf(answers.annual_revenue) > -1;
     var teamQualified = ['2_5', '6_15', '16_50', '51_plus'].indexOf(answers.team_size) > -1;
     return revenueQualified && teamQualified && isValidStoreUrl(answers.website_url);
   }
