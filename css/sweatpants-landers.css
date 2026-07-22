@@ -2072,12 +2072,12 @@ img {
 
 /* Obzia-inspired ecommerce flow lander */
 .obz-page {
-  --obz-bg: #050706;
-  --obz-panel: #0b1715;
-  --obz-panel-2: #101f1d;
-  --obz-ink: #f7faf8;
-  --obz-muted: rgba(247, 250, 248, 0.72);
-  --obz-line: rgba(255, 255, 255, 0.13);
+  --obz-bg: #ffffff;
+  --obz-panel: #f3fffc;
+  --obz-panel-2: #e7fbf7;
+  --obz-ink: #101817;
+  --obz-muted: rgba(16, 24, 23, 0.68);
+  --obz-line: rgba(15, 118, 110, 0.16);
   --obz-card: #ffffff;
   --obz-teal: #0f766e;
   --obz-teal-bright: #17b8a6;
@@ -2166,7 +2166,7 @@ img {
   font-weight: 500;
   letter-spacing: 0;
   text-decoration: none;
-  box-shadow: 0 18px 40px rgba(15, 118, 110, 0.26);
+  box-shadow: 0 18px 40px rgba(15, 118, 110, 0.18);
 }
 
 .obz-button::after {
@@ -2186,7 +2186,7 @@ img {
   min-height: 760px;
   place-items: center;
   overflow: hidden;
-  padding: 150px 0 96px;
+  padding: 96px 0 88px;
   text-align: center;
 }
 
@@ -2195,10 +2195,9 @@ img {
   inset: -35% -20% auto;
   height: 760px;
   background:
-    radial-gradient(circle at 50% 28%, rgba(15, 118, 110, 0.96), rgba(15, 118, 110, 0) 38%),
-    radial-gradient(circle at 50% 30%, rgba(23, 184, 166, 0.18), rgba(23, 184, 166, 0) 18%),
-    linear-gradient(180deg, rgba(23, 184, 166, 0.16), rgba(5, 7, 6, 0));
-  filter: blur(8px);
+    radial-gradient(circle at 50% 24%, rgba(23, 184, 166, 0.24), rgba(23, 184, 166, 0) 36%),
+    radial-gradient(circle at 50% 25%, rgba(15, 118, 110, 0.1), rgba(15, 118, 110, 0) 18%);
+  filter: blur(4px);
   pointer-events: none;
 }
 
@@ -2214,9 +2213,9 @@ img {
   display: inline-flex;
   align-items: center;
   min-height: 36px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(15, 118, 110, 0.18);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.07);
+  background: rgba(15, 118, 110, 0.06);
   color: var(--obz-muted);
   padding: 0 16px;
   font-size: 1.02rem;
@@ -2228,7 +2227,7 @@ img {
 .obz-section-head h2,
 .obz-cta h2 {
   margin: 0;
-  color: #fff;
+  color: var(--obz-ink);
   font-family: "Inter Display", Inter, ui-sans-serif, system-ui, sans-serif;
   font-size: clamp(2.5rem, 5vw, 3.75rem);
   font-weight: 500;
@@ -2272,7 +2271,7 @@ img {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  color: #fff;
+  color: var(--obz-ink);
   font-size: 0.92rem;
   font-weight: 400;
 }
@@ -2290,19 +2289,43 @@ img {
 .obz-trust-wall {
   display: grid;
   overflow: hidden;
-  gap: 16px;
+  gap: 22px;
   border-top: 1px solid var(--obz-line);
   border-bottom: 1px solid var(--obz-line);
-  background: #030504;
-  padding: 30px 0;
+  background: #f5fffc;
+  padding: 56px 0 42px;
   mask-image: linear-gradient(to right, transparent 0, black 10%, black 90%, transparent 100%);
 }
 
+.obz-trust-wall h2 {
+  position: relative;
+  left: 50vw;
+  width: min(1120px, calc(100vw - 44px));
+  margin: 0 0 14px;
+  transform: translateX(-50%);
+  color: var(--obz-ink);
+  font-family: "Inter Display", Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2.2rem, 5vw, 4.2rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  text-align: center;
+}
+
+.obz-trust-wall h2 em {
+  color: var(--obz-teal);
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 1.18em;
+  font-style: italic;
+  font-weight: 400;
+}
+
 .obz-trust-track {
+  justify-self: start;
   display: flex;
   width: max-content;
   align-items: center;
-  gap: 54px;
+  gap: 48px;
   animation: obz-marquee-left 42s linear infinite;
 }
 
@@ -2317,28 +2340,46 @@ img {
   justify-content: center;
   min-width: 0;
   min-height: 0;
-  color: rgba(255, 255, 255, 0.84);
+  color: rgba(16, 24, 23, 0.82);
   padding: 0;
-  font-family: Outfit, Inter, ui-sans-serif, system-ui, sans-serif;
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 400;
   white-space: nowrap;
 }
 
 .obz-trust-track-soft span {
-  color: var(--obz-teal-bright);
+  color: var(--obz-teal);
+}
+
+.obz-trust-track .logo-display {
+  font-family: "Inter Display", Inter, ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.obz-trust-track .logo-serif {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: 1.38rem;
+  font-style: italic;
+  letter-spacing: -0.01em;
+}
+
+.obz-trust-track .logo-outfit {
+  font-family: Outfit, Inter, ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
 }
 
 .obz-section {
-  background: #f7faf8;
+  background: #fff;
   color: #101817;
   padding: 108px 0;
   overflow: hidden;
 }
 
 .obz-dark {
-  background: var(--obz-bg);
-  color: #fff;
+  background: #fff;
+  color: var(--obz-ink);
 }
 
 .obz-section-head {
@@ -2360,7 +2401,7 @@ img {
 }
 
 .obz-dark .obz-section-head p {
-  color: var(--obz-lime);
+  color: var(--obz-teal);
 }
 
 .obz-section-head h2 {
@@ -2378,7 +2419,7 @@ img {
 }
 
 .obz-section:not(.obz-dark) .obz-section-head span {
-  color: #5f6f6b;
+  color: rgba(16, 24, 23, 0.68);
 }
 
 .obz-testimonials,
@@ -2414,12 +2455,12 @@ img {
 .obz-screenshot-track img {
   width: 430px;
   height: 230px;
-  border: 1px solid rgba(255, 255, 255, 0.13);
+  border: 1px solid rgba(15, 118, 110, 0.16);
   border-radius: 8px;
   background: #fff;
   object-fit: cover;
   object-position: top;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.34);
+  box-shadow: 0 24px 64px rgba(15, 118, 110, 0.14);
 }
 
 .obz-quote-track {
@@ -2488,12 +2529,12 @@ img {
   background: #fff;
   object-fit: cover;
   object-position: top;
-  box-shadow: 0 26px 64px rgba(0, 0, 0, 0.32);
+  box-shadow: 0 26px 64px rgba(15, 118, 110, 0.16);
 }
 
 .obz-footer {
   border-top: 1px solid var(--obz-line);
-  background: #030504;
+  background: #fff;
   padding: 28px 0;
 }
 
@@ -2514,7 +2555,7 @@ img {
 }
 
 .obz-footer span {
-  color: #fff;
+  color: var(--obz-ink);
   font-weight: 500;
 }
 
@@ -2538,10 +2579,8 @@ img {
 
 .obz-process-grid article {
   border-color: var(--obz-line);
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
-    var(--obz-panel);
-  color: #fff;
+  background: var(--obz-panel);
+  color: var(--obz-ink);
 }
 
 .obz-case-grid span,
@@ -2581,7 +2620,7 @@ img {
 }
 
 .obz-process-grid p {
-  color: var(--obz-muted);
+  color: rgba(16, 24, 23, 0.68);
 }
 
 .obz-case-grid small {
@@ -2597,8 +2636,8 @@ img {
 .obz-cta {
   position: relative;
   overflow: hidden;
-  background: var(--obz-bg);
-  color: #fff;
+  background: #f5fffc;
+  color: var(--obz-ink);
   padding: 122px 0;
   text-align: center;
 }
@@ -2609,7 +2648,7 @@ img {
   inset: auto 10% -240px;
   height: 420px;
   border-radius: 50%;
-  background: rgba(15, 118, 110, 0.44);
+  background: rgba(15, 118, 110, 0.14);
   filter: blur(70px);
 }
 
@@ -2651,7 +2690,7 @@ img {
 .obz-faq summary {
   cursor: pointer;
   padding: 22px 0;
-  color: #fff;
+  color: var(--obz-ink);
   font-size: 1.08rem;
   font-weight: 700;
   list-style: none;
@@ -2722,7 +2761,7 @@ img {
 
   .obz-hero {
     min-height: 0;
-    padding: 120px 0 72px;
+    padding: 76px 0 68px;
   }
 
   .obz-pill {
@@ -2760,8 +2799,12 @@ img {
   }
 
   .obz-trust-wall {
-    gap: 10px;
-    padding: 20px 0;
+    gap: 16px;
+    padding: 42px 0 32px;
+  }
+
+  .obz-trust-wall h2 {
+    margin-bottom: 8px;
   }
 
   .obz-trust-track {
