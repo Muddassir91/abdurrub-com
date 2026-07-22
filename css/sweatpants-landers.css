@@ -2612,6 +2612,189 @@ img {
   border-radius: 6px;
 }
 
+.obz-qualify-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(23, 184, 166, 0.22), rgba(23, 184, 166, 0) 34%),
+    linear-gradient(180deg, #f8fffc 0%, #ffffff 100%);
+}
+
+.obz-qualify-shell {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 28px;
+}
+
+.obz-qualify-card {
+  display: grid;
+  width: min(720px, 100%);
+  min-height: 560px;
+  align-content: start;
+  border: 1px solid rgba(15, 118, 110, 0.18);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.92);
+  padding: clamp(22px, 5vw, 46px);
+  box-shadow: 0 34px 90px rgba(15, 118, 110, 0.14);
+}
+
+.obz-qualify-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.obz-qualify-top a,
+.obz-qualify-top span {
+  color: rgba(16, 24, 23, 0.62);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.obz-qualify-top a {
+  color: var(--obz-teal);
+}
+
+.obz-progress {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(15, 118, 110, 0.12);
+}
+
+.obz-progress span {
+  display: block;
+  width: 33.33%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--obz-teal);
+  transition: width 220ms ease;
+}
+
+.obz-qualify-step,
+.obz-qualify-result {
+  display: none;
+  padding-top: clamp(50px, 9vw, 86px);
+}
+
+.obz-qualify-step.is-active,
+.obz-qualify-result:not([hidden]) {
+  display: grid;
+}
+
+.obz-qualify-kicker {
+  margin: 0 0 14px;
+  color: #d89b00;
+  font-family: "Instrument Serif", Georgia, serif;
+  font-size: clamp(1.2rem, 2.1vw, 1.55rem);
+  font-style: italic;
+  line-height: 1.1;
+}
+
+.obz-qualify-step h1,
+.obz-qualify-result h1 {
+  max-width: 620px;
+  margin: 0;
+  color: var(--obz-ink);
+  font-family: "Inter Display", Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(2rem, 5.2vw, 3rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+.obz-qualify-result p:not(.obz-qualify-kicker) {
+  max-width: 560px;
+  margin: 18px 0 28px;
+  color: var(--obz-muted);
+  font-size: 1.08rem;
+  line-height: 1.55;
+}
+
+.obz-choice-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 34px;
+}
+
+.obz-choice {
+  width: 100%;
+  border: 1px solid rgba(15, 118, 110, 0.18);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--obz-ink);
+  padding: 17px 18px;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.obz-choice:hover,
+.obz-choice:focus-visible,
+.obz-choice.is-selected {
+  border-color: var(--obz-teal);
+  background: #f3fffc;
+  color: var(--obz-teal);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.obz-url-field {
+  display: grid;
+  gap: 9px;
+  margin-top: 34px;
+}
+
+.obz-url-field span {
+  color: rgba(16, 24, 23, 0.7);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.obz-url-field input {
+  width: 100%;
+  border: 1px solid rgba(15, 118, 110, 0.2);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--obz-ink);
+  padding: 18px;
+  font: inherit;
+  font-size: 1.05rem;
+  outline: none;
+}
+
+.obz-url-field input:focus {
+  border-color: var(--obz-teal);
+  box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.1);
+}
+
+.obz-field-error {
+  display: none;
+  margin: 10px 0 0;
+  color: #b45309;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.obz-field-error.is-visible {
+  display: block;
+}
+
+.obz-next-button {
+  width: fit-content;
+  margin-top: 24px;
+  border: 0;
+  cursor: pointer;
+}
+
 .obz-cta {
   position: relative;
   overflow: hidden;

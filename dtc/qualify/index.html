@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>See if you qualify | Foundation Email Flows</title>
+  <meta name="description" content="Answer three quick questions to see if your ecommerce brand qualifies for a free retention audit.">
+  <link rel="canonical" href="https://abdurrub.com/dtc/qualify/">
+  <link rel="stylesheet" href="/css/sweatpants-landers.css?v=40">
+</head>
+<body class="obz-page obz-qualify-page">
+  <main class="obz-qualify-shell" data-calendar-url="https://calendar.google.com/calendar/appointments/schedules/AcZssZ1XmoRqiA4UHt-lvjH5iLT4tOJ4mU1UFUPWJ45LTtkv_AWvelNNtonnoR9NFaCFzm3lc681Mcvi" data-waitlist-url="https://retentionrules.com" data-tracking-endpoint="">
+    <section class="obz-qualify-card" aria-live="polite">
+      <div class="obz-qualify-top">
+        <a href="/dtc/" aria-label="Back to DTC Email Flows page">Retention Rules</a>
+        <span id="obz-progress-label">Question 1 of 3</span>
+      </div>
+
+      <div class="obz-progress" aria-hidden="true">
+        <span id="obz-progress-bar"></span>
+      </div>
+
+      <form id="obz-qualifier-form" novalidate>
+        <section class="obz-qualify-step is-active" data-step="0" data-question-id="annual_revenue" data-question-type="choice">
+          <p class="obz-qualify-kicker">Revenue check</p>
+          <h1>What is your current annual revenue range?</h1>
+          <div class="obz-choice-list" role="radiogroup" aria-label="Annual revenue range">
+            <button type="button" class="obz-choice" data-value="under_500k" data-qualifies="false">Under $500K</button>
+            <button type="button" class="obz-choice" data-value="500k_1m" data-qualifies="false">$500K to $1M</button>
+            <button type="button" class="obz-choice" data-value="1m_3m" data-qualifies="true">$1M to $3M</button>
+            <button type="button" class="obz-choice" data-value="3m_10m" data-qualifies="true">$3M to $10M</button>
+            <button type="button" class="obz-choice" data-value="10m_plus" data-qualifies="true">$10M+</button>
+          </div>
+        </section>
+
+        <section class="obz-qualify-step" data-step="1" data-question-id="website_url" data-question-type="url">
+          <p class="obz-qualify-kicker">Store check</p>
+          <h1>What is your website or store URL?</h1>
+          <label class="obz-url-field">
+            <span>Store URL</span>
+            <input id="obz-store-url" name="website_url" type="url" inputmode="url" autocomplete="url" placeholder="https://yourstore.com">
+          </label>
+          <p class="obz-field-error" id="obz-url-error">Add a real website or store URL.</p>
+          <button type="button" class="obz-button obz-next-button">Continue</button>
+        </section>
+
+        <section class="obz-qualify-step" data-step="2" data-question-id="team_size" data-question-type="choice">
+          <p class="obz-qualify-kicker">Team check</p>
+          <h1>What is your current team size?</h1>
+          <div class="obz-choice-list" role="radiogroup" aria-label="Current team size">
+            <button type="button" class="obz-choice" data-value="just_me" data-qualifies="false">Just me</button>
+            <button type="button" class="obz-choice" data-value="2_5" data-qualifies="true">2 to 5 people</button>
+            <button type="button" class="obz-choice" data-value="6_15" data-qualifies="true">6 to 15 people</button>
+            <button type="button" class="obz-choice" data-value="16_50" data-qualifies="true">16 to 50 people</button>
+            <button type="button" class="obz-choice" data-value="51_plus" data-qualifies="true">51+ people</button>
+          </div>
+        </section>
+      </form>
+
+      <section class="obz-qualify-result" id="obz-qualified" hidden>
+        <p class="obz-qualify-kicker">You qualify</p>
+        <h1>Book your free retention audit.</h1>
+        <p>Your answers show enough signal for me to look at the store properly. Pick a time and bring the real numbers.</p>
+        <a class="obz-button" id="obz-calendar-link" href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ1XmoRqiA4UHt-lvjH5iLT4tOJ4mU1UFUPWJ45LTtkv_AWvelNNtonnoR9NFaCFzm3lc681Mcvi" target="_blank" rel="noopener">Open Calendar</a>
+      </section>
+    </section>
+  </main>
+
+  <script src="/js/dtc-qualifier.js?v=40"></script>
+</body>
+</html>
