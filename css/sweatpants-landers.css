@@ -2290,11 +2290,11 @@ img {
 .obz-trust-wall {
   display: grid;
   overflow: hidden;
-  gap: 12px;
+  gap: 16px;
   border-top: 1px solid var(--obz-line);
   border-bottom: 1px solid var(--obz-line);
   background: #030504;
-  padding: 26px 0;
+  padding: 30px 0;
   mask-image: linear-gradient(to right, transparent 0, black 10%, black 90%, transparent 100%);
 }
 
@@ -2302,7 +2302,7 @@ img {
   display: flex;
   width: max-content;
   align-items: center;
-  gap: 12px;
+  gap: 54px;
   animation: obz-marquee-left 42s linear infinite;
 }
 
@@ -2315,17 +2315,12 @@ img {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 190px;
-  min-height: 54px;
-  border: 1px solid var(--obz-line);
-  border-radius: 8px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.025)),
-    #070b0a;
+  min-width: 0;
+  min-height: 0;
   color: rgba(255, 255, 255, 0.84);
-  padding: 0 22px;
+  padding: 0;
   font-family: Outfit, Inter, ui-sans-serif, system-ui, sans-serif;
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 400;
   white-space: nowrap;
 }
@@ -2386,14 +2381,45 @@ img {
   color: #5f6f6b;
 }
 
-.obz-testimonials {
-  padding-bottom: 86px;
+.obz-testimonials,
+#proof {
+  padding-bottom: 112px;
 }
 
 .obz-quote-marquee,
+.obz-screenshot-wall,
 .obz-email-wall {
   overflow: hidden;
   mask-image: linear-gradient(to right, transparent 0, black 7%, black 93%, transparent 100%);
+}
+
+.obz-screenshot-wall {
+  display: grid;
+  gap: 18px;
+  margin: 6px 0 42px;
+}
+
+.obz-screenshot-track {
+  display: flex;
+  width: max-content;
+  gap: 18px;
+  animation: obz-marquee-left 52s linear infinite;
+}
+
+.obz-screenshot-track-reverse {
+  animation-name: obz-marquee-right;
+  animation-duration: 58s;
+}
+
+.obz-screenshot-track img {
+  width: 430px;
+  height: 230px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 8px;
+  background: #fff;
+  object-fit: cover;
+  object-position: top;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.34);
 }
 
 .obz-quote-track {
@@ -2739,14 +2765,11 @@ img {
   }
 
   .obz-trust-track {
-    gap: 42px;
+    gap: 34px;
     animation-duration: 30s;
   }
 
   .obz-trust-track span {
-    min-width: 168px;
-    min-height: 46px;
-    padding: 0 16px;
     font-size: 0.88rem;
   }
 
@@ -2776,6 +2799,21 @@ img {
     width: 300px;
     min-height: 230px;
     padding: 20px;
+  }
+
+  .obz-screenshot-wall {
+    gap: 12px;
+    margin-bottom: 34px;
+  }
+
+  .obz-screenshot-track {
+    gap: 12px;
+    animation-duration: 38s;
+  }
+
+  .obz-screenshot-track img {
+    width: 300px;
+    height: 176px;
   }
 
   .obz-email-wall {
@@ -2812,6 +2850,7 @@ img {
 
 @media (prefers-reduced-motion: reduce) {
   .obz-trust-track,
+  .obz-screenshot-track,
   .obz-quote-track,
   .obz-email-track {
     animation: none;
