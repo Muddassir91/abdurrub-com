@@ -2526,12 +2526,13 @@ img {
 }
 
 .obz-email-track img {
-  width: 210px;
-  height: 456px;
+  width: 250px;
+  height: auto;
+  aspect-ratio: 560 / 1060;
   border: 1px solid var(--obz-line);
-  border-radius: 18px;
+  border-radius: 10px;
   background: #fff;
-  object-fit: cover;
+  object-fit: contain;
   object-position: top;
   box-shadow: 0 26px 64px rgba(15, 118, 110, 0.16);
 }
@@ -2888,9 +2889,9 @@ img {
   }
 
   .obz-email-track img {
-    width: 150px;
-    height: 326px;
-    border-radius: 12px;
+    width: 170px;
+    height: auto;
+    border-radius: 8px;
   }
 
   .obz-case-grid article,
