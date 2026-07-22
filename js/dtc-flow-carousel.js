@@ -10,6 +10,8 @@
   var dotsWrap = carousel.querySelector('[data-obz-dots]');
   var index = 0;
   var previousIndex = 0;
+  var locked = false;
+  var initialized = false;
 
   if (total) total.textContent = String(slides.length).padStart(2, '0');
 
@@ -27,6 +29,9 @@
   }
 
   function show(nextIndex) {
+    if (locked || (initialized && nextIndex === index)) return;
+    locked = true;
+    initialized = true;
     previousIndex = index;
     index = (nextIndex + slides.length) % slides.length;
     slides.forEach(function (slide, slideIndex) {
@@ -44,6 +49,9 @@
         dot.classList.toggle('is-active', dotIndex === index);
       });
     }
+    window.setTimeout(function () {
+      locked = false;
+    }, 520);
   }
 
   makeDots();

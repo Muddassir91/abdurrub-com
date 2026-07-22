@@ -2632,7 +2632,7 @@ img {
 
 .obz-flow-viewport {
   position: relative;
-  min-height: 620px;
+  min-height: 590px;
   overflow: hidden;
   border: 1px solid rgba(15, 118, 110, 0.16);
   border-radius: 10px;
@@ -2649,9 +2649,9 @@ img {
   align-items: center;
   padding: clamp(24px, 5vw, 52px);
   opacity: 0;
-  transform: translateX(90px);
+  transform: translateX(72px);
   pointer-events: none;
-  transition: opacity 360ms ease, transform 420ms ease;
+  transition: opacity 440ms cubic-bezier(0.22, 1, 0.36, 1), transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .obz-flow-slide.is-active {
@@ -2664,7 +2664,7 @@ img {
 .obz-flow-slide.is-exiting-left {
   z-index: 1;
   opacity: 0;
-  transform: translateX(-90px);
+  transform: translateX(-72px);
 }
 
 .obz-flow-copy p {
@@ -2687,10 +2687,20 @@ img {
   line-height: 1.02;
 }
 
+.obz-flow-revenue {
+  display: block;
+  width: fit-content;
+  margin-top: 18px;
+  color: var(--obz-teal);
+  font-size: 0.96rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
 .obz-flow-copy ul {
   display: grid;
-  gap: 12px;
-  margin: 28px 0 0;
+  gap: 9px;
+  margin: 22px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -2701,7 +2711,7 @@ img {
   color: rgba(16, 24, 23, 0.72);
   font-size: 1.04rem;
   font-weight: 300;
-  line-height: 1.45;
+  line-height: 1.35;
 }
 
 .obz-flow-copy li::before {
@@ -2717,23 +2727,40 @@ img {
 
 .obz-flow-slide figure {
   display: grid;
-  height: min(520px, 62vw);
-  min-height: 430px;
-  place-items: start center;
+  height: 500px;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  place-items: center;
   margin: 0;
-  overflow: hidden;
-  border: 1px solid rgba(15, 118, 110, 0.16);
-  border-radius: 10px;
-  background: #f8fffc;
-  padding: 18px 18px 0;
+  overflow: visible;
+}
+
+.obz-flow-slide figure span {
+  margin-bottom: 10px;
+  color: var(--obz-teal);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
 }
 
 .obz-flow-slide img {
-  width: min(280px, 100%);
-  max-width: none;
+  width: auto;
+  max-width: min(320px, 100%);
+  max-height: 462px;
   height: auto;
-  border-radius: 8px 8px 0 0;
+  border: 1px solid rgba(15, 118, 110, 0.14);
+  border-radius: 8px;
+  object-fit: contain;
   box-shadow: 0 24px 60px rgba(15, 118, 110, 0.18);
+}
+
+.obz-flow-slide figcaption {
+  margin-top: 12px;
+  color: rgba(16, 24, 23, 0.58);
+  font-size: 0.82rem;
+  font-weight: 500;
+  text-align: center;
 }
 
 .obz-flow-dots {
@@ -3213,7 +3240,7 @@ img {
   }
 
   .obz-flow-viewport {
-    min-height: 760px;
+    min-height: 690px;
   }
 
   .obz-flow-slide {
@@ -3228,17 +3255,16 @@ img {
   }
 
   .obz-flow-copy li {
-    font-size: 0.98rem;
+    font-size: 0.96rem;
   }
 
   .obz-flow-slide figure {
-    height: 360px;
-    min-height: 360px;
-    padding-top: 14px;
+    height: 334px;
   }
 
   .obz-flow-slide img {
-    width: min(220px, 78vw);
+    max-width: min(230px, 78vw);
+    max-height: 286px;
   }
 
   .obz-flowchart {
