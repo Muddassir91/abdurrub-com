@@ -2120,6 +2120,13 @@ img {
   object-fit: cover;
 }
 
+.obz-brand-static {
+  color: var(--obz-muted);
+  font-size: 0.76rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
 .obz-nav-links {
   display: flex;
   justify-content: center;
@@ -2588,14 +2595,13 @@ img {
   color: var(--obz-muted);
 }
 
-.obz-case-grid a {
+.obz-case-grid small {
   display: inline-flex;
   margin-top: 22px;
   color: var(--obz-teal);
   font-size: 0.78rem;
   font-weight: 950;
   letter-spacing: 0.08em;
-  text-decoration: none;
   text-transform: uppercase;
 }
 
