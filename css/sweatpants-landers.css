@@ -2319,21 +2319,17 @@ img {
 }
 
 .obz-trust-track {
-  justify-self: center;
   display: flex;
-  width: min(1120px, calc(100vw - 44px));
+  width: max-content;
   align-items: center;
-  justify-content: center;
   gap: 42px;
-  overflow: hidden;
+  animation: obz-trust-marquee-left 42s linear infinite;
+  will-change: transform;
 }
 
 .obz-trust-track-reverse {
-  animation: none;
-}
-
-.obz-trust-track span:nth-child(n+7) {
-  display: none;
+  animation-name: obz-trust-marquee-right;
+  animation-duration: 48s;
 }
 
 .obz-trust-track span {
@@ -2735,13 +2731,13 @@ img {
 }
 
 @keyframes obz-trust-marquee-left {
-  from { transform: translateX(-25%); }
-  to { transform: translateX(-75%); }
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 @keyframes obz-trust-marquee-right {
-  from { transform: translateX(-75%); }
-  to { transform: translateX(-25%); }
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
 }
 
 @media (max-width: 1100px) {
@@ -2831,17 +2827,11 @@ img {
   }
 
   .obz-trust-track {
-    width: min(100%, calc(100vw - 28px));
     gap: 28px;
-    justify-content: center;
   }
 
   .obz-trust-track span {
     font-size: 0.88rem;
-  }
-
-  .obz-trust-track span:nth-child(n+5) {
-    display: none;
   }
 
   .obz-section {
