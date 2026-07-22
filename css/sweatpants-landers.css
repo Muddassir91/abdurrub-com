@@ -2284,6 +2284,13 @@ img {
   line-height: 1;
 }
 
+.obz-limited-spots {
+  margin: -6px 0 0;
+  color: var(--obz-teal);
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
 .obz-trust-wall {
   display: grid;
   overflow: hidden;
@@ -2554,7 +2561,8 @@ img {
   color: var(--obz-ink);
 }
 
-.obz-process-grid span {
+.obz-process-grid span,
+.obz-guides-grid span {
   display: block;
   color: var(--obz-teal);
   font-size: 0.78rem;
