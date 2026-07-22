@@ -2071,7 +2071,7 @@ img {
   --obz-card: #ffffff;
   --obz-teal: #0f766e;
   --obz-teal-bright: #17b8a6;
-  --obz-lime: #d8f36f;
+  --obz-lime: #17b8a6;
   background: var(--obz-bg);
   color: var(--obz-ink);
   font-family: Outfit, Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -2138,17 +2138,17 @@ img {
   align-items: center;
   justify-content: center;
   min-height: 52px;
-  border: 1px solid rgba(216, 243, 111, 0.74);
+  border: 1px solid rgba(23, 184, 166, 0.74);
   border-radius: 999px;
-  background: var(--obz-lime);
-  color: #07100e;
+  background: var(--obz-teal);
+  color: #fff;
   padding: 0 24px;
   font-size: 0.82rem;
   font-weight: 950;
   letter-spacing: 0.04em;
   text-decoration: none;
   text-transform: uppercase;
-  box-shadow: 0 18px 40px rgba(216, 243, 111, 0.18);
+  box-shadow: 0 18px 40px rgba(15, 118, 110, 0.26);
 }
 
 .obz-button::after {
@@ -2178,8 +2178,8 @@ img {
   inset: -35% -20% auto;
   height: 760px;
   background:
-    radial-gradient(circle at 50% 28%, rgba(15, 118, 110, 0.9), rgba(15, 118, 110, 0) 38%),
-    radial-gradient(circle at 50% 30%, rgba(216, 243, 111, 0.24), rgba(216, 243, 111, 0) 18%),
+    radial-gradient(circle at 50% 28%, rgba(15, 118, 110, 0.96), rgba(15, 118, 110, 0) 38%),
+    radial-gradient(circle at 50% 30%, rgba(23, 184, 166, 0.18), rgba(23, 184, 166, 0) 18%),
     linear-gradient(180deg, rgba(23, 184, 166, 0.16), rgba(5, 7, 6, 0));
   filter: blur(8px);
   pointer-events: none;
@@ -2213,15 +2213,15 @@ img {
 .obz-cta h2 {
   margin: 0;
   color: #fff;
-  font-size: clamp(3.4rem, 8.6vw, 7.5rem);
+  font-size: clamp(2.85rem, 6.4vw, 5.2rem);
   font-weight: 950;
-  letter-spacing: -0.065em;
-  line-height: 0.86;
+  letter-spacing: -0.052em;
+  line-height: 0.94;
   text-wrap: balance;
 }
 
 .obz-hero h1 {
-  max-width: 940px;
+  max-width: 980px;
 }
 
 .obz-hero h1 em,
@@ -2264,8 +2264,46 @@ img {
   height: 28px;
   place-items: center;
   border-radius: 50%;
-  background: rgba(216, 243, 111, 0.14);
-  color: var(--obz-lime);
+  background: rgba(23, 184, 166, 0.16);
+  color: var(--obz-teal-bright);
+}
+
+.obz-stat-band {
+  border-top: 1px solid var(--obz-line);
+  border-bottom: 1px solid var(--obz-line);
+  background: #030504;
+  padding: 54px 0;
+  text-align: center;
+}
+
+.obz-stat-band .obz-wrap {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+.obz-stat-band p {
+  margin: 0;
+  color: var(--obz-teal-bright);
+  font-size: 0.78rem;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.obz-stat-band strong {
+  color: #fff;
+  font-size: clamp(3.5rem, 8vw, 7.2rem);
+  font-weight: 950;
+  letter-spacing: -0.065em;
+  line-height: 0.88;
+}
+
+.obz-stat-band span {
+  width: min(680px, 100%);
+  color: var(--obz-muted);
+  font-size: 1.06rem;
+  line-height: 1.5;
 }
 
 .obz-logo-strip {
@@ -2330,8 +2368,8 @@ img {
 
 .obz-section-head h2 {
   color: inherit;
-  font-size: clamp(2.6rem, 6vw, 5.6rem);
-  line-height: 0.9;
+  font-size: clamp(2.45rem, 5vw, 4.75rem);
+  line-height: 0.94;
 }
 
 .obz-section-head span {
@@ -2350,6 +2388,7 @@ img {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
   align-items: start;
+  margin-bottom: 34px;
 }
 
 .obz-proof-shots figure {
@@ -2456,6 +2495,33 @@ img {
   object-fit: cover;
   object-position: top;
   box-shadow: 0 26px 64px rgba(0, 0, 0, 0.32);
+}
+
+.obz-footer {
+  border-top: 1px solid var(--obz-line);
+  background: #030504;
+  padding: 28px 0;
+}
+
+.obz-footer .obz-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+
+.obz-footer span,
+.obz-footer a {
+  color: var(--obz-muted);
+  font-size: 0.82rem;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.obz-footer span {
+  color: #fff;
+  font-weight: 950;
 }
 
 .obz-case-grid,
@@ -2675,9 +2741,9 @@ img {
   .obz-hero h1,
   .obz-section-head h2,
   .obz-cta h2 {
-    font-size: clamp(2.46rem, 14vw, 3.4rem);
-    letter-spacing: -0.055em;
-    line-height: 0.92;
+    font-size: clamp(2.05rem, 10.2vw, 2.78rem);
+    letter-spacing: -0.045em;
+    line-height: 0.98;
   }
 
   .obz-subhead,
@@ -2705,6 +2771,14 @@ img {
 
   .obz-section {
     padding: 72px 0;
+  }
+
+  .obz-stat-band {
+    padding: 42px 0;
+  }
+
+  .obz-stat-band strong {
+    font-size: clamp(3.1rem, 16vw, 4.4rem);
   }
 
   .obz-section-head {
