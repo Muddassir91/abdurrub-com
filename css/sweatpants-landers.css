@@ -2599,6 +2599,12 @@ img {
   color: rgba(16, 24, 23, 0.68);
 }
 
+.obz-section-action {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
+}
+
 .obz-flow-carousel {
   position: relative;
   margin-bottom: 28px;
