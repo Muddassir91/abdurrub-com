@@ -1,0 +1,9 @@
+// Shared build settings.
+//
+// Your Apple Team ID is personal, so it is NOT committed. Copy
+// Config/Local.xcconfig.example to Config/Local.xcconfig and fill it in.
+
+DEVELOPMENT_TEAM =
+BUNDLE_ID_PREFIX = com.abdurrub
+
+#include? "Local.xcconfig"

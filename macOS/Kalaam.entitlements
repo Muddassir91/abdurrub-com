@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- App Sandbox: Kalaam can only touch its own container. -->
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
+	<!-- Microphone. Required by both the sandbox and the Hardened Runtime. -->
+	<key>com.apple.security.device.audio-input</key>
+	<true/>
+	<!--
+	Deliberately absent: com.apple.security.network.client / network.server.
+	Without them macOS blocks every network connection from this app, so audio
+	and text physically cannot be sent anywhere. (Speech and Apple Intelligence
+	models are downloaded by the operating system, not by Kalaam.)
+	-->
+</dict>
+</plist>
