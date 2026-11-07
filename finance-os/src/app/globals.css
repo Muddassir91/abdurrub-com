@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --surface-2: #f1f3f6;
+  --border: #e4e7ec;
+  --border-strong: #cfd4dc;
+  --fg: #0f172a;
+  --fg-muted: #5b6577;
+  --fg-faint: #8b94a5;
+  --accent: #4f46e5;
+  --accent-fg: #ffffff;
+  --accent-soft: #eef0ff;
+  --positive: #0f9d58;
+  --positive-soft: #e6f6ec;
+  --caution: #c77700;
+  --caution-soft: #fff4e0;
+  --critical: #d93025;
+  --critical-soft: #fde9e7;
+  --info: #2563eb;
+  --info-soft: #e8f0fe;
+  --chart-1: #4f46e5;
+  --chart-2: #0ea5a4;
+  --chart-3: #f59e0b;
+  --chart-4: #ec4899;
+  --chart-5: #64748b;
+  --chart-6: #22c55e;
+  --shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 1px 3px rgba(16, 24, 40, 0.06);
+}
+
+.dark {
+  --bg: #0b0d12;
+  --surface: #12151c;
+  --surface-2: #181c25;
+  --border: #232833;
+  --border-strong: #313847;
+  --fg: #e6e9ef;
+  --fg-muted: #9aa3b5;
+  --fg-faint: #6b7385;
+  --accent: #7c74ff;
+  --accent-fg: #ffffff;
+  --accent-soft: #1d1f3a;
+  --positive: #34c77b;
+  --positive-soft: #0f2a1c;
+  --caution: #f2a93b;
+  --caution-soft: #2d2210;
+  --critical: #f06a60;
+  --critical-soft: #2f1614;
+  --info: #5b9cff;
+  --info-soft: #121f36;
+  --chart-1: #7c74ff;
+  --chart-2: #2dd4bf;
+  --chart-3: #fbbf24;
+  --chart-4: #f472b6;
+  --chart-5: #94a3b8;
+  --chart-6: #4ade80;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-faint: var(--fg-faint);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-positive: var(--positive);
+  --color-positive-soft: var(--positive-soft);
+  --color-caution: var(--caution);
+  --color-caution-soft: var(--caution-soft);
+  --color-critical: var(--critical);
+  --color-critical-soft: var(--critical-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --shadow-card: var(--shadow);
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  border-color: var(--border);
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 8px;
+  border: 2px solid var(--bg);
+}
+
+.recharts-default-tooltip {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 10px !important;
+  box-shadow: var(--shadow) !important;
+  color: var(--fg) !important;
+}
+.recharts-tooltip-label {
+  color: var(--fg-muted) !important;
+}

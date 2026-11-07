@@ -6,6 +6,12 @@ Static HTML, Tailwind via CDN, vanilla JS. No build step.
 
 ---
 
+## Finance OS (private app at /finance/)
+
+`finance-os/` contains a Next.js application, the Retention Rules Finance OS (personal CFO and agency financial operating system). Its static export is committed to `finance/` and served by GitHub Pages at https://abdurrub.com/finance/. Data stays in the browser (SQLite via WebAssembly, persisted to IndexedDB, optional passphrase encryption). See `finance-os/README.md` for how it works, how to run it locally and how to rebuild the export. The `.nojekyll` file at the root is required so Pages serves the app's `_next/` folder.
+
+---
+
 ## File structure
 
 ```
