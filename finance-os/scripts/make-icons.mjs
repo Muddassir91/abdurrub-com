@@ -2,7 +2,7 @@
 import { createRequire } from "node:module";
 import { writeFileSync, mkdirSync } from "node:fs";
 const { chromium } = createRequire(import.meta.url)("playwright");
-const svg = (pad) => `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><rect width="512" height="512" rx="${pad ? 0 : 112}" fill="#4f46e5"/><text x="256" y="${pad ? 306 : 312}" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="${pad ? 128 : 168}" font-weight="800" fill="#fff" letter-spacing="-6">CF<tspan font-style="italic">oh!</tspan></text></svg>`;
+const svg = (pad) => { const fs = pad ? 108 : 132; const y = pad ? 300 : 304; const x0 = pad ? 92 : 50; return `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><rect width="512" height="512" rx="${pad ? 0 : 112}" fill="#4f46e5"/><text x="${x0}" y="${y}" font-family="Inter, Helvetica, Arial, sans-serif" font-size="${fs}" font-weight="800" fill="#fff" letter-spacing="6">CF</text><text x="${x0 + fs * 1.42}" y="${y}" transform="skewX(-16)" transform-origin="${x0 + fs * 1.42} ${y}" font-family="Inter, Helvetica, Arial, sans-serif" font-size="${fs}" font-weight="800" font-style="italic" fill="#fff" letter-spacing="6">oh!</text></svg>`; };
 mkdirSync("public/icons", { recursive: true });
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 512, height: 512 }, deviceScaleFactor: 1 });
