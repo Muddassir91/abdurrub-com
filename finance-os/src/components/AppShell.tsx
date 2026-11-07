@@ -1,19 +1,21 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
-import { LayoutDashboard, ArrowLeftRight, Receipt, Users, CreditCard, Wallet, Landmark, PiggyBank, Scale, Rocket, SlidersHorizontal, Bell, CalendarCheck, Settings, Lock, Sun, Moon, Menu, X, ChevronLeft, ChevronRight, TrendingUp, Save } from "lucide-react";
+import { LayoutDashboard, ArrowLeftRight, Receipt, Users, CreditCard, Wallet, Landmark, PiggyBank, Scale, Rocket, SlidersHorizontal, Bell, CalendarCheck, Settings, Lock, Sun, Moon, Menu, X, ChevronLeft, ChevronRight, TrendingUp, Save, ChevronsUpDown, Plus, Check } from "lucide-react";
 import { useFinance } from "@/store/FinanceProvider";
 import { addMonths, monthLabel, currentMonthKey } from "@/lib/dates";
+import { Modal } from "./ui/Modal";
+import { WorkspaceForm } from "./WorkspaceForm";
 
 const NAV = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/transactions/", label: "Transactions", icon: ArrowLeftRight },
   { href: "/expenses/", label: "Business expenses", icon: Receipt },
   { href: "/clients/", label: "Clients & revenue", icon: Users },
-  { href: "/whop/", label: "Whop", icon: CreditCard },
+  { href: "/whop/", label: "Payment processor", icon: CreditCard },
   { href: "/personal/", label: "Owner & personal", icon: Wallet },
   { href: "/accounts/", label: "Accounts & cash", icon: Landmark },
   { href: "/reserves/", label: "Profit & reserves", icon: PiggyBank },
@@ -26,34 +28,141 @@ const NAV = [
   { href: "/settings/", label: "Settings", icon: Settings },
 ];
 
-function useTheme() {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+export type ThemePref = "system" | "light" | "dark";
+const THEME_KEY = "finance-os:theme";
+
+function readPref(): ThemePref {
+  try {
+    const t = localStorage.getItem(THEME_KEY);
+    return t === "dark" || t === "light" ? t : "system";
+  } catch {
+    return "system";
+  }
+}
+
+function apply(pref: ThemePref) {
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const dark = pref === "dark" || (pref === "system" && prefersDark);
+  document.documentElement.classList.toggle("dark", dark);
+  return dark ? "dark" : "light";
+}
+
+/** Theme preference: system (follows the OS), light or dark. Shared by the top bar toggle and Settings → Appearance. */
+export function useTheme() {
+  const [pref, setPrefState] = useState<ThemePref>("system");
+  const [resolved, setResolved] = useState<"light" | "dark">("light");
   useEffect(() => {
-    const stored = localStorage.getItem("finance-os:theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const t = stored === "dark" || stored === "light" ? stored : prefersDark ? "dark" : "light";
-    setTheme(t);
-    document.documentElement.classList.toggle("dark", t === "dark");
+    const p = readPref();
+    setPrefState(p);
+    setResolved(apply(p));
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const onChange = () => {
+      if (readPref() === "system") setResolved(apply("system"));
+    };
+    mq.addEventListener("change", onChange);
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === THEME_KEY) {
+        const np = readPref();
+        setPrefState(np);
+        setResolved(apply(np));
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    window.addEventListener("finance-os:theme", onStorage as EventListener);
+    return () => {
+      mq.removeEventListener("change", onChange);
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("finance-os:theme", onStorage as EventListener);
+    };
   }, []);
-  const toggle = () => {
-    const t = theme === "dark" ? "light" : "dark";
-    setTheme(t);
-    localStorage.setItem("finance-os:theme", t);
-    document.documentElement.classList.toggle("dark", t === "dark");
+  const setPref = (p: ThemePref) => {
+    try {
+      localStorage.setItem(THEME_KEY, p);
+    } catch {
+      /* ignore */
+    }
+    setPrefState(p);
+    setResolved(apply(p));
+    window.dispatchEvent(new StorageEvent("finance-os:theme", { key: THEME_KEY }));
   };
-  return { theme, toggle };
+  const toggle = () => setPref(resolved === "dark" ? "light" : "dark");
+  return { pref, resolved, setPref, toggle };
+}
+
+function WorkspaceSwitcher({ onCreate }: { onCreate: () => void }) {
+  const { workspaces, currentWorkspace, switchWorkspace, data } = useFinance();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [open]);
+  const initials = (currentWorkspace?.name ?? "FO")
+    .split(/\s+/)
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+  return (
+    <div className="relative px-3 pt-3" ref={ref}>
+      <button onClick={() => setOpen((v) => !v)} className="flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left hover:bg-surface-2" aria-haspopup="listbox" aria-expanded={open} title="Switch workspace">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent text-xs font-bold text-accent-fg">{initials}</div>
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-sm font-semibold leading-tight text-fg">{currentWorkspace?.name ?? "Finance OS"}</div>
+          <div className="truncate text-[11px] text-fg-faint">{data?.settings.businessName ?? "Workspace"}</div>
+        </div>
+        <ChevronsUpDown size={14} className="shrink-0 text-fg-faint" />
+      </button>
+      {open && (
+        <div className="absolute left-3 right-3 top-full z-40 mt-1 rounded-xl border border-border bg-surface p-1 shadow-lg" role="listbox">
+          <div className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-fg-faint">Workspaces</div>
+          {workspaces.map((w) => (
+            <button
+              key={w.id}
+              role="option"
+              aria-selected={w.id === currentWorkspace?.id}
+              onClick={() => {
+                setOpen(false);
+                void switchWorkspace(w.id);
+              }}
+              className={clsx("flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm hover:bg-surface-2", w.id === currentWorkspace?.id ? "text-fg" : "text-fg-muted")}
+            >
+              <span className="flex-1 truncate">{w.name}</span>
+              {w.id === currentWorkspace?.id && <Check size={14} className="text-accent" />}
+            </button>
+          ))}
+          <div className="my-1 border-t border-border" />
+          <button
+            onClick={() => {
+              setOpen(false);
+              onCreate();
+            }}
+            className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm text-accent hover:bg-surface-2"
+          >
+            <Plus size={14} /> Add business or person
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
   const path = pathname.startsWith(base) ? pathname.slice(base.length) || "/" : pathname;
-  const { month, setMonth, alerts, displayCurrency, setDisplayCurrency, isEncrypted, lock, saving, lastSavedAt, data } = useFinance();
-  const { theme, toggle } = useTheme();
+  const { month, setMonth, alerts, displayCurrency, setDisplayCurrency, isEncrypted, lock, saving, lastSavedAt, data, createWorkspace } = useFinance();
+  const { resolved, toggle } = useTheme();
   const [open, setOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
   const critical = alerts.filter((a) => a.level === "critical").length;
   const caution = alerts.filter((a) => a.level === "caution").length;
   const isClosed = data?.monthCloses.some((c) => c.month === month && c.status === "closed");
+  const processorName = data?.processors[0]?.name ?? "Payment processor";
 
   const nav = (
     <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-2">
@@ -63,7 +172,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         return (
           <Link key={item.href} href={item.href} onClick={() => setOpen(false)} className={clsx("flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-colors", active ? "bg-accent-soft text-accent" : "text-fg-muted hover:bg-surface-2 hover:text-fg")}>
             <Icon size={16} className="shrink-0" />
-            <span className="flex-1 truncate">{item.label}</span>
+            <span className="flex-1 truncate">{item.href === "/whop/" ? processorName : item.label}</span>
             {item.href === "/alerts/" && (critical > 0 || caution > 0) && <span className={clsx("rounded-full px-1.5 text-[10px] font-semibold", critical > 0 ? "bg-critical text-white" : "bg-caution text-white")}>{critical + caution}</span>}
           </Link>
         );
@@ -73,15 +182,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-bg">
-      {/* Sidebar */}
       <aside className="hidden w-60 shrink-0 flex-col border-r border-border bg-surface lg:flex">
-        <div className="flex items-center gap-2.5 px-5 py-4">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-sm font-bold text-accent-fg">RR</div>
-          <div>
-            <div className="text-sm font-semibold leading-tight text-fg">Finance OS</div>
-            <div className="text-[11px] text-fg-faint">{data?.settings.businessName ?? "Retention Rules"}</div>
-          </div>
-        </div>
+        <WorkspaceSwitcher onCreate={() => setCreating(true)} />
         {nav}
         <div className="border-t border-border px-4 py-3 text-[11px] text-fg-faint">
           <div className="flex items-center gap-1.5">
@@ -92,16 +194,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      {/* Mobile drawer */}
       {open && (
         <div className="fixed inset-0 z-40 flex lg:hidden">
           <div className="flex w-64 flex-col border-r border-border bg-surface">
-            <div className="flex items-center justify-between px-4 py-3">
-              <span className="text-sm font-semibold">Finance OS</span>
-              <button onClick={() => setOpen(false)} className="rounded-md p-1 text-fg-muted hover:bg-surface-2">
+            <div className="flex items-center justify-between px-4 pt-3">
+              <span className="text-xs font-semibold uppercase tracking-wide text-fg-faint">Finance OS</span>
+              <button onClick={() => setOpen(false)} className="rounded-md p-1 text-fg-muted hover:bg-surface-2" aria-label="Close navigation">
                 <X size={16} />
               </button>
             </div>
+            <WorkspaceSwitcher onCreate={() => { setOpen(false); setCreating(true); }} />
             {nav}
           </div>
           <div className="flex-1 bg-black/40" onClick={() => setOpen(false)} />
@@ -109,7 +211,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       )}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        {/* Top bar */}
         <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-border bg-surface/90 px-4 backdrop-blur sm:px-6">
           <button onClick={() => setOpen(true)} className="rounded-md p-1.5 text-fg-muted hover:bg-surface-2 lg:hidden" aria-label="Open navigation">
             <Menu size={18} />
@@ -134,8 +235,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </button>
             ))}
           </div>
-          <button onClick={toggle} className="rounded-md p-1.5 text-fg-muted hover:bg-surface-2 hover:text-fg" aria-label="Toggle theme">
-            {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+          <button onClick={toggle} className="rounded-md p-1.5 text-fg-muted hover:bg-surface-2 hover:text-fg" aria-label="Toggle theme" title={`Theme: ${resolved}. Settings → Appearance for "follow system".`}>
+            {resolved === "dark" ? <Sun size={16} /> : <Moon size={16} />}
           </button>
           {isEncrypted && (
             <button onClick={lock} className="rounded-md p-1.5 text-fg-muted hover:bg-surface-2 hover:text-fg" aria-label="Lock" title="Lock now">
@@ -145,6 +246,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </header>
         <main className="mx-auto w-full max-w-[1400px] flex-1 px-4 py-6 sm:px-6">{children}</main>
       </div>
+
+      <Modal open={creating} onClose={() => setCreating(false)} title="Add a business or person" description="Creates a separate workspace with its own database, settings and optional passphrase. Switch between workspaces from the sidebar." size="lg">
+        <WorkspaceForm
+          allowRetentionRulesTemplate={false}
+          onCancel={() => setCreating(false)}
+          onSubmit={async (input) => {
+            await createWorkspace(input);
+            setCreating(false);
+          }}
+        />
+      </Modal>
     </div>
   );
 }

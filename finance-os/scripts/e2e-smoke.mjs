@@ -43,6 +43,9 @@ page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
 
 try {
   await page.goto(`http://localhost:${PORT}/finance/`, { waitUntil: "networkidle" });
+  await page.getByText("Set up Finance OS").waitFor({ timeout: 20000 });
+  check("Fresh browser shows the sign-up screen", true);
+  await page.getByRole("button", { name: "Create workspace and open" }).click();
   await page.getByText("overview").first().waitFor({ timeout: 20000 });
   check("App boots and seeds the database", await page.getByText("Retention Rules").first().isVisible());
   check("Dashboard shows the lean policy", await page.getByText("Lean solo operation").first().isVisible());
@@ -143,6 +146,40 @@ try {
   await page.getByRole("tab", { name: "Backup & restore" }).click();
   const [download] = await Promise.all([page.waitForEvent("download"), page.getByRole("button", { name: /Download backup/ }).click()]);
   check("Backup download produced", (await download.suggestedFilename()).endsWith(".sqlite"));
+
+  // Workspaces: add a second business, check isolation, switch back.
+  await page.goto(`http://localhost:${PORT}/finance/settings/`, { waitUntil: "networkidle" });
+  await page.getByRole("tab", { name: "Workspaces" }).click();
+  await page.getByRole("button", { name: "Add business or person" }).first().click();
+  const wsd = page.getByRole("dialog");
+  await wsd.getByPlaceholder("e.g. Second agency, Ahmed").fill("Second Agency");
+  await wsd.locator("input").nth(1).fill("Second Agency Ltd");
+  await wsd.locator("input").nth(2).fill("Someone Else");
+  await wsd.getByRole("button", { name: "Create workspace" }).click();
+  await page.locator("aside").getByText("Second Agency Ltd").first().waitFor({ timeout: 20000 });
+  await page.locator("aside").getByText(/Saved /).waitFor();
+  await page.goto(`http://localhost:${PORT}/finance/`, { waitUntil: "networkidle" });
+  const ws2 = await page.locator("body").innerText();
+  check("Second workspace starts empty (no $4,000 collected)", !ws2.includes("$4,000.00") && ws2.includes("Second Agency"), `has4000=${ws2.includes("$4,000.00")} hasName=${ws2.includes("Second Agency")} aside=${(await page.locator("aside").innerText()).split("\n").slice(0,3).join("/")}`);
+  await page.locator("aside").getByTitle("Switch workspace").click();
+  await page.getByRole("option", { name: "Retention Rules" }).click();
+  let restored = true;
+  try {
+    await page.locator("aside").getByText("Retention Rules").first().waitFor({ timeout: 20000 });
+    await page.getByText("$5,000.00").first().waitFor({ timeout: 20000 }); // $4,000 commission + $1,000 Whop sale
+  } catch {
+    restored = false;
+  }
+  check("Switching back restores Retention Rules data", restored);
+  await page.screenshot({ path: "../finance-os/.e2e/workspaces.png", fullPage: false }).catch(() => {});
+
+  // Appearance setting: follow system.
+  await page.goto(`http://localhost:${PORT}/finance/settings/`, { waitUntil: "networkidle" });
+  await page.getByRole("tab", { name: "Appearance" }).click();
+  await page.getByRole("button", { name: /Dark/ }).click();
+  check("Appearance: dark applied", await page.evaluate(() => document.documentElement.classList.contains("dark")));
+  await page.getByRole("button", { name: /Follow system/ }).click();
+  check("Appearance: follow system stored", await page.evaluate(() => localStorage.getItem("finance-os:theme") === "system"));
 
   // Visit every page for runtime errors.
   for (const p of ["expenses", "clients", "personal", "accounts", "tax", "growth", "forecast", "alerts"]) {

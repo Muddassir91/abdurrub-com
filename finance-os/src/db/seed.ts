@@ -25,13 +25,26 @@ export function categoryId(scope: "business" | "personal", name: string) {
   return `cat-${scope}-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
 }
 
+export interface SeedOptions {
+  /** "retention_rules" = the owner's full starting position; "blank" = generic scaffolding for another business. */
+  template?: "retention_rules" | "blank";
+  businessName?: string;
+  ownerName?: string;
+  baseCurrency?: string;
+  householdCurrency?: string;
+  fxRatePerUsd?: string;
+}
+
 /**
- * Seeds the database with the owner's actual starting position.
- * Idempotent: it only runs when the settings row is missing.
+ * Seeds the database. Idempotent: it only runs when the settings row is missing.
+ * The default template is the owner's actual starting position; the blank
+ * template creates the policy, accounts, categories, entity and a generic
+ * processor so a second business starts clean but usable.
  */
-export function seedDatabase(db: Db): boolean {
+export function seedDatabase(db: Db, opts: SeedOptions = {}): boolean {
   const existing = db.select().from(s.settings).all();
   if (existing.length > 0) return false;
+  if ((opts.template ?? "retention_rules") === "blank") return seedBlank(db, opts);
   const now = nowIso();
   const today = todayKey();
   const month = currentMonthKey();
@@ -39,11 +52,11 @@ export function seedDatabase(db: Db): boolean {
   db.insert(s.settings)
     .values({
       id: 1,
-      businessName: "Retention Rules",
-      ownerName: "Muddassir Abdur Rub",
+      businessName: opts.businessName ?? "Retention Rules",
+      ownerName: opts.ownerName ?? "Muddassir Abdur Rub",
       baseCurrency: "USD",
       householdCurrency: "PKR",
-      defaultFxRatePkrPerUsd: "280",
+      defaultFxRatePkrPerUsd: opts.fxRatePerUsd ?? "280",
       householdBudgetUsdCents: 100000,
       discretionaryGoalUsdCents: 500000,
       targetGrossMarginMinPct: "65",
@@ -242,6 +255,89 @@ export function seedDatabase(db: Db): boolean {
       { id: "comp-deadlines", title: "Other relevant tax deadlines", jurisdiction: "Both", description: "Add quarterly estimates or withholding statements as advised by your accountant.", frequency: "annual", status: "pending", applicable: true, sortOrder: 8 },
     ])
     .run();
+
+  return true;
+}
+
+function seedBlank(db: Db, opts: SeedOptions): boolean {
+  const now = nowIso();
+  const today = todayKey();
+  const businessName = opts.businessName?.trim() || "My business";
+  const ownerName = opts.ownerName?.trim() || "Owner";
+  const baseCurrency = opts.baseCurrency ?? "USD";
+  const householdCurrency = opts.householdCurrency ?? "PKR";
+
+  db.insert(s.settings)
+    .values({
+      id: 1,
+      businessName,
+      ownerName,
+      baseCurrency,
+      householdCurrency,
+      defaultFxRatePkrPerUsd: opts.fxRatePerUsd ?? "280",
+      householdBudgetUsdCents: 0,
+      discretionaryGoalUsdCents: 0,
+      targetGrossMarginMinPct: "65",
+      targetGrossMarginMaxPct: "75",
+      reserveTargetMonths: "3",
+      reserveMinMonths: "3",
+      reserveMaxMonths: "6",
+      concentrationWarnPct: "50",
+      concentrationCriticalPct: "75",
+      renewalReminderDays: 7,
+      createdAt: now,
+      updatedAt: now,
+    })
+    .run();
+
+  db.insert(s.allocationPolicies)
+    .values({
+      id: IDS.policyLean,
+      name: "Starting policy",
+      description: "Profit First starting split. Edit the percentages to fit this business; they must add up to 100%.",
+      appliesFromMonthlyRevenueUsdCents: 0,
+      opexPct: "25",
+      ownerPct: "35",
+      taxPct: "15",
+      profitPct: "10",
+      reservePct: "10",
+      growthPct: "5",
+      isDefault: true,
+      createdAt: now,
+      updatedAt: now,
+    })
+    .run();
+
+  db.insert(s.entities).values({ id: uid(), name: businessName, type: "other", jurisdiction: "To be set", notes: "Edit under Tax & compliance.", createdAt: now }).run();
+
+  db.insert(s.processors)
+    .values({ id: IDS.processorWhop, name: "Payment processor", availableAccountId: IDS.acctWhopAvailable, restrictedAccountId: IDS.acctWhopRestricted, pricingSource: "Generic card-processing defaults (2.7% + $0.30, +1.5% international, +1% conversion). Rename the processor and set its real fees under Fee defaults.", notes: null, createdAt: now })
+    .run();
+
+  const acct = (id: string, name: string, role: string, kind: string, isBusiness: boolean, sortOrder: number, extra: Partial<s.NewAccount> = {}) => ({ id, name, role, kind, currency: baseCurrency, openingBalanceMinor: 0, openingBalanceDate: today, isBusiness, isArchived: false, sortOrder, createdAt: now, ...extra });
+  db.insert(s.accounts)
+    .values([
+      acct(IDS.acctOperating, "Business operating account", "operating", "bank", true, 1),
+      acct(IDS.acctTax, "Tax reserve account", "tax", "bank", true, 2),
+      acct(IDS.acctProfit, "Business profit account", "profit", "bank", true, 3),
+      acct(IDS.acctSavings, "Business savings account", "savings", "bank", true, 4),
+      acct(IDS.acctGrowth, "Growth account", "growth", "bank", true, 5),
+      acct(IDS.acctPersonal, "Personal account", "personal", "bank", false, 6),
+      acct(IDS.acctWhopAvailable, "Processor available balance", "processor_available", "processor", true, 7, { processorId: IDS.processorWhop }),
+      acct(IDS.acctWhopRestricted, "Processor restricted balance", "processor_restricted", "processor", true, 8, { processorId: IDS.processorWhop }),
+    ])
+    .run();
+
+  const essentialBusiness = new Set(["Software and AI", "Communication", "Administrative", "Operations"]);
+  db.insert(s.categories)
+    .values([
+      ...BUSINESS_CATEGORY_NAMES.map((name, i) => ({ id: categoryId("business", name), name, scope: "business", isEssentialDefault: essentialBusiness.has(name), sortOrder: i, isSystem: true })),
+      ...PERSONAL_CATEGORY_NAMES.map((name, i) => ({ id: categoryId("personal", name), name, scope: "personal", isEssentialDefault: ["Family support", "Food", "Utilities", "Internet"].includes(name), sortOrder: i, isSystem: true })),
+    ])
+    .run();
+
+  db.insert(s.taxProfiles).values({ id: uid(), name: `${businessName} business tax`, jurisdiction: "To be set", entityId: null, scope: "business", assumedRatePct: null, isEstimate: true, filingFrequency: "annual", notes: "Set the jurisdiction and confirm obligations with a professional.", createdAt: now }).run();
+  db.insert(s.complianceItems).values({ id: uid(), title: "Business registration and tax filings", jurisdiction: "To be set", description: "Add the registrations, returns and deadlines that apply to this business.", frequency: "annual", status: "pending", applicable: true, sortOrder: 1 }).run();
 
   return true;
 }

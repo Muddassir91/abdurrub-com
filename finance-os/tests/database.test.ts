@@ -59,3 +59,21 @@ describe("database", () => {
     expect(snap.owner.householdLinesBudget).toBe(69642); // PKR 195,000 at 280, rounded per line
   });
 });
+
+describe("workspace templates", () => {
+  it("seeds a blank workspace for another business with a valid policy and standard accounts", async () => {
+    const opened = await openDatabase();
+    expect(seedDatabase(opened.db, { template: "blank", businessName: "Second Agency", ownerName: "Someone Else", baseCurrency: "USD", householdCurrency: "GBP" })).toBe(true);
+    const data = loadEngineData(opened.db);
+    expect(data.settings.businessName).toBe("Second Agency");
+    expect(data.settings.householdCurrency).toBe("GBP");
+    expect(data.clients.length).toBe(0);
+    expect(data.recurringExpenses.length).toBe(0);
+    expect(data.householdLines.length).toBe(0);
+    expect(data.accounts.map((a) => a.role).sort()).toEqual(["growth", "operating", "personal", "processor_available", "processor_restricted", "profit", "savings", "tax"]);
+    expect(data.categories.length).toBe(20);
+    const snap = buildSnapshot(data, "2026-11", "2026-11-15");
+    expect(snap.policyValid).toBe(true);
+    expect(snap.revenue.collected).toBe(0);
+  });
+});

@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { Plus, Trash2, Download, Upload, Lock, Unlock, RotateCcw, Save, Star } from "lucide-react";
+import { Plus, Trash2, Download, Upload, Lock, Unlock, RotateCcw, Save, Star, Sun, Moon, MonitorSmartphone } from "lucide-react";
 import type { AllocationPolicy, Category, FxRate } from "@/db/schema";
-import { useReady } from "@/store/FinanceProvider";
+import { useReady, useFinance } from "@/store/FinanceProvider";
+import { useTheme, type ThemePref } from "@/components/AppShell";
+import { WorkspaceForm } from "@/components/WorkspaceForm";
 import { useToast } from "@/components/ui/toast";
 import { Money } from "@/components/Money";
 import { PageHeader, Card, Badge, Button, Callout, Tabs, DefinitionList } from "@/components/ui/primitives";
@@ -17,20 +19,89 @@ import { todayKey, dateLabel } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
 import { clsx } from "clsx";
 
-type Tab = "allocation" | "business" | "fx" | "categories" | "backup" | "privacy";
+type Tab = "allocation" | "business" | "fx" | "categories" | "backup" | "privacy" | "appearance" | "workspaces";
 
 export default function SettingsPage() {
   const [tab, setTab] = useState<Tab>("allocation");
   return (
     <>
-      <PageHeader title="Settings" description="Allocation rules, business parameters, exchange rates, categories, backups and privacy. Nothing here changes silently; every percentage must add up to 100%." />
-      <Tabs className="mb-4" value={tab} onChange={setTab} tabs={[{ value: "allocation", label: "Allocation policies" }, { value: "business", label: "Business & targets" }, { value: "fx", label: "Exchange rates" }, { value: "categories", label: "Categories" }, { value: "backup", label: "Backup & restore" }, { value: "privacy", label: "Privacy lock" }]} />
+      <PageHeader title="Settings" description="Allocation rules, business parameters, exchange rates, categories, backups, privacy, appearance and workspaces. Nothing here changes silently; every percentage must add up to 100%." />
+      <Tabs className="mb-4" value={tab} onChange={setTab} tabs={[{ value: "allocation", label: "Allocation policies" }, { value: "business", label: "Business & targets" }, { value: "fx", label: "Exchange rates" }, { value: "categories", label: "Categories" }, { value: "backup", label: "Backup & restore" }, { value: "privacy", label: "Privacy lock" }, { value: "appearance", label: "Appearance" }, { value: "workspaces", label: "Workspaces" }]} />
       {tab === "allocation" && <PoliciesTab />}
       {tab === "business" && <BusinessTab />}
       {tab === "fx" && <FxTab />}
       {tab === "categories" && <CategoriesTab />}
       {tab === "backup" && <BackupTab />}
       {tab === "privacy" && <PrivacyTab />}
+      {tab === "appearance" && <AppearanceTab />}
+      {tab === "workspaces" && <WorkspacesTab />}
+    </>
+  );
+}
+
+/* ----------------------------------------------------------------- appearance */
+
+function AppearanceTab() {
+  const { pref, resolved, setPref } = useTheme();
+  const options: { value: ThemePref; label: string; hint: string; icon: React.ReactNode }[] = [
+    { value: "system", label: "Follow system", hint: "Switches with your device's light/dark setting.", icon: <MonitorSmartphone size={16} /> },
+    { value: "light", label: "Light", hint: "Always light.", icon: <Sun size={16} /> },
+    { value: "dark", label: "Dark", hint: "Always dark.", icon: <Moon size={16} /> },
+  ];
+  return (
+    <div className="grid gap-4 lg:grid-cols-2">
+      <Card title="Theme" subtitle={`Currently showing the ${resolved} theme. The sun/moon button in the top bar is a quick toggle.`}>
+        <div className="grid gap-2 sm:grid-cols-3">
+          {options.map((o) => (
+            <button key={o.value} onClick={() => setPref(o.value)} className={clsx("rounded-xl border p-3 text-left transition-colors", pref === o.value ? "border-accent bg-accent-soft" : "border-border hover:bg-surface-2")}>
+              <div className="flex items-center gap-2 text-sm font-medium">{o.icon} {o.label}</div>
+              <div className="mt-1 text-xs text-fg-muted">{o.hint}</div>
+            </button>
+          ))}
+        </div>
+      </Card>
+      <Card title="Currency display" subtitle="USD is the primary currency; PKR is the secondary for household figures">
+        <p className="text-sm text-fg-muted">Use the USD / PKR switch in the top bar to flip every figure. Each transaction keeps its original currency and rate regardless of the display setting.</p>
+      </Card>
+    </div>
+  );
+}
+
+/* ----------------------------------------------------------------- workspaces */
+
+function WorkspacesTab() {
+  const { workspaces, currentWorkspace, switchWorkspace, renameWorkspace, deleteWorkspace, createWorkspace } = useFinance();
+  const toast = useToast();
+  const [creating, setCreating] = useState(false);
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const [editing, setEditing] = useState<{ id: string; name: string; businessName: string } | null>(null);
+  return (
+    <>
+      <Callout tone="info" className="mb-4" title="One workspace per business or person">
+        Each workspace is a separate database with its own policy, accounts, clients, settings and passphrase. Nothing is shared between them. Use this for a second business, or for another person using this device. To use a workspace on another device, download its backup and restore it there.
+      </Callout>
+      <div className="mb-3 flex justify-end">
+        <Button variant="primary" onClick={() => setCreating(true)}><Plus size={14} /> Add business or person</Button>
+      </div>
+      <div className="grid gap-3 lg:grid-cols-2">
+        {workspaces.map((w) => (
+          <Card key={w.id} title={<span className="flex items-center gap-2">{w.name}{w.id === currentWorkspace?.id && <Badge tone="positive">open</Badge>}<Badge>{w.template === "retention_rules" ? "Retention Rules template" : "blank template"}</Badge></span>} subtitle={`${w.businessName} · ${w.ownerName} · created ${dateLabel(w.createdAt.slice(0, 10))}`} actions={<>{w.id !== currentWorkspace?.id && <Button size="sm" onClick={() => void switchWorkspace(w.id)}>Open</Button>}<Button size="sm" variant="ghost" onClick={() => setEditing({ id: w.id, name: w.name, businessName: w.businessName })}>Rename</Button><Button size="sm" variant="ghost" onClick={() => setDeleting(w.id)}><Trash2 size={13} /></Button></>}>
+            <p className="text-xs text-fg-muted">Passphrase, backups and reset for a workspace are managed while it is open, under Privacy lock and Backup & restore.</p>
+          </Card>
+        ))}
+      </div>
+      <Modal open={creating} onClose={() => setCreating(false)} title="Add a business or person" size="lg">
+        <WorkspaceForm allowRetentionRulesTemplate={false} onCancel={() => setCreating(false)} onSubmit={async (input) => { await createWorkspace(input); setCreating(false); toast.success(`Workspace "${input.name}" created and opened`); }} />
+      </Modal>
+      <Modal open={!!editing} onClose={() => setEditing(null)} title="Rename workspace" size="sm" footer={<><Button onClick={() => setEditing(null)}>Cancel</Button><Button variant="primary" disabled={!editing?.name.trim()} onClick={async () => { if (!editing) return; await renameWorkspace(editing.id, editing.name, editing.businessName); setEditing(null); toast.success("Workspace renamed"); }}>Save</Button></>}>
+        {editing && (
+          <div className="space-y-3">
+            <Field label="Workspace name"><Input value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} /></Field>
+            <Field label="Business name (label only)" hint="The business name used inside the app is under Business & targets."><Input value={editing.businessName} onChange={(e) => setEditing({ ...editing, businessName: e.target.value })} /></Field>
+          </div>
+        )}
+      </Modal>
+      <ConfirmModal open={!!deleting} onClose={() => setDeleting(null)} danger confirmLabel="Delete workspace" title="Delete this workspace?" body="Its entire database is removed from this browser. This cannot be undone unless you have a backup file of it." onConfirm={() => { if (deleting) void deleteWorkspace(deleting).then(() => toast.success("Workspace deleted")); }} />
     </>
   );
 }

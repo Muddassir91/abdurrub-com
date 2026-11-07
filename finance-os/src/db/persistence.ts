@@ -1,13 +1,21 @@
 /**
- * IndexedDB persistence for the SQLite byte image, with optional passphrase
- * encryption (PBKDF2 -> AES-GCM via WebCrypto). Nothing ever leaves the
- * browser: the "deployment" is just static files, your data stays on your device.
+ * IndexedDB persistence for the SQLite byte images, one per workspace, with
+ * optional passphrase encryption (PBKDF2 -> AES-GCM via WebCrypto). Nothing
+ * ever leaves the browser: the "deployment" is static files; your data stays
+ * on your device.
+ *
+ * Layout inside the "kv" object store:
+ *   workspaces                 -> WorkspaceRegistry
+ *   sqlite-image:<workspaceId> -> Uint8Array (plain or AES-GCM ciphertext)
+ *   meta:<workspaceId>         -> StoredMeta
  */
 
 const DB_NAME = "finance-os";
 const STORE = "kv";
-const DATA_KEY = "sqlite-image";
-const META_KEY = "meta";
+const REGISTRY_KEY = "workspaces";
+const LEGACY_DATA_KEY = "sqlite-image";
+const LEGACY_META_KEY = "meta";
+export const DEFAULT_WORKSPACE_ID = "retention-rules";
 
 export interface StoredMeta {
   encrypted: boolean;
@@ -15,6 +23,22 @@ export interface StoredMeta {
   iv?: string; // base64
   savedAt: string;
   version: number;
+}
+
+export type SeedTemplate = "retention_rules" | "blank";
+
+export interface WorkspaceInfo {
+  id: string;
+  name: string;
+  businessName: string;
+  ownerName: string;
+  template: SeedTemplate;
+  createdAt: string;
+}
+
+export interface WorkspaceRegistry {
+  list: WorkspaceInfo[];
+  currentId: string | null;
 }
 
 function openIdb(): Promise<IDBDatabase> {
@@ -52,6 +76,22 @@ async function idbPut(key: string, value: unknown): Promise<void> {
   });
 }
 
+/** Write several keys in ONE transaction so a page unload cannot leave them half-written. */
+async function idbPutMany(entries: [string, unknown][]): Promise<void> {
+  const db = await openIdb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE, "readwrite");
+    const store = tx.objectStore(STORE);
+    for (const [k, v] of entries) store.put(v, k);
+    tx.oncomplete = () => {
+      db.close();
+      resolve();
+    };
+    tx.onerror = () => reject(tx.error);
+    tx.onabort = () => reject(tx.error ?? new Error("IndexedDB transaction aborted"));
+  });
+}
+
 async function idbDelete(key: string): Promise<void> {
   const db = await openIdb();
   return new Promise((resolve, reject) => {
@@ -63,6 +103,34 @@ async function idbDelete(key: string): Promise<void> {
     };
     tx.onerror = () => reject(tx.error);
   });
+}
+
+const dataKey = (id: string) => `${LEGACY_DATA_KEY}:${id}`;
+const metaKey = (id: string) => `${LEGACY_META_KEY}:${id}`;
+
+/** Load the registry, migrating a pre-workspace single database into the default workspace. */
+export async function loadRegistry(): Promise<WorkspaceRegistry> {
+  const reg = await idbGet<WorkspaceRegistry>(REGISTRY_KEY);
+  if (reg) return reg;
+  const legacy = await idbGet<ArrayBuffer | Uint8Array>(LEGACY_DATA_KEY);
+  if (legacy) {
+    const legacyMeta = await idbGet<StoredMeta>(LEGACY_META_KEY);
+    await idbPut(dataKey(DEFAULT_WORKSPACE_ID), legacy);
+    if (legacyMeta) await idbPut(metaKey(DEFAULT_WORKSPACE_ID), legacyMeta);
+    await idbDelete(LEGACY_DATA_KEY);
+    await idbDelete(LEGACY_META_KEY);
+    const migrated: WorkspaceRegistry = {
+      list: [{ id: DEFAULT_WORKSPACE_ID, name: "Retention Rules", businessName: "Retention Rules", ownerName: "Muddassir Abdur Rub", template: "retention_rules", createdAt: new Date().toISOString() }],
+      currentId: DEFAULT_WORKSPACE_ID,
+    };
+    await saveRegistry(migrated);
+    return migrated;
+  }
+  return { list: [], currentId: null };
+}
+
+export async function saveRegistry(reg: WorkspaceRegistry): Promise<void> {
+  await idbPut(REGISTRY_KEY, reg);
 }
 
 const b64 = {
@@ -81,8 +149,8 @@ async function deriveKey(passphrase: string, salt: Uint8Array): Promise<CryptoKe
   );
 }
 
-export async function loadMeta(): Promise<StoredMeta | undefined> {
-  return idbGet<StoredMeta>(META_KEY);
+export async function loadMeta(workspaceId: string): Promise<StoredMeta | undefined> {
+  return idbGet<StoredMeta>(metaKey(workspaceId));
 }
 
 export class WrongPassphraseError extends Error {
@@ -92,10 +160,10 @@ export class WrongPassphraseError extends Error {
   }
 }
 
-/** Load the stored SQLite image; returns undefined when nothing has been saved yet. */
-export async function loadImage(passphrase?: string): Promise<Uint8Array | undefined> {
-  const meta = await loadMeta();
-  const data = await idbGet<ArrayBuffer | Uint8Array>(DATA_KEY);
+/** Load a workspace's SQLite image; returns undefined when nothing has been saved yet. */
+export async function loadImage(workspaceId: string, passphrase?: string): Promise<Uint8Array | undefined> {
+  const meta = await loadMeta(workspaceId);
+  const data = await idbGet<ArrayBuffer | Uint8Array>(dataKey(workspaceId));
   if (!data) return undefined;
   const bytes = data instanceof Uint8Array ? data : new Uint8Array(data);
   if (!meta?.encrypted) return bytes;
@@ -109,7 +177,7 @@ export async function loadImage(passphrase?: string): Promise<Uint8Array | undef
   }
 }
 
-export async function saveImage(bytes: Uint8Array, passphrase?: string): Promise<StoredMeta> {
+export async function saveImage(workspaceId: string, bytes: Uint8Array, passphrase?: string): Promise<StoredMeta> {
   let meta: StoredMeta;
   let payload: Uint8Array = bytes;
   if (passphrase) {
@@ -122,12 +190,14 @@ export async function saveImage(bytes: Uint8Array, passphrase?: string): Promise
   } else {
     meta = { encrypted: false, savedAt: new Date().toISOString(), version: 1 };
   }
-  await idbPut(DATA_KEY, payload);
-  await idbPut(META_KEY, meta);
+  await idbPutMany([
+    [dataKey(workspaceId), payload],
+    [metaKey(workspaceId), meta],
+  ]);
   return meta;
 }
 
-export async function clearStorage(): Promise<void> {
-  await idbDelete(DATA_KEY);
-  await idbDelete(META_KEY);
+export async function clearWorkspaceStorage(workspaceId: string): Promise<void> {
+  await idbDelete(dataKey(workspaceId));
+  await idbDelete(metaKey(workspaceId));
 }

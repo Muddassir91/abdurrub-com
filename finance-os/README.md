@@ -40,7 +40,17 @@ git commit -m "Update Finance OS" && git push
 
 Merging to `main` publishes it at `https://abdurrub.com/finance/`.
 
-**Privacy.** The URL is public but shows only an empty app shell with the starting seed. Your data exists solely in the browser profile where you entered it. Turn on the passphrase lock in *Settings → Privacy lock* to encrypt it at rest (AES-256-GCM, PBKDF2 key derivation); the app then locks when the tab is closed. Keep backups: there is no recovery for a lost passphrase.
+### Workspaces (sign-up)
+
+On first open the app shows a sign-up screen that creates a **workspace**. A workspace is one business or one person: its own SQLite database, its own policy, accounts, clients, settings and optional passphrase. Two templates exist: *Retention Rules* (pre-filled with the agency profile) and *Another business or person* (clean scaffolding). Add more from the switcher at the top of the sidebar or under *Settings → Workspaces*, and switch between them there. Workspaces never share data; move one to another device with its backup file.
+
+There is no server, so there are no online accounts: "sign up" creates a local workspace in this browser. If you later want the same workspace shared across devices or people, the next step would be a hosted database with authentication; the engine and UI are built to make that an addition, not a rewrite.
+
+### Appearance
+
+*Settings → Appearance* chooses **Follow system**, **Light** or **Dark**. The sun/moon button in the top bar is a quick toggle. The preference is stored per browser and applied before first paint, so there is no flash.
+
+**Privacy.** The URL is public but shows only the sign-up screen to anyone else. Your data exists solely in the browser profile where you entered it. Turn on the passphrase lock in *Settings → Privacy lock* to encrypt it at rest (AES-256-GCM, PBKDF2 key derivation); the app then locks when the tab is closed. Keep backups: there is no recovery for a lost passphrase.
 
 ---
 

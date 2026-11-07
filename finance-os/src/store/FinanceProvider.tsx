@@ -3,15 +3,34 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { Database } from "sql.js";
 import { openDatabase, exportImage, type Db } from "@/db/client";
-import { loadImage, saveImage, loadMeta, clearStorage, WrongPassphraseError, type StoredMeta } from "@/db/persistence";
-import { seedDatabase } from "@/db/seed";
+import { loadImage, saveImage, loadMeta, loadRegistry, saveRegistry, clearWorkspaceStorage, WrongPassphraseError, type StoredMeta, type WorkspaceInfo, type WorkspaceRegistry, type SeedTemplate } from "@/db/persistence";
+import { seedDatabase, type SeedOptions } from "@/db/seed";
 import { loadEngineData } from "@/db/repo";
 import type { EngineData, MonthSnapshot, Alert } from "@/engine/types";
 import { buildSnapshot } from "@/engine/snapshot";
 import { buildAlerts } from "@/engine/alerts";
 import { currentMonthKey, todayKey } from "@/lib/dates";
+import { uid } from "@/lib/ids";
 
-export type Status = "loading" | "locked" | "ready" | "error";
+/**
+ * status
+ *  loading  opening storage / a workspace
+ *  setup    no workspace exists yet: show the sign-up screen
+ *  locked   the current workspace is encrypted and needs its passphrase
+ *  ready    data loaded
+ *  error    unrecoverable
+ */
+export type Status = "loading" | "setup" | "locked" | "ready" | "error";
+
+export interface CreateWorkspaceInput {
+  name: string;
+  businessName: string;
+  ownerName: string;
+  template: SeedTemplate;
+  passphrase?: string;
+  baseCurrency?: string;
+  householdCurrency?: string;
+}
 
 export interface FinanceContextValue {
   status: Status;
@@ -36,11 +55,18 @@ export interface FinanceContextValue {
   saving: boolean;
   displayCurrency: "USD" | "PKR";
   setDisplayCurrency: (c: "USD" | "PKR") => void;
+  // Workspaces (one per business or person; each is its own database)
+  workspaces: WorkspaceInfo[];
+  currentWorkspace: WorkspaceInfo | null;
+  createWorkspace: (input: CreateWorkspaceInput) => Promise<void>;
+  switchWorkspace: (id: string) => Promise<void>;
+  renameWorkspace: (id: string, name: string, businessName?: string) => Promise<void>;
+  deleteWorkspace: (id: string) => Promise<void>;
 }
 
 const Ctx = createContext<FinanceContextValue | null>(null);
 
-const PASS_SESSION_KEY = "finance-os:session-pass";
+const passKey = (id: string) => `finance-os:session-pass:${id}`;
 
 export function FinanceProvider({ children }: { children: React.ReactNode }) {
   const [status, setStatus] = useState<Status>("loading");
@@ -51,10 +77,11 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [displayCurrency, setDisplayCurrencyState] = useState<"USD" | "PKR">("USD");
+  const [registry, setRegistry] = useState<WorkspaceRegistry>({ list: [], currentId: null });
   const sqlRef = useRef<Database | null>(null);
   const dbRef = useRef<Db | null>(null);
   const passRef = useRef<string | null>(null);
-  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const wsRef = useRef<string | null>(null);
   const today = todayKey();
 
   const setDisplayCurrency = useCallback((c: "USD" | "PKR") => {
@@ -76,11 +103,11 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const persistNow = useCallback(async () => {
-    if (!sqlRef.current) return;
+    if (!sqlRef.current || !wsRef.current) return;
     setSaving(true);
     try {
       const bytes = exportImage(sqlRef.current);
-      const m = await saveImage(bytes, passRef.current ?? undefined);
+      const m = await saveImage(wsRef.current, bytes, passRef.current ?? undefined);
       setMeta(m);
       setLastSavedAt(m.savedAt);
     } catch (e) {
@@ -90,13 +117,6 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
       setSaving(false);
     }
   }, []);
-
-  // Persist immediately after every mutation (the database is small, exporting
-  // it costs a few milliseconds) and once more on tab hide as a safety net.
-  const schedulePersist = useCallback(() => {
-    if (saveTimer.current) clearTimeout(saveTimer.current);
-    void persistNow();
-  }, [persistNow]);
 
   useEffect(() => {
     const flush = () => {
@@ -110,48 +130,83 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     };
   }, [persistNow]);
 
+  const closeCurrent = useCallback(() => {
+    try {
+      sqlRef.current?.close();
+    } catch {
+      /* already closed */
+    }
+    sqlRef.current = null;
+    dbRef.current = null;
+    setData(null);
+  }, []);
+
+  /** Open a workspace's database (creating + seeding when it has no image yet). */
   const boot = useCallback(
-    async (image: Uint8Array | undefined) => {
+    async (workspaceId: string, image: Uint8Array | undefined, seed?: SeedOptions) => {
+      closeCurrent();
+      wsRef.current = workspaceId;
       const opened = await openDatabase(image);
       sqlRef.current = opened.sql;
       dbRef.current = opened.db;
-      const seeded = seedDatabase(opened.db);
+      const seeded = seedDatabase(opened.db, seed);
       setData(loadEngineData(opened.db));
+      setMonth(currentMonthKey());
       setStatus("ready");
       if (seeded || opened.isNew) await persistNow();
       else {
-        const m = await loadMeta();
+        const m = await loadMeta(workspaceId);
+        setMeta(m ?? null);
         if (m?.savedAt) setLastSavedAt(m.savedAt);
       }
     },
-    [persistNow],
+    [closeCurrent, persistNow],
+  );
+
+  /** Load a workspace, handling the locked state. */
+  const open = useCallback(
+    async (ws: WorkspaceInfo, seed?: SeedOptions) => {
+      setStatus("loading");
+      const m = await loadMeta(ws.id);
+      setMeta(m ?? null);
+      if (m?.encrypted) {
+        const sessionPass = sessionStorage.getItem(passKey(ws.id));
+        if (sessionPass) {
+          try {
+            const image = await loadImage(ws.id, sessionPass);
+            passRef.current = sessionPass;
+            await boot(ws.id, image);
+            return;
+          } catch {
+            sessionStorage.removeItem(passKey(ws.id));
+          }
+        }
+        closeCurrent();
+        wsRef.current = ws.id;
+        passRef.current = null;
+        setStatus("locked");
+        return;
+      }
+      passRef.current = null;
+      const image = await loadImage(ws.id);
+      await boot(ws.id, image, seed ?? { template: ws.template, businessName: ws.businessName, ownerName: ws.ownerName });
+    },
+    [boot, closeCurrent],
   );
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        const m = await loadMeta();
+        const reg = await loadRegistry();
         if (cancelled) return;
-        setMeta(m ?? null);
-        if (m?.encrypted) {
-          const sessionPass = sessionStorage.getItem(PASS_SESSION_KEY);
-          if (sessionPass) {
-            try {
-              const image = await loadImage(sessionPass);
-              passRef.current = sessionPass;
-              await boot(image);
-              return;
-            } catch {
-              sessionStorage.removeItem(PASS_SESSION_KEY);
-            }
-          }
-          setStatus("locked");
+        setRegistry(reg);
+        const current = reg.list.find((w) => w.id === reg.currentId) ?? reg.list[0];
+        if (!current) {
+          setStatus("setup");
           return;
         }
-        const image = await loadImage();
-        if (cancelled) return;
-        await boot(image);
+        await open(current);
       } catch (e) {
         console.error(e);
         setError(e instanceof Error ? e.message : String(e));
@@ -161,15 +216,76 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [boot]);
+  }, [open]);
+
+  // Save first, then update state: the UI must never show a workspace the
+  // registry on disk does not yet know about (a reload would lose it).
+  const updateRegistry = useCallback(async (next: WorkspaceRegistry) => {
+    await saveRegistry(next);
+    setRegistry(next);
+  }, []);
+
+  const createWorkspace = useCallback(
+    async (input: CreateWorkspaceInput) => {
+      const ws: WorkspaceInfo = { id: uid(), name: input.name.trim(), businessName: input.businessName.trim(), ownerName: input.ownerName.trim(), template: input.template, createdAt: new Date().toISOString() };
+      const next: WorkspaceRegistry = { list: [...registry.list, ws], currentId: ws.id };
+      await updateRegistry(next);
+      passRef.current = input.passphrase || null;
+      if (input.passphrase) sessionStorage.setItem(passKey(ws.id), input.passphrase);
+      setStatus("loading");
+      await boot(ws.id, undefined, { template: ws.template, businessName: ws.businessName, ownerName: ws.ownerName, baseCurrency: input.baseCurrency, householdCurrency: input.householdCurrency });
+    },
+    [registry, updateRegistry, boot],
+  );
+
+  const switchWorkspace = useCallback(
+    async (id: string) => {
+      const ws = registry.list.find((w) => w.id === id);
+      if (!ws || id === wsRef.current) return;
+      await persistNow();
+      await updateRegistry({ ...registry, currentId: id });
+      await open(ws);
+    },
+    [registry, updateRegistry, open, persistNow],
+  );
+
+  const renameWorkspace = useCallback(
+    async (id: string, name: string, businessName?: string) => {
+      await updateRegistry({ ...registry, list: registry.list.map((w) => (w.id === id ? { ...w, name: name.trim() || w.name, businessName: businessName?.trim() || w.businessName } : w)) });
+    },
+    [registry, updateRegistry],
+  );
+
+  const deleteWorkspace = useCallback(
+    async (id: string) => {
+      const remaining = registry.list.filter((w) => w.id !== id);
+      await clearWorkspaceStorage(id);
+      sessionStorage.removeItem(passKey(id));
+      if (id === wsRef.current) {
+        closeCurrent();
+        wsRef.current = null;
+        passRef.current = null;
+      }
+      const next: WorkspaceRegistry = { list: remaining, currentId: id === registry.currentId ? (remaining[0]?.id ?? null) : registry.currentId };
+      await updateRegistry(next);
+      if (id === registry.currentId) {
+        const target = remaining.find((w) => w.id === next.currentId);
+        if (target) await open(target);
+        else setStatus("setup");
+      }
+    },
+    [registry, updateRegistry, closeCurrent, open],
+  );
 
   const unlock = useCallback(
     async (passphrase: string) => {
+      const id = wsRef.current;
+      if (!id) return false;
       try {
-        const image = await loadImage(passphrase);
+        const image = await loadImage(id, passphrase);
         passRef.current = passphrase;
-        sessionStorage.setItem(PASS_SESSION_KEY, passphrase);
-        await boot(image);
+        sessionStorage.setItem(passKey(id), passphrase);
+        await boot(id, image);
         return true;
       } catch (e) {
         if (e instanceof WrongPassphraseError) return false;
@@ -183,24 +299,24 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
 
   const setPassphrase = useCallback(
     async (passphrase: string | null) => {
+      const id = wsRef.current;
+      if (!id) return;
       passRef.current = passphrase;
-      if (passphrase) sessionStorage.setItem(PASS_SESSION_KEY, passphrase);
-      else sessionStorage.removeItem(PASS_SESSION_KEY);
+      if (passphrase) sessionStorage.setItem(passKey(id), passphrase);
+      else sessionStorage.removeItem(passKey(id));
       await persistNow();
     },
     [persistNow],
   );
 
   const lock = useCallback(() => {
-    if (!passRef.current) return;
-    sessionStorage.removeItem(PASS_SESSION_KEY);
+    const id = wsRef.current;
+    if (!passRef.current || !id) return;
+    sessionStorage.removeItem(passKey(id));
     passRef.current = null;
-    sqlRef.current?.close();
-    sqlRef.current = null;
-    dbRef.current = null;
-    setData(null);
+    closeCurrent();
     setStatus("locked");
-  }, []);
+  }, [closeCurrent]);
 
   const mutate = useCallback(
     <T,>(fn: (db: Db, data: EngineData) => T): T => {
@@ -208,10 +324,10 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
       if (!db || !data) throw new Error("Database is not ready");
       const result = fn(db, data);
       setData(loadEngineData(db));
-      schedulePersist();
+      void persistNow();
       return result;
     },
-    [data, schedulePersist],
+    [data, persistNow],
   );
 
   const exportDatabase = useCallback(() => {
@@ -221,28 +337,29 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
 
   const importDatabase = useCallback(
     async (bytes: Uint8Array) => {
-      // Validate before replacing anything.
+      const id = wsRef.current;
+      if (!id) throw new Error("No workspace open");
       const test = await openDatabase(bytes);
       loadEngineData(test.db);
       test.sql.close();
-      sqlRef.current?.close();
       setStatus("loading");
-      await boot(bytes);
+      await boot(id, bytes);
       await persistNow();
     },
     [boot, persistNow],
   );
 
   const resetDatabase = useCallback(async () => {
-    sqlRef.current?.close();
-    sqlRef.current = null;
-    dbRef.current = null;
+    const id = wsRef.current;
+    if (!id) return;
+    const ws = registry.list.find((w) => w.id === id);
+    closeCurrent();
     passRef.current = null;
-    sessionStorage.removeItem(PASS_SESSION_KEY);
-    await clearStorage();
+    sessionStorage.removeItem(passKey(id));
+    await clearWorkspaceStorage(id);
     setStatus("loading");
-    await boot(undefined);
-  }, [boot]);
+    await boot(id, undefined, ws ? { template: ws.template, businessName: ws.businessName, ownerName: ws.ownerName } : undefined);
+  }, [boot, closeCurrent, registry.list]);
 
   const snapshotFor = useCallback(
     (m: string) => {
@@ -254,6 +371,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
 
   const snapshot = useMemo(() => (data ? buildSnapshot(data, month, today) : null), [data, month, today]);
   const alerts = useMemo(() => (data && snapshot ? buildAlerts(data, snapshot, today) : []), [data, snapshot, today]);
+  const currentWorkspace = registry.list.find((w) => w.id === registry.currentId) ?? null;
 
   const value: FinanceContextValue = {
     status,
@@ -277,6 +395,12 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     saving,
     displayCurrency,
     setDisplayCurrency,
+    workspaces: registry.list,
+    currentWorkspace,
+    createWorkspace,
+    switchWorkspace,
+    renameWorkspace,
+    deleteWorkspace,
   };
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
