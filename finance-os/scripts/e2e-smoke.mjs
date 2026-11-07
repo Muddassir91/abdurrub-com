@@ -43,7 +43,7 @@ page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
 
 try {
   await page.goto(`http://localhost:${PORT}/finance/`, { waitUntil: "networkidle" });
-  await page.getByText("Set up Finance OS").waitFor({ timeout: 20000 });
+  await page.getByText("Set up").first().waitFor({ timeout: 20000 });
   check("Fresh browser shows the sign-up screen", true);
   await page.getByRole("button", { name: "Create workspace and open" }).click();
   await page.getByText("overview").first().waitFor({ timeout: 20000 });

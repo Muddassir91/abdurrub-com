@@ -4,13 +4,20 @@ import "./globals.css";
 import { FinanceProvider } from "@/store/FinanceProvider";
 import { ToastProvider } from "@/components/ui/toast";
 import { Gate } from "@/components/Gate";
+import { PwaRegister } from "@/components/PwaRegister";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 export const metadata: Metadata = {
-  title: "Finance OS · Retention Rules",
-  description: "Personal CFO and agency financial operating system.",
+  title: "CFoh! · your CFO in the browser",
+  description: "CFoh! is a personal CFO and financial operating system for solo agencies and small businesses: Profit First allocations, cash, reserves, tax and growth decisions.",
+  applicationName: "CFoh!",
+  manifest: `${basePath}/manifest.webmanifest`,
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "CFoh!" },
+  icons: { icon: [{ url: `${basePath}/icons/icon-192.png`, sizes: "192x192", type: "image/png" }, { url: `${basePath}/icons/icon-512.png`, sizes: "512x512", type: "image/png" }], apple: `${basePath}/icons/apple-touch-icon.png` },
   robots: { index: false, follow: false },
 };
 
@@ -38,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ToastProvider>
           <FinanceProvider>
             <Gate>{children}</Gate>
+            <PwaRegister />
           </FinanceProvider>
         </ToastProvider>
       </body>

@@ -1,4 +1,4 @@
-# Finance OS · Retention Rules
+# CFoh! (Finance OS) · Retention Rules
 
 Personal CFO and agency financial operating system for a solo marketing agency, built on Profit First allocations, zero-based budgeting, contribution-margin analysis, cash-flow management and rolling forecasting.
 

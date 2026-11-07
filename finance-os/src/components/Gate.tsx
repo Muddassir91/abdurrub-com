@@ -7,6 +7,7 @@ import { AppShell } from "./AppShell";
 import { Button } from "./ui/primitives";
 import { Input } from "./ui/forms";
 import { WorkspaceForm } from "./WorkspaceForm";
+import { LogoMark, Wordmark } from "./Logo";
 
 function Centered({ children }: { children: React.ReactNode }) {
   return <div className="flex min-h-screen items-center justify-center bg-bg p-4 sm:p-6">{children}</div>;
@@ -44,9 +45,9 @@ export function Gate({ children }: { children: React.ReactNode }) {
       <Centered>
         <div className="w-full max-w-2xl rounded-2xl border border-border bg-surface p-6 shadow-card sm:p-8">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent text-sm font-bold text-accent-fg">RR</div>
+            <LogoMark size={40} />
             <div>
-              <h1 className="text-lg font-semibold text-fg">Set up Finance OS</h1>
+              <h1 className="text-lg font-semibold text-fg">Set up <Wordmark size="md" /></h1>
               <p className="text-sm text-fg-muted">Create your first workspace. One workspace per business or person; you can add more later from the sidebar.</p>
             </div>
           </div>

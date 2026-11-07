@@ -9,6 +9,7 @@ import { useFinance } from "@/store/FinanceProvider";
 import { addMonths, monthLabel, currentMonthKey } from "@/lib/dates";
 import { Modal } from "./ui/Modal";
 import { WorkspaceForm } from "./WorkspaceForm";
+import { Wordmark } from "./Logo";
 
 const NAV = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -112,7 +113,7 @@ function WorkspaceSwitcher({ onCreate }: { onCreate: () => void }) {
       <button onClick={() => setOpen((v) => !v)} className="flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left hover:bg-surface-2" aria-haspopup="listbox" aria-expanded={open} title="Switch workspace">
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent text-xs font-bold text-accent-fg">{initials}</div>
         <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-semibold leading-tight text-fg">{currentWorkspace?.name ?? "Finance OS"}</div>
+          <div className="truncate text-sm font-semibold leading-tight text-fg">{currentWorkspace?.name ?? "CFoh!"}</div>
           <div className="truncate text-[11px] text-fg-faint">{data?.settings.businessName ?? "Workspace"}</div>
         </div>
         <ChevronsUpDown size={14} className="shrink-0 text-fg-faint" />
@@ -186,6 +187,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <WorkspaceSwitcher onCreate={() => setCreating(true)} />
         {nav}
         <div className="border-t border-border px-4 py-3 text-[11px] text-fg-faint">
+          <div className="mb-1.5"><Wordmark size="sm" className="text-fg-muted" /></div>
           <div className="flex items-center gap-1.5">
             <Save size={12} className={saving ? "animate-pulse text-accent" : ""} />
             {saving ? "Saving…" : lastSavedAt ? `Saved ${new Date(lastSavedAt).toLocaleTimeString()}` : "Not saved yet"}
@@ -198,7 +200,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="fixed inset-0 z-40 flex lg:hidden">
           <div className="flex w-64 flex-col border-r border-border bg-surface">
             <div className="flex items-center justify-between px-4 pt-3">
-              <span className="text-xs font-semibold uppercase tracking-wide text-fg-faint">Finance OS</span>
+              <Wordmark size="sm" />
               <button onClick={() => setOpen(false)} className="rounded-md p-1 text-fg-muted hover:bg-surface-2" aria-label="Close navigation">
                 <X size={16} />
               </button>
