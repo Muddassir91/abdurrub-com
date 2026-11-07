@@ -4,7 +4,7 @@ Personal CFO and agency financial operating system for a solo marketing agency, 
 
 It is a complete single-page application: Next.js 16, TypeScript, Tailwind 4, Recharts, Drizzle ORM over **SQLite running in the browser** (sql.js / WebAssembly). The database is persisted to IndexedDB after every change, optionally encrypted with a passphrase. Nothing leaves the device; the deployed site is static files.
 
-Live URL once merged to `main`: **https://abdurrub.com/finance/** (served by GitHub Pages from the `finance/` folder at the repo root).
+Live URL once merged to `main`: **https://abdurrub.com/cfoh/** (served by GitHub Pages from the `cfoh/` folder at the repo root).
 
 ---
 
@@ -13,7 +13,7 @@ Live URL once merged to `main`: **https://abdurrub.com/finance/** (served by Git
 ```bash
 cd finance-os
 npm install --legacy-peer-deps   # peer-dependency noise from vitest/vite only
-npm run dev                      # http://localhost:3000/finance/
+npm run dev                      # http://localhost:3000/cfoh/
 ```
 
 Other commands:
@@ -24,21 +24,21 @@ Other commands:
 | `npm run typecheck` | `tsc --noEmit`. |
 | `npm run lint` | ESLint. |
 | `npm run build` | Static export to `out/`. |
-| `npm run export:site` | Build and copy the export into `../finance/` for GitHub Pages. |
+| `npm run export:site` | Build and copy the export into `../cfoh/` for GitHub Pages. |
 | `npm run db:generate` | Regenerate SQL migrations from `src/db/schema.ts` and bundle them for the browser. |
 | `node scripts/e2e-smoke.mjs` | Browser smoke test against the exported site (needs Playwright). |
 
 ### Deploying
 
-The portfolio site deploys from `main` (root) on GitHub Pages. The app is committed as a built static export in `finance/`, plus a `.nojekyll` marker at the repo root so Pages serves the `_next/` folder. To ship a change:
+The portfolio site deploys from `main` (root) on GitHub Pages. The app is committed as a built static export in `cfoh/`, plus a `.nojekyll` marker at the repo root so Pages serves the `_next/` folder. To ship a change:
 
 ```bash
 cd finance-os && npm run export:site
-git add ../finance ../.nojekyll finance-os
+git add ../cfoh ../.nojekyll finance-os
 git commit -m "Update Finance OS" && git push
 ```
 
-Merging to `main` publishes it at `https://abdurrub.com/finance/`.
+Merging to `main` publishes it at `https://abdurrub.com/cfoh/`.
 
 ### Workspaces (sign-up)
 

@@ -1,5 +1,5 @@
 // End-to-end smoke test against the static export, served the way GitHub Pages
-// will serve it (repo root, app under /finance/). Exercises the real browser
+// will serve it (repo root, app under /cfoh/). Exercises the real browser
 // SQLite engine: seed, record transactions, verify dashboard math, persistence
 // across reload, month close and backup export.
 import http from "node:http";
@@ -42,7 +42,7 @@ page.on("pageerror", (e) => errors.push(String(e)));
 page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
 
 try {
-  await page.goto(`http://localhost:${PORT}/finance/`, { waitUntil: "networkidle" });
+  await page.goto(`http://localhost:${PORT}/cfoh/`, { waitUntil: "networkidle" });
   await page.getByText("Set up").first().waitFor({ timeout: 20000 });
   check("Fresh browser shows the sign-up screen", true);
   await page.getByRole("button", { name: "Create workspace and open" }).click();
@@ -52,7 +52,7 @@ try {
   await page.screenshot({ path: "../finance-os/.e2e/dashboard-empty.png", fullPage: true }).catch(() => {});
 
   // Record a $4,000 client payment via the Transactions page.
-  await page.goto(`http://localhost:${PORT}/finance/transactions/`, { waitUntil: "networkidle" });
+  await page.goto(`http://localhost:${PORT}/cfoh/transactions/`, { waitUntil: "networkidle" });
   await page.getByRole("button", { name: "Record" }).first().click();
   const dialog = page.getByRole("dialog");
   await dialog.getByRole("combobox").first().selectOption("client_payment");
@@ -85,7 +85,7 @@ try {
   check("PKR expense converted at the transaction rate", await page.getByText("$178.57").first().isVisible());
 
   // Dashboard figures: Scenario A allocations and expense health.
-  await page.goto(`http://localhost:${PORT}/finance/`, { waitUntil: "networkidle" });
+  await page.goto(`http://localhost:${PORT}/cfoh/`, { waitUntil: "networkidle" });
   const body = await page.locator("body").innerText();
   check("Owner compensation = $1,400.00", body.includes("$1,400.00"));
   check("Tax reserve = $600.00", body.includes("$600.00"));
@@ -107,14 +107,14 @@ try {
   await page.getByRole("button", { name: "Toggle theme" }).click();
 
   // Scenarios page preset check ($10,000 -> owner $3,500).
-  await page.goto(`http://localhost:${PORT}/finance/scenarios/`, { waitUntil: "networkidle" });
+  await page.goto(`http://localhost:${PORT}/cfoh/scenarios/`, { waitUntil: "networkidle" });
   await page.getByRole("button", { name: "$10k", exact: true }).click();
   const sBody = await page.locator("body").innerText();
   check("Scenario B owner compensation $3,500.00", sBody.includes("$3,500.00") && sBody.includes("$2,500.00"));
   await page.screenshot({ path: "../finance-os/.e2e/scenarios.png", fullPage: true }).catch(() => {});
 
   // Whop sale with fee lines.
-  await page.goto(`http://localhost:${PORT}/finance/whop/`, { waitUntil: "networkidle" });
+  await page.goto(`http://localhost:${PORT}/cfoh/whop/`, { waitUntil: "networkidle" });
   await page.getByRole("button", { name: "Record sale" }).first().click();
   const wd = page.getByRole("dialog");
   await wd.locator('input[inputmode="decimal"]').first().fill("1000");
@@ -127,7 +127,7 @@ try {
   await page.screenshot({ path: "../finance-os/.e2e/whop.png", fullPage: true }).catch(() => {});
 
   // Month-end: tick all steps and close.
-  await page.goto(`http://localhost:${PORT}/finance/month-end/`, { waitUntil: "networkidle" });
+  await page.goto(`http://localhost:${PORT}/cfoh/month-end/`, { waitUntil: "networkidle" });
   const steps = page.locator("button:has(svg.lucide-circle)");
   const n = await steps.count();
   for (let i = 0; i < n; i++) await page.locator("button:has(svg.lucide-circle)").first().click();
@@ -137,18 +137,18 @@ try {
   await page.screenshot({ path: "../finance-os/.e2e/month-end.png", fullPage: true }).catch(() => {});
 
   // Reserves page shows booked envelope.
-  await page.goto(`http://localhost:${PORT}/finance/reserves/`, { waitUntil: "networkidle" });
+  await page.goto(`http://localhost:${PORT}/cfoh/reserves/`, { waitUntil: "networkidle" });
   const rBody = await page.locator("body").innerText();
   check("Reserve envelope credited after close", rBody.includes("Allocation booked at month close"));
 
   // Backup export triggers a download.
-  await page.goto(`http://localhost:${PORT}/finance/settings/`, { waitUntil: "networkidle" });
+  await page.goto(`http://localhost:${PORT}/cfoh/settings/`, { waitUntil: "networkidle" });
   await page.getByRole("tab", { name: "Backup & restore" }).click();
   const [download] = await Promise.all([page.waitForEvent("download"), page.getByRole("button", { name: /Download backup/ }).click()]);
   check("Backup download produced", (await download.suggestedFilename()).endsWith(".sqlite"));
 
   // Workspaces: add a second business, check isolation, switch back.
-  await page.goto(`http://localhost:${PORT}/finance/settings/`, { waitUntil: "networkidle" });
+  await page.goto(`http://localhost:${PORT}/cfoh/settings/`, { waitUntil: "networkidle" });
   await page.getByRole("tab", { name: "Workspaces" }).click();
   await page.getByRole("button", { name: "Add business or person" }).first().click();
   const wsd = page.getByRole("dialog");
@@ -158,7 +158,7 @@ try {
   await wsd.getByRole("button", { name: "Create workspace" }).click();
   await page.locator("aside").getByText("Second Agency Ltd").first().waitFor({ timeout: 20000 });
   await page.locator("aside").getByText(/Saved /).waitFor();
-  await page.goto(`http://localhost:${PORT}/finance/`, { waitUntil: "networkidle" });
+  await page.goto(`http://localhost:${PORT}/cfoh/`, { waitUntil: "networkidle" });
   const ws2 = await page.locator("body").innerText();
   check("Second workspace starts empty (no $4,000 collected)", !ws2.includes("$4,000.00") && ws2.includes("Second Agency"), `has4000=${ws2.includes("$4,000.00")} hasName=${ws2.includes("Second Agency")} aside=${(await page.locator("aside").innerText()).split("\n").slice(0,3).join("/")}`);
   await page.locator("aside").getByTitle("Switch workspace").click();
@@ -174,7 +174,7 @@ try {
   await page.screenshot({ path: "../finance-os/.e2e/workspaces.png", fullPage: false }).catch(() => {});
 
   // Appearance setting: follow system.
-  await page.goto(`http://localhost:${PORT}/finance/settings/`, { waitUntil: "networkidle" });
+  await page.goto(`http://localhost:${PORT}/cfoh/settings/`, { waitUntil: "networkidle" });
   await page.getByRole("tab", { name: "Appearance" }).click();
   await page.getByRole("button", { name: /Dark/ }).click();
   check("Appearance: dark applied", await page.evaluate(() => document.documentElement.classList.contains("dark")));
@@ -183,7 +183,7 @@ try {
 
   // Visit every page for runtime errors.
   for (const p of ["expenses", "clients", "personal", "accounts", "tax", "growth", "forecast", "alerts"]) {
-    await page.goto(`http://localhost:${PORT}/finance/${p}/`, { waitUntil: "networkidle" });
+    await page.goto(`http://localhost:${PORT}/cfoh/${p}/`, { waitUntil: "networkidle" });
     await page.waitForTimeout(200);
   }
   await page.screenshot({ path: "../finance-os/.e2e/alerts.png", fullPage: true }).catch(() => {});

@@ -1,10 +1,10 @@
-// Copies the static export (out/) into ../finance so GitHub Pages serves the
-// app at https://abdurrub.com/finance/ alongside the portfolio site.
+// Copies the static export (out/) into ../cfoh so GitHub Pages serves the
+// app at https://abdurrub.com/cfoh/ alongside the portfolio site.
 import { cpSync, existsSync, rmSync, mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
 const out = resolve(process.cwd(), "out");
-const target = resolve(process.cwd(), "..", "finance");
+const target = resolve(process.cwd(), "..", "cfoh");
 if (!existsSync(out)) {
   console.error("No out/ directory. Run `npm run build` first.");
   process.exit(1);
