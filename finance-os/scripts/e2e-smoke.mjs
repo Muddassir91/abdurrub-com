@@ -43,8 +43,14 @@ page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
 
 try {
   await page.goto(`http://localhost:${PORT}/cfoh/`, { waitUntil: "networkidle" });
+  // With cloud accounts configured the first screen is sign-in; device-only mode is still offered.
+  const deviceOnly = page.getByRole("button", { name: /Continue without an account/ });
+  if (await deviceOnly.isVisible({ timeout: 5000 }).catch(() => false)) {
+    check("Fresh browser shows the sign-in screen", true);
+    await deviceOnly.click();
+  }
   await page.getByText("Set up").first().waitFor({ timeout: 20000 });
-  check("Fresh browser shows the sign-up screen", true);
+  check("Device-only path reaches workspace setup", true);
   await page.getByRole("button", { name: "Create workspace and open" }).click();
   await page.getByText("overview").first().waitFor({ timeout: 20000 });
   check("App boots and seeds the database", await page.getByText("Retention Rules").first().isVisible());
