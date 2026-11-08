@@ -6,20 +6,13 @@ Instructions for Claude when working in this repo (abdurrub.com, Muddassir Abdur
 
 Follow the voice rules in `README.md` for any copy: no em or en dashes, active voice, reader-first, short punchy sentences, no "leverage" / "dive deep" / "game-changer" / "revolutionary", position as marketer or retention strategist, never "copywriter".
 
-## Openings: mandatory workflow
+## Openings
 
-An "opening" is anything whose job is to earn the first second of attention:
+Whenever Muddassir asks for openings of any kind, run the `/openings` skill (`.claude/skills/openings/SKILL.md`) without being asked. "Openings" means headlines, subheadlines, email subject lines, preview text, first lines, static and video ad hooks, drama story ad openings, VSL hooks, script first lines, and blog, LinkedIn or Substack leads. Also treat "hooks", "openers", "leads" and "first lines" as requests for openings.
 
-- headlines (landing pages, sales pages, blog posts)
-- email subject lines and first lines
-- ad openings and ad hooks (static, UGC, drama story ads)
-- VSL hooks and first lines of scripts
-- any other lead, teaser or first sentence
+The skill applies the master doc at `_reference/openings-master.md`. Read it in full before writing. Two things are mandatory every time, for every format:
 
-Whenever Muddassir asks for openings of any kind, do BOTH of the following every time, without being reminded:
+1. Include Ben Settle-style openings, labelled.
+2. Fetch the current headlines from the drama tabloid outlets listed in the master doc, mine their structures, and show the source beside each adapted opening.
 
-1. **Include Ben Settle-style openings.** At least a few of the suggested openings must follow Ben Settle's email opening patterns (listed in `_reference/openings-playbook.md`). Label them so he can tell which ones they are.
-
-2. **Go through the drama tabloid outlets.** Before writing, check the current real-life / drama headlines on the outlets listed in `_reference/openings-playbook.md` (Take a Break, That's Life!, Chat, The Sun Fabulous, Daily Mirror real life, Daily Mail Femail, New York Post relationships, National Enquirer, TMZ, E! News). Fetch them live when web access is available. Borrow the headline structures, emotional triggers and story shapes, then rewrite them for the offer at hand. Show which tabloid pattern each adapted opening came from. If the web is unavailable, say so and work from the saved pattern list in the playbook instead.
-
-Read `_reference/openings-playbook.md` in full before suggesting openings.
+If the web is unreachable, say so and use the fallback patterns in the master doc.
