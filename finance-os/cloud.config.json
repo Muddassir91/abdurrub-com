@@ -1,0 +1,5 @@
+{
+  "_comment": "Cloud accounts for CFoh!. Fill in from your Supabase project (Settings -> API): the project URL and the anon/publishable key. Both are safe to commit; privacy comes from row-level security (see supabase/schema.sql). Leave empty for device-only mode.",
+  "supabaseUrl": "",
+  "supabaseAnonKey": ""
+}

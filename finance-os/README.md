@@ -46,6 +46,29 @@ On first open the app shows a sign-up screen that creates a **workspace**. A wor
 
 There is no server, so there are no online accounts: "sign up" creates a local workspace in this browser. If you later want the same workspace shared across devices or people, the next step would be a hosted database with authentication; the engine and UI are built to make that an addition, not a rewrite.
 
+### Accounts and sync (Supabase)
+
+With a Supabase project connected, the app shows a sign-in screen. Each account gets a private space: its workspaces are uploaded after every save and downloaded on other devices. Row-level security means an account can only ever read its own rows and files; a passphrase-locked workspace is encrypted before upload, so the server holds ciphertext only. Without an account the app still works on one device ("Continue without an account").
+
+One-time setup, about ten minutes:
+
+1. Create a free project at supabase.com. Pick a region close to you.
+2. Dashboard → SQL editor → New query. Paste `supabase/schema.sql` and run it. It creates the `workspaces` table, the private `workspaces` storage bucket and the security policies.
+3. Dashboard → Authentication → URL configuration. Set the Site URL to `https://abdurrub.com/cfoh/` and add it to Redirect URLs. Under Providers, keep Email enabled with "Confirm email" on.
+4. Dashboard → Settings → API. Copy the Project URL and the anon (publishable) key into `finance-os/cloud.config.json`, then rebuild and publish:
+
+```bash
+cd finance-os && npm run export:site && git add -A && git commit -m "Enable accounts" && git push
+```
+
+The anon key is public by design; it is safe in the repository. Never put the service-role key anywhere in this project.
+
+Sync rules: every save increments a version counter. On open, the newer side wins; if both devices changed a workspace while offline, the newer save wins and the older copy is kept as a separate "copy from this device" workspace. Settings → Account & sync shows status, forces a sync and signs out (optionally wiping local copies on a shared computer).
+
+### Trends & progress
+
+The Trends page aggregates the ledger by day (last 30), week (last 12), month (last 12) and year (last 5): collected, fees and reversals, net revenue, overhead, delivery, growth, owner draws, personal spend, result and cumulative result. Transfers never count.
+
 ### Appearance
 
 *Settings → Appearance* chooses **Follow system**, **Light** or **Dark**. The sun/moon button in the top bar is a quick toggle. The preference is stored per browser and applied before first paint, so there is no flash.

@@ -19,14 +19,18 @@ import { todayKey, dateLabel } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
 import { clsx } from "clsx";
 
-type Tab = "allocation" | "business" | "fx" | "categories" | "backup" | "privacy" | "appearance" | "workspaces";
+type Tab = "allocation" | "business" | "fx" | "categories" | "backup" | "privacy" | "appearance" | "workspaces" | "account";
 
 export default function SettingsPage() {
-  const [tab, setTab] = useState<Tab>("allocation");
+  const [tab, setTab] = useState<Tab>(() => {
+    if (typeof window === "undefined") return "allocation";
+    const t = new URLSearchParams(window.location.search).get("tab");
+    return t === "account" ? "account" : "allocation";
+  });
   return (
     <>
       <PageHeader title="Settings" description="Allocation rules, business parameters, exchange rates, categories, backups, privacy, appearance and workspaces. Nothing here changes silently; every percentage must add up to 100%." />
-      <Tabs className="mb-4" value={tab} onChange={setTab} tabs={[{ value: "allocation", label: "Allocation policies" }, { value: "business", label: "Business & targets" }, { value: "fx", label: "Exchange rates" }, { value: "categories", label: "Categories" }, { value: "backup", label: "Backup & restore" }, { value: "privacy", label: "Privacy lock" }, { value: "appearance", label: "Appearance" }, { value: "workspaces", label: "Workspaces" }]} />
+      <Tabs className="mb-4" value={tab} onChange={setTab} tabs={[{ value: "allocation", label: "Allocation policies" }, { value: "business", label: "Business & targets" }, { value: "fx", label: "Exchange rates" }, { value: "categories", label: "Categories" }, { value: "backup", label: "Backup & restore" }, { value: "privacy", label: "Privacy lock" }, { value: "appearance", label: "Appearance" }, { value: "workspaces", label: "Workspaces" }, { value: "account", label: "Account & sync" }]} />
       {tab === "allocation" && <PoliciesTab />}
       {tab === "business" && <BusinessTab />}
       {tab === "fx" && <FxTab />}
@@ -35,7 +39,56 @@ export default function SettingsPage() {
       {tab === "privacy" && <PrivacyTab />}
       {tab === "appearance" && <AppearanceTab />}
       {tab === "workspaces" && <WorkspacesTab />}
+      {tab === "account" && <AccountTab />}
     </>
+  );
+}
+
+/* ----------------------------------------------------------------- account */
+
+function AccountTab() {
+  const { cloudStatus, cloudUser, cloudError, lastSyncedAt, signOut, syncNow, workspaces, currentWorkspace, continueWithoutAccount } = useFinance();
+  const toast = useToast();
+  const [busy, setBusy] = useState(false);
+  const [confirmOut, setConfirmOut] = useState<null | boolean>(null);
+  if (cloudStatus === "off") {
+    return (
+      <Callout tone="neutral" title="Accounts are not enabled in this build">
+        This copy of CFoh! runs on this device only. Once the cloud project is connected (see finance-os/README.md), signing in makes your workspaces follow you across devices.
+      </Callout>
+    );
+  }
+  if (!cloudUser) {
+    return (
+      <Card title="Not signed in" subtitle="You chose to use CFoh! on this device only">
+        <p className="text-sm text-fg-muted">Sign in or create an account to keep your workspaces in your private cloud space and open them from any device. Local workspaces on this device will be uploaded to the account automatically.</p>
+        <Button className="mt-3" variant="primary" onClick={() => { localStorage.removeItem("finance-os:device-only"); window.location.reload(); }}>Sign in or create account</Button>
+      </Card>
+    );
+  }
+  const synced = workspaces.filter((w) => w.cloud).length;
+  return (
+    <div className="grid gap-4 lg:grid-cols-2">
+      <Card title="Your account" subtitle="Private cloud space for your workspaces">
+        <DefinitionList items={[{ label: "Signed in as", value: cloudUser.email ?? cloudUser.id }, { label: "Sync status", value: cloudStatus === "syncing" ? "Syncing…" : cloudStatus === "error" ? <span className="text-critical">Error</span> : "Up to date" }, { label: "Last synced", value: lastSyncedAt ? new Date(lastSyncedAt).toLocaleString() : "—" }, { label: "Workspaces in account", value: `${synced} of ${workspaces.length}` }, { label: "Current workspace", value: currentWorkspace ? `${currentWorkspace.name}${currentWorkspace.cloud ? " (synced)" : " (this device only)"}` : "—" }]} />
+        {cloudError && <Callout tone="critical" className="mt-3" title="Last sync error">{cloudError}</Callout>}
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Button variant="primary" loading={busy} onClick={async () => { setBusy(true); await syncNow(); setBusy(false); toast.success("Sync complete"); }}>Sync now</Button>
+          <Button onClick={() => setConfirmOut(false)}>Sign out</Button>
+          <Button variant="danger" onClick={() => setConfirmOut(true)}>Sign out and remove data from this device</Button>
+        </div>
+        <ConfirmModal open={confirmOut !== null} onClose={() => setConfirmOut(null)} danger={confirmOut === true} confirmLabel={confirmOut ? "Sign out and remove" : "Sign out"} title={confirmOut ? "Remove your data from this device?" : "Sign out?"} body={confirmOut ? "Your workspaces stay safe in your account. Their local copies on this device are deleted, which is what you want on a shared computer." : "Your workspaces stay on this device and in your account. Sign back in any time."} onConfirm={() => void signOut(confirmOut === true)} />
+        <span className="hidden">{String(continueWithoutAccount)}</span>
+      </Card>
+      <Card title="How sync works" subtitle="Plain answers">
+        <ul className="list-disc space-y-1.5 pl-4 text-sm text-fg-muted">
+          <li>Every save on this device is also uploaded to your account, usually within two seconds.</li>
+          <li>Opening a workspace on another device downloads the latest copy. If both devices changed it while offline, the newer save wins and the other is kept as a separate &quot;copy from this device&quot; workspace so nothing is lost.</li>
+          <li>With a passphrase set, the workspace is encrypted before upload. The server stores ciphertext only; the passphrase is needed on every device.</li>
+          <li>Nobody else can read your rows: the database enforces that each account only sees its own data.</li>
+        </ul>
+      </Card>
+    </div>
   );
 }
 

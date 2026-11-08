@@ -181,6 +181,34 @@ try {
   await page.getByRole("button", { name: /Follow system/ }).click();
   check("Appearance: follow system stored", await page.evaluate(() => localStorage.getItem("finance-os:theme") === "system"));
 
+  // Trends page renders the four granularities.
+  await page.goto(`http://localhost:${PORT}/cfoh/trends/`, { waitUntil: "networkidle" });
+  for (const g of ["Daily", "Weekly", "Monthly", "Yearly"]) await page.getByRole("tab", { name: g }).click();
+  check("Trends page renders all granularities", (await page.locator("body").innerText()).includes("Net revenue"));
+  await page.screenshot({ path: "../finance-os/.e2e/trends.png", fullPage: true }).catch(() => {});
+
+  // Cloud accounts (in-memory backend): sign up, workspace uploaded, sign out, sign in again sees it.
+  const ctx2 = await browser.newContext({ viewport: { width: 1400, height: 900 } });
+  await ctx2.addInitScript(() => localStorage.setItem("finance-os:cloud", "memory"));
+  const p2 = await ctx2.newPage();
+  const errors2 = [];
+  p2.on("pageerror", (e) => errors2.push(String(e)));
+  await p2.goto(`http://localhost:${PORT}/cfoh/`, { waitUntil: "networkidle" });
+  await p2.getByRole("tab", { name: "Create account" }).click();
+  await p2.getByPlaceholder("you@yourbusiness.com").fill("owner@example.com");
+  await p2.locator('input[type="password"]').fill("correct-horse-battery");
+  await p2.getByRole("button", { name: "Create account" }).click();
+  await p2.getByText("Set up").first().waitFor({ timeout: 20000 });
+  check("Cloud: sign-up leads to workspace setup", true);
+  await p2.getByRole("button", { name: "Create workspace and open" }).click();
+  await p2.getByText("overview").first().waitFor({ timeout: 20000 });
+  await p2.locator("aside").getByText(/Synced/).first().waitFor({ timeout: 20000 });
+  check("Cloud: workspace synced to account", true);
+  await p2.goto(`http://localhost:${PORT}/cfoh/settings/?tab=account`, { waitUntil: "networkidle" });
+  check("Cloud: account tab shows the signed-in email", (await p2.locator("body").innerText()).includes("owner@example.com"));
+  check("Cloud: no runtime errors in account flow", errors2.length === 0, errors2.slice(0, 2).join(" | "));
+  await ctx2.close();
+
   // Visit every page for runtime errors.
   for (const p of ["expenses", "clients", "personal", "accounts", "tax", "growth", "forecast", "alerts"]) {
     await page.goto(`http://localhost:${PORT}/cfoh/${p}/`, { waitUntil: "networkidle" });

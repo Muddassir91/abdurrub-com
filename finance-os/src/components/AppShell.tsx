@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
-import { LayoutDashboard, ArrowLeftRight, Receipt, Users, CreditCard, Wallet, Landmark, PiggyBank, Scale, Rocket, SlidersHorizontal, Bell, CalendarCheck, Settings, Lock, Sun, Moon, Menu, X, ChevronLeft, ChevronRight, TrendingUp, Save, ChevronsUpDown, Plus, Check } from "lucide-react";
+import { LayoutDashboard, LineChart, ArrowLeftRight, Receipt, Users, CreditCard, Wallet, Landmark, PiggyBank, Scale, Rocket, SlidersHorizontal, Bell, CalendarCheck, Settings, Lock, Sun, Moon, Menu, X, ChevronLeft, ChevronRight, TrendingUp, Save, ChevronsUpDown, Plus, Check } from "lucide-react";
 import { useFinance } from "@/store/FinanceProvider";
 import { addMonths, monthLabel, currentMonthKey } from "@/lib/dates";
 import { Modal } from "./ui/Modal";
@@ -13,6 +13,7 @@ import { Wordmark } from "./Logo";
 
 const NAV = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/trends/", label: "Trends & progress", icon: LineChart },
   { href: "/transactions/", label: "Transactions", icon: ArrowLeftRight },
   { href: "/expenses/", label: "Business expenses", icon: Receipt },
   { href: "/clients/", label: "Clients & revenue", icon: Users },
@@ -91,7 +92,7 @@ export function useTheme() {
 }
 
 function WorkspaceSwitcher({ onCreate }: { onCreate: () => void }) {
-  const { workspaces, currentWorkspace, switchWorkspace, data } = useFinance();
+  const { workspaces, currentWorkspace, switchWorkspace, data, cloudUser, cloudStatus, cloudError, lastSyncedAt } = useFinance();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -146,6 +147,15 @@ function WorkspaceSwitcher({ onCreate }: { onCreate: () => void }) {
           >
             <Plus size={14} /> Add business or person
           </button>
+          {cloudStatus !== "off" && (
+            <>
+              <div className="my-1 border-t border-border" />
+              <Link href="/settings/?tab=account" onClick={() => setOpen(false)} className="block rounded-lg px-2 py-1.5 text-left hover:bg-surface-2">
+                <div className="truncate text-xs font-medium text-fg">{cloudUser ? cloudUser.email : "Not signed in"}</div>
+                <div className="truncate text-[11px] text-fg-faint">{cloudStatus === "syncing" ? "Syncing…" : cloudStatus === "error" ? `Sync error: ${cloudError ?? ""}` : cloudUser ? (lastSyncedAt ? `Synced ${new Date(lastSyncedAt).toLocaleTimeString()}` : "Synced to your account") : "This device only · tap to sign in"}</div>
+              </Link>
+            </>
+          )}
         </div>
       )}
     </div>
@@ -156,7 +166,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
   const path = pathname.startsWith(base) ? pathname.slice(base.length) || "/" : pathname;
-  const { month, setMonth, alerts, displayCurrency, setDisplayCurrency, isEncrypted, lock, saving, lastSavedAt, data, createWorkspace } = useFinance();
+  const { month, setMonth, alerts, displayCurrency, setDisplayCurrency, isEncrypted, lock, saving, lastSavedAt, data, createWorkspace, cloudUser, cloudStatus } = useFinance();
   const { resolved, toggle } = useTheme();
   const [open, setOpen] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -192,7 +202,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Save size={12} className={saving ? "animate-pulse text-accent" : ""} />
             {saving ? "Saving…" : lastSavedAt ? `Saved ${new Date(lastSavedAt).toLocaleTimeString()}` : "Not saved yet"}
           </div>
-          <div className="mt-1">Data lives in this browser only.</div>
+          <div className="mt-1">{cloudUser ? (cloudStatus === "syncing" ? "Syncing to your account…" : cloudStatus === "error" ? "Cloud sync failed; data is safe on this device." : "Synced to your account.") : "Data lives in this browser only."}</div>
         </div>
       </aside>
 

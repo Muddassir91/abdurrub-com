@@ -8,6 +8,7 @@ import { Button } from "./ui/primitives";
 import { Input } from "./ui/forms";
 import { WorkspaceForm } from "./WorkspaceForm";
 import { LogoMark, Wordmark } from "./Logo";
+import { AuthScreen } from "./AuthScreen";
 
 function Centered({ children }: { children: React.ReactNode }) {
   return <div className="flex min-h-screen items-center justify-center bg-bg p-4 sm:p-6">{children}</div>;
@@ -40,6 +41,7 @@ export function Gate({ children }: { children: React.ReactNode }) {
       </Centered>
     );
   }
+  if (status === "auth") return <AuthScreen />;
   if (status === "setup") {
     return (
       <Centered>

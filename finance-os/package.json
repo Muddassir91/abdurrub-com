@@ -15,6 +15,7 @@
     "export:site": "npm run build && node scripts/copy-export.mjs"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.119.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
     "decimal.js": "^10.6.0",
