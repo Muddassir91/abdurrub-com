@@ -26,7 +26,7 @@ const results = [];
 const check = (name, ok, detail = "") => { results.push({ name, ok }); console.log(`${ok ? "PASS" : "FAIL"} ${name}${detail ? " · " + detail : ""}`); };
 const proxy = process.env.HTTPS_PROXY ? { server: process.env.HTTPS_PROXY, bypass: "localhost,127.0.0.1" } : undefined;
 const browser = await chromium.launch({ proxy });
-const U = `http://localhost:${PORT}/cfoh/`;
+const U = `http://localhost:${PORT}/cfoh/app/`;
 
 try {
   // Device A: sign up, create workspace, record a payment, expect sync.

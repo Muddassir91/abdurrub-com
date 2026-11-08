@@ -4,7 +4,7 @@ Personal CFO and agency financial operating system for a solo marketing agency, 
 
 It is a complete single-page application: Next.js 16, TypeScript, Tailwind 4, Recharts, Drizzle ORM over **SQLite running in the browser** (sql.js / WebAssembly). The database is persisted to IndexedDB after every change, optionally encrypted with a passphrase. Nothing leaves the device; the deployed site is static files.
 
-Live URL once merged to `main`: **https://abdurrub.com/cfoh/** (served by GitHub Pages from the `cfoh/` folder at the repo root).
+Live: **https://abdurrub.com/cfoh/** is the marketing homepage; the app itself is at **https://abdurrub.com/cfoh/app/** (served by GitHub Pages from the `cfoh/` folder at the repo root).
 
 ---
 
@@ -13,7 +13,7 @@ Live URL once merged to `main`: **https://abdurrub.com/cfoh/** (served by GitHub
 ```bash
 cd finance-os
 npm install --legacy-peer-deps   # peer-dependency noise from vitest/vite only
-npm run dev                      # http://localhost:3000/cfoh/
+npm run dev                      # http://localhost:3000/cfoh/ (homepage), /cfoh/app/ (the app)
 ```
 
 Other commands:

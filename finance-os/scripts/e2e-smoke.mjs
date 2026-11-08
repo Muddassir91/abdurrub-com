@@ -42,10 +42,26 @@ page.on("pageerror", (e) => errors.push(String(e)));
 page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
 
 try {
+  // Marketing homepage: rotating headline, interactive demo, CTAs into the app.
   await page.goto(`http://localhost:${PORT}/cfoh/`, { waitUntil: "networkidle" });
+  const home = await page.locator("body").innerText();
+  const homeLc = home.toLowerCase();
+  check("Homepage renders header, subheader, demo, comparison and use cases", homeLc.includes("make better financial decisions") && homeLc.includes("without hiring a cfo") && homeLc.includes("the old way") && homeLc.includes("freelancers"));
+  const demoBefore = await page.locator("#demo").innerText();
+  await page.locator('input[aria-label="Monthly revenue"]').fill("4");
+  const demoAfter = await page.locator("#demo").innerText();
+  check("Homepage demo recalculates when the slider moves", demoBefore.includes("$4,000") && demoAfter.includes("$10,000") && demoAfter.includes("$3,500"));
+  const firstPhrase = await page.locator("h1 [aria-live]").innerText();
+  await page.waitForTimeout(3200);
+  const secondPhrase = await page.locator("h1 [aria-live]").innerText();
+  check("Homepage headline rotates", firstPhrase.trim() !== secondPhrase.trim(), `${firstPhrase.trim()} -> ${secondPhrase.trim()}`);
+  await page.screenshot({ path: "../finance-os/.e2e/home.png", fullPage: true }).catch(() => {});
+  await page.getByRole("link", { name: "Start free" }).first().click();
+  await page.waitForURL(/\/cfoh\/app\/?$/, { timeout: 20000 });
+  check("Homepage CTA opens the app", true);
   // With cloud accounts configured the first screen is sign-in; device-only mode is still offered.
   const deviceOnly = page.getByRole("button", { name: /Continue without an account/ });
-  if (await deviceOnly.isVisible({ timeout: 5000 }).catch(() => false)) {
+  if (await deviceOnly.waitFor({ state: "visible", timeout: 15000 }).then(() => true).catch(() => false)) {
     check("Fresh browser shows the sign-in screen", true);
     await deviceOnly.click();
   }
@@ -58,7 +74,7 @@ try {
   await page.screenshot({ path: "../finance-os/.e2e/dashboard-empty.png", fullPage: true }).catch(() => {});
 
   // Record a $4,000 client payment via the Transactions page.
-  await page.goto(`http://localhost:${PORT}/cfoh/transactions/`, { waitUntil: "networkidle" });
+  await page.goto(`http://localhost:${PORT}/cfoh/app/transactions/`, { waitUntil: "networkidle" });
   await page.getByRole("button", { name: "Record" }).first().click();
   const dialog = page.getByRole("dialog");
   await dialog.getByRole("combobox").first().selectOption("client_payment");
@@ -91,7 +107,7 @@ try {
   check("PKR expense converted at the transaction rate", await page.getByText("$178.57").first().isVisible());
 
   // Dashboard figures: Scenario A allocations and expense health.
-  await page.goto(`http://localhost:${PORT}/cfoh/`, { waitUntil: "networkidle" });
+  await page.goto(`http://localhost:${PORT}/cfoh/app/`, { waitUntil: "networkidle" });
   const body = await page.locator("body").innerText();
   check("Owner compensation = $1,400.00", body.includes("$1,400.00"));
   check("Tax reserve = $600.00", body.includes("$600.00"));
@@ -113,14 +129,14 @@ try {
   await page.getByRole("button", { name: "Toggle theme" }).click();
 
   // Scenarios page preset check ($10,000 -> owner $3,500).
-  await page.goto(`http://localhost:${PORT}/cfoh/scenarios/`, { waitUntil: "networkidle" });
+  await page.goto(`http://localhost:${PORT}/cfoh/app/scenarios/`, { waitUntil: "networkidle" });
   await page.getByRole("button", { name: "$10k", exact: true }).click();
   const sBody = await page.locator("body").innerText();
   check("Scenario B owner compensation $3,500.00", sBody.includes("$3,500.00") && sBody.includes("$2,500.00"));
   await page.screenshot({ path: "../finance-os/.e2e/scenarios.png", fullPage: true }).catch(() => {});
 
   // Whop sale with fee lines.
-  await page.goto(`http://localhost:${PORT}/cfoh/whop/`, { waitUntil: "networkidle" });
+  await page.goto(`http://localhost:${PORT}/cfoh/app/whop/`, { waitUntil: "networkidle" });
   await page.getByRole("button", { name: "Record sale" }).first().click();
   const wd = page.getByRole("dialog");
   await wd.locator('input[inputmode="decimal"]').first().fill("1000");
@@ -133,7 +149,7 @@ try {
   await page.screenshot({ path: "../finance-os/.e2e/whop.png", fullPage: true }).catch(() => {});
 
   // Month-end: tick all steps and close.
-  await page.goto(`http://localhost:${PORT}/cfoh/month-end/`, { waitUntil: "networkidle" });
+  await page.goto(`http://localhost:${PORT}/cfoh/app/month-end/`, { waitUntil: "networkidle" });
   const steps = page.locator("button:has(svg.lucide-circle)");
   const n = await steps.count();
   for (let i = 0; i < n; i++) await page.locator("button:has(svg.lucide-circle)").first().click();
@@ -143,18 +159,18 @@ try {
   await page.screenshot({ path: "../finance-os/.e2e/month-end.png", fullPage: true }).catch(() => {});
 
   // Reserves page shows booked envelope.
-  await page.goto(`http://localhost:${PORT}/cfoh/reserves/`, { waitUntil: "networkidle" });
+  await page.goto(`http://localhost:${PORT}/cfoh/app/reserves/`, { waitUntil: "networkidle" });
   const rBody = await page.locator("body").innerText();
   check("Reserve envelope credited after close", rBody.includes("Allocation booked at month close"));
 
   // Backup export triggers a download.
-  await page.goto(`http://localhost:${PORT}/cfoh/settings/`, { waitUntil: "networkidle" });
+  await page.goto(`http://localhost:${PORT}/cfoh/app/settings/`, { waitUntil: "networkidle" });
   await page.getByRole("tab", { name: "Backup & restore" }).click();
   const [download] = await Promise.all([page.waitForEvent("download"), page.getByRole("button", { name: /Download backup/ }).click()]);
   check("Backup download produced", (await download.suggestedFilename()).endsWith(".sqlite"));
 
   // Workspaces: add a second business, check isolation, switch back.
-  await page.goto(`http://localhost:${PORT}/cfoh/settings/`, { waitUntil: "networkidle" });
+  await page.goto(`http://localhost:${PORT}/cfoh/app/settings/`, { waitUntil: "networkidle" });
   await page.getByRole("tab", { name: "Workspaces" }).click();
   await page.getByRole("button", { name: "Add business or person" }).first().click();
   const wsd = page.getByRole("dialog");
@@ -164,7 +180,7 @@ try {
   await wsd.getByRole("button", { name: "Create workspace" }).click();
   await page.locator("aside").getByText("Second Agency Ltd").first().waitFor({ timeout: 20000 });
   await page.locator("aside").getByText(/Saved /).waitFor();
-  await page.goto(`http://localhost:${PORT}/cfoh/`, { waitUntil: "networkidle" });
+  await page.goto(`http://localhost:${PORT}/cfoh/app/`, { waitUntil: "networkidle" });
   const ws2 = await page.locator("body").innerText();
   check("Second workspace starts empty (no $4,000 collected)", !ws2.includes("$4,000.00") && ws2.includes("Second Agency"), `has4000=${ws2.includes("$4,000.00")} hasName=${ws2.includes("Second Agency")} aside=${(await page.locator("aside").innerText()).split("\n").slice(0,3).join("/")}`);
   await page.locator("aside").getByTitle("Switch workspace").click();
@@ -180,7 +196,7 @@ try {
   await page.screenshot({ path: "../finance-os/.e2e/workspaces.png", fullPage: false }).catch(() => {});
 
   // Appearance setting: follow system.
-  await page.goto(`http://localhost:${PORT}/cfoh/settings/`, { waitUntil: "networkidle" });
+  await page.goto(`http://localhost:${PORT}/cfoh/app/settings/`, { waitUntil: "networkidle" });
   await page.getByRole("tab", { name: "Appearance" }).click();
   await page.getByRole("button", { name: /Dark/ }).click();
   check("Appearance: dark applied", await page.evaluate(() => document.documentElement.classList.contains("dark")));
@@ -188,7 +204,7 @@ try {
   check("Appearance: follow system stored", await page.evaluate(() => localStorage.getItem("finance-os:theme") === "system"));
 
   // Trends page renders the four granularities.
-  await page.goto(`http://localhost:${PORT}/cfoh/trends/`, { waitUntil: "networkidle" });
+  await page.goto(`http://localhost:${PORT}/cfoh/app/trends/`, { waitUntil: "networkidle" });
   for (const g of ["Daily", "Weekly", "Monthly", "Yearly"]) await page.getByRole("tab", { name: g }).click();
   check("Trends page renders all granularities", (await page.locator("body").innerText()).includes("Net revenue"));
   await page.screenshot({ path: "../finance-os/.e2e/trends.png", fullPage: true }).catch(() => {});
@@ -199,7 +215,7 @@ try {
   const p2 = await ctx2.newPage();
   const errors2 = [];
   p2.on("pageerror", (e) => errors2.push(String(e)));
-  await p2.goto(`http://localhost:${PORT}/cfoh/`, { waitUntil: "networkidle" });
+  await p2.goto(`http://localhost:${PORT}/cfoh/app/`, { waitUntil: "networkidle" });
   check("Cloud: sign-in screen offers Google", await p2.getByRole("button", { name: "Continue with Google" }).isVisible());
   await p2.getByRole("button", { name: "Create an account" }).click();
   await p2.getByPlaceholder("you@yourbusiness.com").fill("owner@example.com");
@@ -211,7 +227,7 @@ try {
   await p2.getByText("overview").first().waitFor({ timeout: 20000 });
   await p2.locator("aside").getByText(/Synced/).first().waitFor({ timeout: 20000 });
   check("Cloud: workspace synced to account", true);
-  await p2.goto(`http://localhost:${PORT}/cfoh/settings/?tab=account`, { waitUntil: "networkidle" });
+  await p2.goto(`http://localhost:${PORT}/cfoh/app/settings/?tab=account`, { waitUntil: "networkidle" });
   check("Cloud: account tab shows the signed-in email", (await p2.locator("body").innerText()).includes("owner@example.com"));
   check("Cloud: no runtime errors in account flow", errors2.length === 0, errors2.slice(0, 2).join(" | "));
   await ctx2.close();
@@ -220,7 +236,7 @@ try {
   const ctx3 = await browser.newContext({ viewport: { width: 1400, height: 900 } });
   await ctx3.addInitScript(() => localStorage.setItem("finance-os:cloud", "memory"));
   const p3 = await ctx3.newPage();
-  await p3.goto(`http://localhost:${PORT}/cfoh/`, { waitUntil: "networkidle" });
+  await p3.goto(`http://localhost:${PORT}/cfoh/app/`, { waitUntil: "networkidle" });
   await p3.screenshot({ path: "../finance-os/.e2e/auth.png", fullPage: false }).catch(() => {});
   await p3.getByRole("button", { name: "Continue with Google" }).click();
   await p3.getByText("Set up").first().waitFor({ timeout: 20000 });
@@ -229,7 +245,7 @@ try {
 
   // Visit every page for runtime errors.
   for (const p of ["expenses", "clients", "personal", "accounts", "tax", "growth", "forecast", "alerts"]) {
-    await page.goto(`http://localhost:${PORT}/cfoh/${p}/`, { waitUntil: "networkidle" });
+    await page.goto(`http://localhost:${PORT}/cfoh/app/${p}/`, { waitUntil: "networkidle" });
     await page.waitForTimeout(200);
   }
   await page.screenshot({ path: "../finance-os/.e2e/alerts.png", fullPage: true }).catch(() => {});

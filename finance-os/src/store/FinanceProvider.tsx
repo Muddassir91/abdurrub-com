@@ -461,7 +461,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     await enter();
   }, [enter]);
 
-  const redirectTo = () => `${window.location.origin}${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/`;
+  const redirectTo = () => `${window.location.origin}${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/app/`;
   const sendMagicLink = useCallback(async (email: string) => {
     const cloud = cloudRef.current;
     if (!cloud) throw new Error("Accounts are not available in this build");

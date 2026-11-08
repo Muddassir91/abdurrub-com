@@ -12,22 +12,22 @@ import { WorkspaceForm } from "./WorkspaceForm";
 import { Wordmark } from "./Logo";
 
 const NAV = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/trends/", label: "Trends & progress", icon: LineChart },
-  { href: "/transactions/", label: "Transactions", icon: ArrowLeftRight },
-  { href: "/expenses/", label: "Business expenses", icon: Receipt },
-  { href: "/clients/", label: "Clients & revenue", icon: Users },
-  { href: "/whop/", label: "Payment processor", icon: CreditCard },
-  { href: "/personal/", label: "Owner & personal", icon: Wallet },
-  { href: "/accounts/", label: "Accounts & cash", icon: Landmark },
-  { href: "/reserves/", label: "Profit & reserves", icon: PiggyBank },
-  { href: "/tax/", label: "Tax & compliance", icon: Scale },
-  { href: "/growth/", label: "Growth & hiring", icon: Rocket },
-  { href: "/scenarios/", label: "Scenarios", icon: SlidersHorizontal },
-  { href: "/forecast/", label: "Cash-flow forecast", icon: TrendingUp },
-  { href: "/alerts/", label: "Alerts", icon: Bell },
-  { href: "/month-end/", label: "Month-end & reports", icon: CalendarCheck },
-  { href: "/settings/", label: "Settings", icon: Settings },
+  { href: "/app/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/app/trends/", label: "Trends & progress", icon: LineChart },
+  { href: "/app/transactions/", label: "Transactions", icon: ArrowLeftRight },
+  { href: "/app/expenses/", label: "Business expenses", icon: Receipt },
+  { href: "/app/clients/", label: "Clients & revenue", icon: Users },
+  { href: "/app/whop/", label: "Payment processor", icon: CreditCard },
+  { href: "/app/personal/", label: "Owner & personal", icon: Wallet },
+  { href: "/app/accounts/", label: "Accounts & cash", icon: Landmark },
+  { href: "/app/reserves/", label: "Profit & reserves", icon: PiggyBank },
+  { href: "/app/tax/", label: "Tax & compliance", icon: Scale },
+  { href: "/app/growth/", label: "Growth & hiring", icon: Rocket },
+  { href: "/app/scenarios/", label: "Scenarios", icon: SlidersHorizontal },
+  { href: "/app/forecast/", label: "Cash-flow forecast", icon: TrendingUp },
+  { href: "/app/alerts/", label: "Alerts", icon: Bell },
+  { href: "/app/month-end/", label: "Month-end & reports", icon: CalendarCheck },
+  { href: "/app/settings/", label: "Settings", icon: Settings },
 ];
 
 export type ThemePref = "system" | "light" | "dark";
@@ -150,7 +150,7 @@ function WorkspaceSwitcher({ onCreate }: { onCreate: () => void }) {
           {cloudStatus !== "off" && (
             <>
               <div className="my-1 border-t border-border" />
-              <Link href="/settings/?tab=account" onClick={() => setOpen(false)} className="block rounded-lg px-2 py-1.5 text-left hover:bg-surface-2">
+              <Link href="/app/settings/?tab=account" onClick={() => setOpen(false)} className="block rounded-lg px-2 py-1.5 text-left hover:bg-surface-2">
                 <div className="truncate text-xs font-medium text-fg">{cloudUser ? cloudUser.email : "Not signed in"}</div>
                 <div className="truncate text-[11px] text-fg-faint">{cloudStatus === "syncing" ? "Syncing…" : cloudStatus === "error" ? `Sync error: ${cloudError ?? ""}` : cloudUser ? (lastSyncedAt ? `Synced ${new Date(lastSyncedAt).toLocaleTimeString()}` : "Synced to your account") : "This device only · tap to sign in"}</div>
               </Link>
@@ -178,13 +178,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const nav = (
     <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-2">
       {NAV.map((item) => {
-        const active = item.href === "/" ? path === "/" : path.startsWith(item.href);
+        const active = item.href === "/app/" ? path === "/app/" || path === "/app" : path.startsWith(item.href);
         const Icon = item.icon;
         return (
           <Link key={item.href} href={item.href} onClick={() => setOpen(false)} className={clsx("flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-colors", active ? "bg-accent-soft text-accent" : "text-fg-muted hover:bg-surface-2 hover:text-fg")}>
             <Icon size={16} className="shrink-0" />
-            <span className="flex-1 truncate">{item.href === "/whop/" ? processorName : item.label}</span>
-            {item.href === "/alerts/" && (critical > 0 || caution > 0) && <span className={clsx("rounded-full px-1.5 text-[10px] font-semibold", critical > 0 ? "bg-critical text-white" : "bg-caution text-white")}>{critical + caution}</span>}
+            <span className="flex-1 truncate">{item.href === "/app/whop/" ? processorName : item.label}</span>
+            {item.href === "/app/alerts/" && (critical > 0 || caution > 0) && <span className={clsx("rounded-full px-1.5 text-[10px] font-semibold", critical > 0 ? "bg-critical text-white" : "bg-caution text-white")}>{critical + caution}</span>}
           </Link>
         );
       })}

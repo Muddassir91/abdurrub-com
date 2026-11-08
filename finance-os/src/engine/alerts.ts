@@ -27,7 +27,7 @@ export function buildAlerts(data: EngineData, snap: MonthSnapshot, today = today
       why: "Allocations are disabled until the policy is valid, so targets on this page are zero.",
       impact: "No guidance on owner pay, tax or reserves this month.",
       action: "Fix the percentages in Settings. The system never changes them silently.",
-      href: "/settings/",
+      href: "/app/settings/",
     });
   }
 
@@ -44,7 +44,7 @@ export function buildAlerts(data: EngineData, snap: MonthSnapshot, today = today
         why: "Overhead above the ceiling is funded from money earmarked for owner pay, tax or reserves.",
         impact: `${usd(over)} has effectively been taken from other allocations this month.`,
         action: "Cancel or defer non-essential subscriptions, or document and approve a higher ceiling in Settings if a growth decision justifies it.",
-        href: "/expenses/",
+        href: "/app/expenses/",
       });
     }
   } else if (ex.ceiling > 0 && rev.netDistributable > 0 && ex.committedSubscriptionsMonthly > ex.ceiling) {
@@ -56,7 +56,7 @@ export function buildAlerts(data: EngineData, snap: MonthSnapshot, today = today
       why: "Even before one-off purchases, recurring costs will breach the allowance.",
       impact: `${usd(ex.committedSubscriptionsMonthly - ex.ceiling)} per month of structural overspend.`,
       action: "Review the subscription list and cut or downgrade tools that do not produce revenue.",
-      href: "/expenses/",
+      href: "/app/expenses/",
     });
   }
 
@@ -73,7 +73,7 @@ export function buildAlerts(data: EngineData, snap: MonthSnapshot, today = today
         why: "Subscription creep is the most common way lean agencies lose margin.",
         impact: `${usd(trend[2].amount - trend[0].amount)} more per month than three months ago.`,
         action: "Check each new subscription has a documented justification and ROI.",
-        href: "/expenses/",
+        href: "/app/expenses/",
       });
     }
   }
@@ -89,7 +89,7 @@ export function buildAlerts(data: EngineData, snap: MonthSnapshot, today = today
       why: "Household costs come out of owner compensation first, so overspend shrinks discretionary income one for one.",
       impact: `Discretionary room reduced by ${usd(hh.householdActual - hh.householdBudget)}.`,
       action: "Check utilities and food lines; if the overspend is structural, update the household budget rather than ignoring it.",
-      href: "/personal/",
+      href: "/app/personal/",
     });
   }
   if (hh.target > 0 && hh.remainingPersonalBudget < 0) {
@@ -101,7 +101,7 @@ export function buildAlerts(data: EngineData, snap: MonthSnapshot, today = today
       why: "Spending beyond compensation is funded from business cash or past savings.",
       impact: `${usd(-hh.remainingPersonalBudget)} over budget this month.`,
       action: "Pause discretionary purchases until next month's allocation.",
-      href: "/personal/",
+      href: "/app/personal/",
     });
   }
   if (hh.drawn > hh.target && hh.target > 0 && hh.drawn - hh.target > hh.target * 0.05) {
@@ -113,7 +113,7 @@ export function buildAlerts(data: EngineData, snap: MonthSnapshot, today = today
       why: "Extra draws come out of tax, reserve or profit money that has not been set aside yet.",
       impact: `${usd(hh.drawn - hh.target)} drawn ahead of allocation.`,
       action: "Treat the excess as an advance against next month, or reduce next month's draw.",
-      href: "/personal/",
+      href: "/app/personal/",
     });
   }
 
@@ -130,7 +130,7 @@ export function buildAlerts(data: EngineData, snap: MonthSnapshot, today = today
         why: "One slow month or one late client payment would force cuts or personal cash injections.",
         impact: `${usd(Math.max(0, res.essentialMonthly - res.balance))} short of one month's cover; target is ${usd(res.target)}.`,
         action: "Close the month to book the reserve allocation, redirect unspent operating allowance to reserves, and hold off on hiring or new recurring costs.",
-        href: "/reserves/",
+        href: "/app/reserves/",
       });
     }
   }
@@ -146,7 +146,7 @@ export function buildAlerts(data: EngineData, snap: MonthSnapshot, today = today
       why: "Virtual allocations are not cash. If the money is still in operating, it tends to get spent.",
       impact: `${usd(tax.envelopeBalance - tax.fundedBalance)} of tax money is not physically reserved.`,
       action: "Transfer the difference to the tax reserve account and record the transfer.",
-      href: "/accounts/",
+      href: "/app/accounts/",
     });
   }
 
@@ -165,7 +165,7 @@ export function buildAlerts(data: EngineData, snap: MonthSnapshot, today = today
         why: "Losing this client would remove most of your income at once.",
         impact: `Up to ${usd(rev.netDistributable)} of monthly revenue depends on a single relationship.`,
         action: "Prioritise acquiring a second and third client before scaling fixed costs. Keep reserves higher than the standard target.",
-        href: "/clients/",
+        href: "/app/clients/",
       });
     } else if (share.gte(warn)) {
       alerts.push({
@@ -176,7 +176,7 @@ export function buildAlerts(data: EngineData, snap: MonthSnapshot, today = today
         why: "Above 50% a single client dispute or churn event threatens solvency.",
         impact: "Revenue volatility is tied to one client's performance.",
         action: "Keep lead generation running and diversify agreement types (retainers alongside revenue share).",
-        href: "/clients/",
+        href: "/app/clients/",
       });
     }
   }
@@ -194,7 +194,7 @@ export function buildAlerts(data: EngineData, snap: MonthSnapshot, today = today
       why: "Earned revenue is not allocatable until it is collected.",
       impact: `${usd(total)} of expected allocations are on hold.`,
       action: "Send a payment reminder today and confirm the client's payout date.",
-      href: "/clients/",
+      href: "/app/clients/",
     });
   }
 
@@ -211,7 +211,7 @@ export function buildAlerts(data: EngineData, snap: MonthSnapshot, today = today
       why: "Restricted funds are not spendable and are excluded from allocations until released.",
       impact: `${usd(total)} of collected revenue is unavailable.`,
       action: "Check the processor dashboard for release dates and record them so the cash-flow forecast stays accurate.",
-      href: "/whop/",
+      href: "/app/whop/",
     });
   }
 
@@ -227,7 +227,7 @@ export function buildAlerts(data: EngineData, snap: MonthSnapshot, today = today
       why: "Renewal is the moment to decide whether a tool still earns its cost.",
       impact: `${usd(cost)}/month of operating allowance.`,
       action: r.justification ? `Confirm it still delivers: "${r.justification}"` : "Add a business justification or cancel before renewal.",
-      href: "/expenses/",
+      href: "/app/expenses/",
     });
   }
 
@@ -242,7 +242,7 @@ export function buildAlerts(data: EngineData, snap: MonthSnapshot, today = today
       why: "Unknown recurring costs make the operating ceiling and reserve target understated.",
       impact: "Essential monthly cost and runway are approximate until set.",
       action: "Enter the real plan price and activate the subscription.",
-      href: "/expenses/",
+      href: "/app/expenses/",
     });
   }
 
@@ -259,7 +259,7 @@ export function buildAlerts(data: EngineData, snap: MonthSnapshot, today = today
         why: "Missed filings carry penalties; US Form 5472 penalties start at $25,000.",
         impact: "Potential penalties and compliance risk.",
         action: "Complete the filing or confirm with your accountant, then mark it done.",
-        href: "/tax/",
+        href: "/app/tax/",
       });
     }
   }
@@ -278,7 +278,7 @@ export function buildAlerts(data: EngineData, snap: MonthSnapshot, today = today
           why: "Hiring on cash availability alone, before reserves and margin support it, is the fastest way to a cash crisis.",
           impact: `${usd(g.monthlyCostUsdCents)} of new fixed monthly cost.`,
           action: "Re-run the evaluation after reserves reach one month and the hire has revenue or capacity attached.",
-          href: "/growth/",
+          href: "/app/growth/",
         });
       }
     } catch {
@@ -296,7 +296,7 @@ export function buildAlerts(data: EngineData, snap: MonthSnapshot, today = today
       why: "Allocations are based on collected revenue, so every target is zero and all spending draws down reserves.",
       impact: `Negative cash flow of ${usd(ex.overheadActual + ex.directDeliveryActual + ex.growthActual + hh.drawn)}.`,
       action: "Chase outstanding invoices, record any collections, and limit draws to what reserves can support.",
-      href: "/transactions/",
+      href: "/app/transactions/",
     });
   }
 

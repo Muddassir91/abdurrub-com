@@ -2,7 +2,7 @@
   "name": "CFoh! — your CFO in the browser",
   "short_name": "CFoh!",
   "description": "Personal CFO and financial operating system for solo agencies and small businesses.",
-  "start_url": "/cfoh/",
+  "start_url": "/cfoh/app/",
   "scope": "/cfoh/",
   "display": "standalone",
   "orientation": "any",

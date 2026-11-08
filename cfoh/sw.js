@@ -1,6 +1,6 @@
 /* CFoh! service worker: network-first for pages, cache-first for built assets, so the app opens offline. */
-const VERSION = "cfoh-v1";
-const PRECACHE = ["/cfoh/", "/cfoh/sqljs/sql-wasm.js", "/cfoh/sqljs/sql-wasm.wasm", "/cfoh/manifest.webmanifest"];
+const VERSION = "cfoh-v2";
+const PRECACHE = ["/cfoh/", "/cfoh/app/", "/cfoh/sqljs/sql-wasm.js", "/cfoh/sqljs/sql-wasm.wasm", "/cfoh/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(VERSION).then((c) => c.addAll(PRECACHE).catch(() => undefined)).then(() => self.skipWaiting()));
@@ -23,6 +23,6 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     fetch(req)
       .then((res) => { if (res.ok) caches.open(VERSION).then((c) => c.put(req, res.clone())); return res; })
-      .catch(async () => (await caches.match(req)) ?? (await caches.match("/cfoh/")) ?? Response.error()),
+      .catch(async () => (await caches.match(req)) ?? (await caches.match("/cfoh/app/")) ?? Response.error()),
   );
 });

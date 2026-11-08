@@ -1,10 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { FinanceProvider } from "@/store/FinanceProvider";
 import { ToastProvider } from "@/components/ui/toast";
-import { Gate } from "@/components/Gate";
-import { PwaRegister } from "@/components/PwaRegister";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -18,7 +15,6 @@ export const metadata: Metadata = {
   manifest: `${basePath}/manifest.webmanifest`,
   appleWebApp: { capable: true, statusBarStyle: "default", title: "CFoh!" },
   icons: { icon: [{ url: `${basePath}/icons/icon-192.png`, sizes: "192x192", type: "image/png" }, { url: `${basePath}/icons/icon-512.png`, sizes: "512x512", type: "image/png" }], apple: `${basePath}/icons/apple-touch-icon.png` },
-  robots: { index: false, follow: false },
 };
 
 export const viewport: Viewport = {
@@ -42,12 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="min-h-full">
-        <ToastProvider>
-          <FinanceProvider>
-            <Gate>{children}</Gate>
-            <PwaRegister />
-          </FinanceProvider>
-        </ToastProvider>
+        <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
   );

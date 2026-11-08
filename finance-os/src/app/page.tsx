@@ -1,180 +1,149 @@
-"use client";
-
-import React, { useMemo } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, AlertTriangle, Info, ShieldAlert } from "lucide-react";
-import { useReady } from "@/store/FinanceProvider";
-import { Money, Pct } from "@/components/Money";
-import { Card, Stat, Progress, spendTone, Badge, PageHeader, levelTone, Callout, DefinitionList } from "@/components/ui/primitives";
-import { AllocationTable } from "@/components/AllocationTable";
-import { AllocationDonut, RevenueExpenseChart } from "@/components/charts";
-import { monthlySeries } from "@/engine/snapshot";
-import { lastNMonths, monthLabel } from "@/lib/dates";
+import { ArrowRight, Check, X } from "lucide-react";
+import { LogoMark, Wordmark } from "@/components/Logo";
+import { RotatingHeadline } from "@/components/marketing/RotatingHeadline";
+import { AllocationDemo } from "@/components/marketing/AllocationDemo";
 
-export default function DashboardPage() {
-  const { data, snapshot: snap, alerts, month, today } = useReady();
-  const series = useMemo(() => monthlySeries(data, lastNMonths(month, 6), today), [data, month, today]);
-  const rev = snap.revenue;
-  const ex = snap.expenses;
-  const own = snap.owner;
-  const topAlerts = alerts.slice(0, 4);
-  const reserveEnvelope = snap.envelopes.find((e) => e.bucket === "reserve")!;
+export const metadata: Metadata = {
+  title: "CFoh! · Make better financial decisions",
+  description: "Track your finances, spending and profit without hiring a CFO. Every dollar collected gets a job: operating, owner pay, tax, profit, reserve and growth.",
+  robots: { index: true, follow: true },
+};
 
+const OLD_WAY = [
+  "One bank balance for everything, so every number looks spendable.",
+  "Subscriptions stack up quietly; you find out at month end.",
+  "Pay yourself whatever is left. Some months too much, some months nothing.",
+  "Tax arrives as a surprise.",
+  "Client revenue and your own revenue blur into one figure.",
+  "A spreadsheet that breaks the moment work gets busy.",
+  "No idea whether you can afford that hire or that tool.",
+];
+
+const NEW_WAY = ["Every dollar collected gets a job the moment it lands.", "See what you can spend, pay yourself and save, today.", "One ledger, one dashboard, every device."];
+
+const WHO = [
+  { title: "Freelancers", body: "Irregular income, one account, and a tax bill you would rather see coming." },
+  { title: "Solopreneurs", body: "You are the CEO, the delivery team and the finance department. Keep the last one simple." },
+  { title: "Agency owners", body: "Retainers, revenue shares, processors holding funds, people to pay. Know your real margin." },
+  { title: "Anyone trying to keep up with their spending", body: "If money disappears and you cannot say where, start here." },
+];
+
+export default function HomePage() {
   return (
-    <>
-      <PageHeader
-        title={`${monthLabel(month, "long")} overview`}
-        description={
-          <>
-            Allocations use <strong>collected and accessible</strong> net revenue, never earned or invoiced figures. Policy: <Badge tone="accent">{snap.policy.name}</Badge>
-            {snap.isClosed && (
-              <>
-                {" "}
-                <Badge>Month closed</Badge>
-              </>
-            )}
-          </>
-        }
-      />
+    <div className="min-h-screen bg-bg text-fg">
+      {/* Nav */}
+      <header className="sticky top-0 z-30 border-b border-border/70 bg-bg/80 backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
+          <Link href="/" className="flex items-center gap-2.5" aria-label="CFoh! home">
+            <LogoMark size={32} />
+            <Wordmark size="md" />
+          </Link>
+          <nav className="flex items-center gap-2">
+            <Link href="/app/" className="hidden rounded-lg px-3 py-2 text-sm font-medium text-fg-muted hover:text-fg sm:inline-block">
+              Sign in
+            </Link>
+            <Link href="/app/" className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-accent px-4 text-sm font-semibold text-accent-fg shadow-sm hover:brightness-110">
+              Get started <ArrowRight size={15} />
+            </Link>
+          </nav>
+        </div>
+      </header>
 
-      {/* Top summary */}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Stat label="Revenue collected" value={<Money cents={rev.collected} />} sub={<>Net distributable <Money cents={rev.netDistributable} /></>} hint="Client payments and other income actually received this month, before fees." />
-        <Stat label="Available cash (bank)" value={<Money cents={snap.cash.bankBusinessCash} />} sub={<>+ <Money cents={snap.cash.processorAvailable} /> withdrawable at processor</>} hint="Sum of business bank accounts derived from the ledger. Processor balances are shown separately." />
-        <Stat label="Restricted processor funds" value={<Money cents={snap.cash.processorRestricted} />} tone={snap.cash.processorRestricted > 0 ? "caution" : "neutral"} sub="Never counted as spendable" />
-        <Stat label="Monthly business spend" value={<Money cents={ex.overheadActual + ex.directDeliveryActual + ex.growthActual} />} sub={<>Overhead <Money cents={ex.overheadActual} /> · Delivery <Money cents={ex.directDeliveryActual} /></>} />
-        <Stat label="Owner compensation" value={<Money cents={own.target} />} sub={<>Drawn <Money cents={own.drawn} /></>} hint="35% (policy) of allocatable revenue. The amount drawn is what actually moved to your personal account." />
-        <Stat label="Business profit" value={<Money cents={snap.profit.target} />} sub={<>Retained to date <Money cents={snap.profit.cumulativeRetained} /></>} hint="This month's profit allocation target. Retained profit is the virtual envelope balance booked at month closes." />
-        <Stat label="Tax reserve" value={<Money cents={snap.tax.target} />} sub={<>Envelope <Money cents={snap.tax.envelopeBalance} /> · Funded <Money cents={snap.tax.fundedBalance} /></>} tone={snap.tax.fundedBalance < snap.tax.envelopeBalance * 0.95 && snap.tax.envelopeBalance > 0 ? "caution" : "neutral"} hint="Estimate pending professional confirmation." />
-        <Stat label="Business cash reserve" value={<Money cents={reserveEnvelope.balance} />} sub={<>{snap.reserve.coverageMonths ?? "—"} months cover · target <Money cents={snap.reserve.target} compact /></>} tone={snap.reserve.essentialMonthly > 0 && reserveEnvelope.balance < snap.reserve.essentialMonthly ? "critical" : "neutral"} />
-      </div>
-
-      <div className="mt-6 grid gap-4 lg:grid-cols-3">
-        <Card title="Monthly allocation" subtitle="Target vs actual per Profit First category" className="lg:col-span-2">
-          <AllocationTable snap={snap} />
-          {rev.allocatableRaw !== rev.netDistributable && (
-            <p className="mt-3 text-xs text-fg-faint">
-              Allocatable revenue differs from net distributable because <Money cents={rev.reservesHeld} /> was held by a processor and <Money cents={rev.reservesReleased} /> was released this month.
-            </p>
-          )}
-        </Card>
-        <Card title="Allocation mix" subtitle="Where this month's net revenue is directed">
-          <AllocationDonut allocations={snap.allocations} />
-        </Card>
-      </div>
-
-      <div className="mt-4 grid gap-4 lg:grid-cols-3">
-        <Card title="Expense health" subtitle="Operating overhead vs the ceiling (a maximum, not a target)">
-          <div className="flex items-end justify-between">
-            <div>
-              <div className="text-xs text-fg-muted">Operating expense ratio</div>
-              <div className="tabular text-2xl font-semibold">
-                <Pct value={ex.opexRatioPct} />
-              </div>
-            </div>
-            <div className="text-right text-xs text-fg-muted">
-              Policy ceiling {snap.policy.opexPct}%
-            </div>
-          </div>
-          <Progress className="mt-3" value={ex.overheadActual} max={ex.ceiling} tone={spendTone(ex.overheadActual, ex.ceiling)} />
-          <DefinitionList
-            className="mt-3"
-            items={[
-              { label: "Operating expense ceiling", value: <Money cents={ex.ceiling} /> },
-              { label: "Current monthly spend", value: <Money cents={ex.overheadActual} /> },
-              { label: "Remaining allowance", value: <Money cents={ex.remainingAllowance} className={ex.remainingAllowance < 0 ? "text-critical" : ""} /> },
-              { label: "Committed subscriptions", value: <Money cents={ex.committedSubscriptionsMonthly} />, hint: "Active recurring overhead normalised to a monthly figure." },
-            ]}
-          />
-          <p className="mt-3 text-[11px] text-fg-faint">Unspent allowance stays in business cash. Reassign it to reserves or profit at month-end if you want it put to work.</p>
-        </Card>
-
-        <Card title="Personal finance" subtitle="Owner compensation is the budget; household comes out first">
-          <DefinitionList
-            items={[
-              { label: "Owner compensation target", value: <Money cents={own.target} /> },
-              { label: "Household spending", value: <><Money cents={own.householdActual} /> <span className="text-xs text-fg-faint">/ <Money cents={own.householdBudget} compact /></span></> },
-              { label: "Discretionary spending", value: <Money cents={own.discretionaryActual} /> },
-              { label: "Discretionary available", value: <Money cents={own.discretionaryAvailable} className={own.discretionaryAvailable < 0 ? "text-critical" : ""} />, hint: "Owner compensation − actual household expenses" },
-              { label: "Remaining personal budget", value: <Money cents={own.remainingPersonalBudget} className={own.remainingPersonalBudget < 0 ? "text-critical" : ""} /> },
-            ]}
-          />
-          <div className="mt-3">
-            <div className="mb-1 flex justify-between text-[11px] text-fg-muted">
-              <span>Household</span>
-              <span>
-                <Pct value={own.householdBudget > 0 ? (own.householdActual / own.householdBudget) * 100 : null} digits={0} /> of budget
-              </span>
-            </div>
-            <Progress value={own.householdActual} max={own.householdBudget} tone={spendTone(own.householdActual, own.householdBudget)} thin />
-          </div>
-        </Card>
-
-        <Card title="Business health" subtitle="Margins, runway and concentration">
-          <DefinitionList
-            items={[
-              { label: "Gross margin", value: <Pct value={ex.grossMarginPct} />, hint: "(Net revenue − direct delivery costs) / net revenue. Target 65–75%." },
-              { label: "Operating margin", value: <Pct value={ex.operatingMarginPct} />, hint: "After overhead and growth spend, before owner pay." },
-              { label: "Net result after owner pay", value: <Money cents={ex.netResultAfterOwnerPay} tone="auto" />, hint: "Accounting result. Not the same as cash in the bank." },
-              { label: "Cash runway", value: snap.cash.runwayMonths ? `${snap.cash.runwayMonths} months` : "—", hint: "Business bank cash / average monthly outflow (trailing 3 months)." },
-              { label: "Revenue concentration", value: snap.concentration.largestSharePct ? <><Pct value={snap.concentration.largestSharePct} digits={0} /> <span className="text-xs text-fg-faint">{snap.concentration.largestClientName}</span></> : "—" },
-              { label: "Recurring monthly revenue", value: <Money cents={snap.cash.recurringMonthlyRevenue} />, hint: "Retainers + trailing 3-month average commission." },
-            ]}
-          />
-        </Card>
-      </div>
-
-      <div className="mt-4 grid gap-4 lg:grid-cols-3">
-        <Card title="Revenue and spending, last 6 months" className="lg:col-span-2">
-          <RevenueExpenseChart data={series} />
-        </Card>
-        <Card title="Alerts" subtitle={alerts.length ? `${alerts.length} active` : "All clear"} actions={<Link href="/alerts/" className="text-xs font-medium text-accent hover:underline">View all</Link>}>
-          {topAlerts.length === 0 ? (
-            <Callout tone="positive" title="No alerts">
-              Nothing needs your attention right now.
-            </Callout>
-          ) : (
-            <ul className="space-y-2">
-              {topAlerts.map((a) => (
-                <li key={a.key} className="rounded-lg border border-border bg-surface-2/50 p-3">
-                  <div className="flex items-start gap-2">
-                    {a.level === "critical" ? <ShieldAlert size={14} className="mt-0.5 text-critical" /> : a.level === "caution" ? <AlertTriangle size={14} className="mt-0.5 text-caution" /> : <Info size={14} className="mt-0.5 text-info" />}
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="truncate text-sm font-medium">{a.title}</span>
-                        <Badge tone={levelTone[a.level]}>{a.level}</Badge>
-                      </div>
-                      <p className="mt-0.5 line-clamp-2 text-xs text-fg-muted">{a.action}</p>
-                    </div>
-                    {a.href && (
-                      <Link href={a.href} className="text-fg-faint hover:text-accent">
-                        <ArrowRight size={14} />
-                      </Link>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Card>
-      </div>
-
-      <Card className="mt-4" title="How these numbers are built" subtitle="Read once, then trust the dashboard">
-        <div className="grid gap-4 text-xs text-fg-muted md:grid-cols-3">
-          <div>
-            <div className="font-medium text-fg">Revenue</div>
-            <p className="mt-1">Net distributable = collected − refunds − chargebacks − processing, conversion, platform and payout fees. Each fee is a separate ledger row, counted once. Allocatable = net distributable − new processor holds + releases.</p>
-          </div>
-          <div>
-            <div className="font-medium text-fg">Allocations</div>
-            <p className="mt-1">The active policy splits allocatable revenue into six envelopes that add up exactly. The operating share is a ceiling; unspent allowance stays in business cash. Owner compensation funds household first, then discretionary.</p>
-          </div>
-          <div>
-            <div className="font-medium text-fg">Cash vs budget</div>
-            <p className="mt-1">Bank balances come from the ledger (opening balance ± rows). Envelopes are virtual: they fill at month close. Transfers, draws and payouts are never income or expense. Restricted processor funds are excluded until released.</p>
+      {/* Hero */}
+      <section className="relative overflow-hidden">
+        <div className="pointer-events-none absolute left-1/2 top-[-12rem] h-[34rem] w-[64rem] -translate-x-1/2 rounded-full bg-accent/15 blur-3xl" />
+        <div className="relative mx-auto max-w-6xl px-5 pb-10 pt-16 text-center sm:px-8 sm:pt-24">
+          <RotatingHeadline className="mx-auto max-w-4xl text-4xl leading-[1.08] sm:text-6xl" fixed="Make better financial decisions" phrases={["on what you spend.", "on what you pay yourself.", "on what you set aside for tax.", "on when you can hire.", "on what you keep."]} />
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-fg-muted sm:text-xl">Track your finances, spending and profit without hiring a CFO.</p>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <Link href="/app/" className="inline-flex h-12 items-center gap-2 rounded-xl bg-accent px-6 text-base font-semibold text-accent-fg shadow-sm hover:brightness-110">
+              Start free <ArrowRight size={16} />
+            </Link>
+            <a href="#demo" className="inline-flex h-12 items-center rounded-xl border border-border-strong bg-surface px-6 text-base font-medium text-fg hover:bg-surface-2">
+              Try the demo
+            </a>
           </div>
         </div>
-      </Card>
-    </>
+      </section>
+
+      {/* Interactive demo */}
+      <section id="demo" className="mx-auto max-w-5xl px-5 pb-20 sm:px-8">
+        <AllocationDemo />
+        <p className="mt-3 text-center text-xs text-fg-faint">This is the same allocation engine the app runs. Percentages are the starting policy; you set your own.</p>
+      </section>
+
+      {/* Old way vs new way */}
+      <section className="border-y border-border bg-surface">
+        <div className="mx-auto max-w-5xl px-5 py-20 sm:px-8">
+          <h2 className="text-center text-3xl font-semibold tracking-tight sm:text-4xl">Two ways to run the money.</h2>
+          <div className="mt-10 grid gap-4 md:grid-cols-2">
+            <div className="rounded-3xl border border-border bg-bg p-7">
+              <div className="text-xs font-semibold uppercase tracking-wider text-fg-faint">The old way</div>
+              <ul className="mt-5 space-y-3.5">
+                {OLD_WAY.map((t) => (
+                  <li key={t} className="flex items-start gap-3 text-[15px] text-fg-muted">
+                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-critical-soft text-critical">
+                      <X size={12} />
+                    </span>
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="relative rounded-3xl border border-accent/30 bg-accent-soft/60 p-7">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-accent">
+                The <Wordmark size="sm" /> way
+              </div>
+              <ul className="mt-5 space-y-4">
+                {NEW_WAY.map((t) => (
+                  <li key={t} className="flex items-start gap-3 text-[17px] font-medium text-fg">
+                    <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent text-accent-fg">
+                      <Check size={13} />
+                    </span>
+                    {t}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/app/" className="mt-8 inline-flex h-11 items-center gap-2 rounded-xl bg-accent px-5 text-sm font-semibold text-accent-fg hover:brightness-110">
+                Switch to the new way <ArrowRight size={15} />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Who it is for */}
+      <section className="mx-auto max-w-6xl px-5 py-20 sm:px-8">
+        <h2 className="text-center text-3xl font-semibold tracking-tight sm:text-4xl">
+          Who needs <Wordmark size="xl" className="align-baseline text-3xl sm:text-4xl" />
+        </h2>
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {WHO.map((w) => (
+            <div key={w.title} className="rounded-3xl border border-border bg-surface p-6 shadow-card">
+              <div className="text-lg font-semibold tracking-tight">{w.title}</div>
+              <p className="mt-2 text-sm leading-relaxed text-fg-muted">{w.body}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-12 text-center">
+          <Link href="/app/" className="inline-flex h-12 items-center gap-2 rounded-xl bg-accent px-6 text-base font-semibold text-accent-fg shadow-sm hover:brightness-110">
+            Start free <ArrowRight size={16} />
+          </Link>
+          <p className="mt-3 text-xs text-fg-faint">Free while we build. Works on your phone and laptop; sign in to keep everything in sync.</p>
+        </div>
+      </section>
+
+      <footer className="border-t border-border">
+        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-4 px-5 py-8 text-xs text-fg-faint sm:flex-row sm:items-center sm:px-8">
+          <div className="flex items-center gap-2">
+            <LogoMark size={22} />
+            <span>CFoh! by Retention Rules</span>
+          </div>
+          <p className="max-w-xl">CFoh! is a financial planning and tracking tool. It does not provide tax, legal, accounting or investment advice. Figures are based on what you enter; confirm tax matters with a qualified professional.</p>
+        </div>
+      </footer>
+    </div>
   );
 }
