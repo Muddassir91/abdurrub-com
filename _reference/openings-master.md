@@ -45,47 +45,60 @@ Default batch size: 10 to 15 options unless asked otherwise, spread across the t
 
 ## 3. Ben Settle openings
 
-Ben Settle (Email Players) writes daily emails built on "infotainment": entertain first, teach second, sell every time. His openings are short, odd and personal. They never give the content away in the subject line, and the first line pulls the reader into a scene or an argument before any teaching starts. These patterns transfer to every format in section 1, not just email.
+Source: Ben Settle, Email Players newsletter, Issue #1 (August 2011), "The 24-Point Email Marketing Cheat Sheet". Muddassir's copy lives in Google Drive as "Ben Settle Email Openings". Settle's own instruction: adapt these to the product, market and list; never lift them word for word.
 
-### Subject line and headline patterns
+Written for email, but every one of them transfers to the formats in section 1. A "subject line" pattern is a headline, an on-image line or a spoken hook. An "opening" pattern is a first line, a first paragraph or the first 3 seconds of a video.
 
-1. **The odd, specific, half-sentence.** A phrase that makes no sense until you read on. Shape: "the goat that ate my Tuesday".
-2. **The pop-culture or villain hook.** A character, film, wrestler or news villain used as a doorway into the lesson. Shape: "What Darth Vader knew about retention".
-3. **The confession.** Admitting a mistake or embarrassing moment. Shape: "I nearly lost this client last week".
-4. **The quote lead.** A striking line someone said to him, in quotation marks. Shape: "'Your emails are too long'".
-5. **The question that bothers them.** A direct question aimed at a fear they already have. Shape: "Why do your flows stop making money after week 2?".
-6. **The lowercase, one-to-three-word teaser.** Looks like a note from a friend, not a campaign. Shape: "weird", "about yesterday", "bad news".
-7. **The contrarian flip.** A position against the accepted advice. Shape: "Stop writing welcome emails".
-8. **The reader mailbag.** Framing the piece as a reply to a reader. Shape: "A reader asks about discount codes".
-9. **The number with a twist.** A number that is suspiciously specific or deliberately unimpressive. Shape: "The 3 word subject line that out-pulled everything".
-10. **The time or place anchor.** Starting mid-scene with a time, place or mundane detail. Shape: "Sunday, 6:12am, Lisbon".
+### The 24 cheat sheet openings
 
-### First line and hook patterns
+**Openings (first lines)**
 
-1. **In medias res.** Open in the middle of a scene. "So there I was, staring at a Shopify dashboard at midnight..."
-2. **The mundane-to-lesson bridge.** Something trivial from daily life (a dog, a drive, a bad meal) that turns into the point.
-3. **The reader quote.** "Got this email from a reader yesterday:" then the quote, then the response.
-4. **The contrarian declaration.** One sentence that picks a fight with the industry.
-5. **The story in progress.** "Quick story." or "True story:" followed by a short anecdote.
-6. **The confession opener.** "I have a confession."
-7. **The 'here is what happened' recap.** Reporting a conversation, a client result or a screwup like a diary entry.
-8. **The pre-frame.** "This will annoy some people." or "Not for everyone, but..."
-9. **The one-word paragraph.** A single word on its own line, then the story.
-10. **The direct address.** Speaking to one reader about one problem they have right now.
+1. **The Joke Opening.** A short joke that disguises the email's purpose long enough to bond and open the mind. It does not have to be good, only true to the point. Example: "What did the bird say when he flew over the internet? Cheap! Cheap! Cheap!" then into cheap and free stuff.
+2. **Piggyback Off Of Books.** Talk about a book relevant to the market and list the interesting facts or lessons found in it, then tie to the offer. Example: a laundry list of marketing lessons from Frank Capra's autobiography.
+3. **The FAQ Open.** Open with two or three skeptical questions the market asks, in quotes. Addresses skeptics up front and runs on curiosity. Example: "Is PRO Elite just MLM?" "Is it a pyramid?" "Does it REALLY work for the average person?"
+4. **Comment On Industry Gossip.** Take whatever the niche is gossiping about and comment on it, whether true, opinion or lies. Example: the "Syndicate" fuss among marketing gurus.
+5. **The "Where Are The Tips?" Recap.** Answer a complaint by listing the subject lines of recent emails with the tip each one contained, so the reader sees the value was there all along. (Source text for this one is partial in the Drive copy.)
+7. **The 3 Questions Opening.** Three short questions the market is mentally nodding "yes" to, built from their wants. Example: "So you want to fit into that bikini by summer? But you ate like a pig over the holidays? And you aren't sure you can shed it without starving?"
+8. **The New Word Opening.** "A little while ago I learned a new word:" then a bizarre, little-known word, its meaning, and a tie-in. Example: "Fauxcellarm", the phantom phone vibration.
+12. **The "Here's Some Great Advice I Got" Opening.** Start with a piece of advice that helped you, quoted, then tie it to the offer. Example: the quote about copywriters needing to fail to get home runs.
+14. **The "I Got This Interesting Question" Open.** "I got this interesting question:" then the reader's question in full, then the answer, which leads into the call to action.
+15. **The "Things That Don't Make No Sense" Email.** "Some things just don't make no sense. Especially in the world of [niche]." Then list the dumb, harmful or useless things everyone does, then the offer.
+18. **The "Myths" Email.** Name a common myth the market believes, knock it down, repeat, then segue into the product. Example subject: "Myths that kill fat loss progress".
+22. **The "You Might Get A Kick Out Of This" Open.** Begin with exactly that sentence, then the story. Short first line, pulls them forward.
+24. **The "George Costanza School Of..." Email.** Build the email around a bumbling TV character and what their behaviour teaches about the offer. Example subject: "The George Costanza School Of Copywriting".
+
+**Subject lines (headlines, hooks)**
+
+6. **The "Why I Don't Do X" Subject Line.** X is something everyone else does. Naturally controversial, dripping with curiosity. Examples: "Why I Don't Do NLP", "Why I Don't Exercise", "Why I Don't Drink Water".
+9. **The "Whacky Crazy Way" Subject Line.** "A Whacky Crazy Way To [benefit]". Different, non-hypey, curiosity-driven. Examples: "A Whacky Crazy Way To Be 10 Times More Productive", "A Whacky Crazy Way To Lose 10 Pounds By Next Week".
+10. **Don't Fear Long Subject Lines.** Mostly use short ones, but when everyone in the niche is short, throw in unusually long ones to stand out.
+11. **The "This Email Contains..." Subject Line.** From Ralph Ginzburg's ad "This Ad Contains A Shameless Bribe". Variants: "This Email Contains A Free Gift", "This Email Contains The Secret To Effortless Exercise". Works as "This Post Contains..." or "This Video Contains..." too.
+13. **The "My Big Stupid ___ Failure" Subject Line.** Fill the blank with the market. "My Big Stupid Marketing Failure", "My Big Stupid Weight Loss Failure". Sets up a story about what not to do.
+19. **The "10 Mistakes That Keep Even Smart People ___" Subject Line.** Numbers, curiosity and a little controversy, especially for markets that think they are smart. "10 Mistakes That Keep Even 'Smart' People Broke", "5 Mistakes That Keep Even Great Golfers Frustrated".
+20. **The "Who Wins In A Fight" Subject Line.** Schoolyard psychology, strongest in male-dominated markets. "Who Wins In A Fight: Introverts Or Extroverts?", "Who Wins In A Fight: The Email Marketer Or Blogger?"
+
+**Whole-email structures (useful for sequences, sales and content formats)**
+
+16. **The "I Don't Know If It's Something In The Water" PS.** Write a useful email, then make the PS a second email that is pure pitch, opening with "I don't know if it's something in the water or what, but I've been getting lots of questions about..."
+17. **The "Come Get Your Lovin'" Sale Email.** Subject: "Come get your [niche] lovin'". Body: "No fireworks or tips today. Just a quickie announcement: [product] is on sale." PS: the skeptical question in quotes, then unsolicited testimonials.
+21. **The "Get New Subscribers Up To Speed" Email.** Subject like "FAQ For The 'Uninitiated'". A list of links to older emails or posts that sold well, framed as catching up new readers.
+23. **The "Top 10 Resources" Email.** List the top resources in the niche without linking them. In the PS, link only your own product, positioning it as the must-have. Example open: "By popular demand, here's my top 10 favorite dating products for men. No long, blathering build up."
 
 ### Settle rules of thumb
 
+- Adapt, never lift. The structure is the swipe, not the words.
 - Subject line and first line never repeat each other. Same for headline and subheadline, hook and second line.
-- Never explain the opening in the next line. Make them keep going to find out.
-- Entertain before you educate. The lesson arrives late and the pitch arrives last.
+- Entertain first, teach second, sell every time. The pitch arrives last.
 - One idea per piece. The opening sets up exactly one tension.
 - Personality over polish. Odd beats clever.
 
-### Settle swipes
+### More Settle material in Drive
 
-Real Ben Settle subject lines and openings Muddassir shares go here, so the patterns above get replaced by the real thing over time.
+- "Ben Settle" Google Doc (Feb 2025) and the "Ben Settle" folder with saved emails from ben@bensettle.com.
+- "2024-05-12 Ben Settle email & web marketing tips" (Doc and PDF).
+- "Ben Settle - Big Book of Business.zip".
 
-<!-- Paste swipes below, one per line, with the date if known -->
+Pull from these when a request needs more than the 24 above. Add anything used to the swipe log in section 7.
 
 ---
 
@@ -171,7 +184,7 @@ Present openings grouped by lane, each labelled:
 
 ```
 Settle lane
-1. [opening]  (Settle: pattern name)
+1. [opening]  (Settle #n: cheat sheet title)
 
 Tabloid lane
 2. [opening]  (Tabloid: source outlet, original headline or pattern)

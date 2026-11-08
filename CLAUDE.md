@@ -12,7 +12,7 @@ Whenever Muddassir asks for openings of any kind, run the `/openings` skill (`.c
 
 The skill applies the master doc at `_reference/openings-master.md`. Read it in full before writing. Two things are mandatory every time, for every format:
 
-1. Include Ben Settle-style openings, labelled.
+1. Include openings built from Ben Settle's 24-point cheat sheet (section 3 of the master doc, sourced from the "Ben Settle Email Openings" doc in Google Drive), labelled with the cheat sheet number.
 2. Fetch the current headlines from the drama tabloid outlets listed in the master doc, mine their structures, and show the source beside each adapted opening.
 
 If the web is unreachable, say so and use the fallback patterns in the master doc.

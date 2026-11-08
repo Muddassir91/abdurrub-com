@@ -16,7 +16,7 @@ Run this skill every time Muddassir asks for openings of any kind. It applies th
 3. **Extract structures.** Break each headline into trigger, specificity device and tension device. Turn them into fill-in-the-blank patterns.
 
 4. **Generate in three lanes.** Every batch must include all three, 10 to 15 options total unless asked otherwise:
-   - Settle lane: built from the Ben Settle subject line and first line patterns in section 3 of the master doc.
+   - Settle lane: built from Ben Settle's 24-point cheat sheet (Email Players Issue #1) in section 3 of the master doc. Name the cheat sheet number and title beside each one, for example (Settle #6: Why I Don't Do X).
    - Tabloid lane: built from the live headlines, each shown with its source headline or pattern.
    - Direct lane: a straight promise, proof or curiosity opening as the control.
 
