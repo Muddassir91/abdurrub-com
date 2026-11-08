@@ -75,6 +75,7 @@ export interface FinanceContextValue {
   signUp: (email: string, password: string) => Promise<{ needsEmailConfirmation: boolean }>;
   signIn: (email: string, password: string) => Promise<void>;
   sendMagicLink: (email: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   sendPasswordReset: (email: string) => Promise<void>;
   signOut: (removeLocalData: boolean) => Promise<void>;
   continueWithoutAccount: () => void;
@@ -466,6 +467,18 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     if (!cloud) throw new Error("Accounts are not available in this build");
     await cloud.sendMagicLink(email, redirectTo());
   }, []);
+  const signInWithGoogle = useCallback(async () => {
+    const cloud = cloudRef.current;
+    if (!cloud) throw new Error("Accounts are not available in this build");
+    localStorage.removeItem(DEVICE_ONLY_KEY);
+    await cloud.signInWithOAuth("google", redirectTo());
+    // Supabase redirects away; the in-memory backend signs in immediately.
+    if (cloud.kind === "memory") {
+      userRef.current = await cloud.getUser();
+      setCloudUser(userRef.current);
+      await enter();
+    }
+  }, [enter]);
   const sendPasswordReset = useCallback(async (email: string) => {
     const cloud = cloudRef.current;
     if (!cloud) throw new Error("Accounts are not available in this build");
@@ -734,6 +747,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     signUp,
     signIn,
     sendMagicLink,
+    signInWithGoogle,
     sendPasswordReset,
     signOut,
     continueWithoutAccount,

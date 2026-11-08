@@ -36,10 +36,10 @@ try {
   pa.on("pageerror", (e) => errsA.push(String(e)));
   pa.on("console", (m) => m.type() === "error" && errsA.push(m.text()));
   await pa.goto(U, { waitUntil: "networkidle" });
-  await pa.getByRole("tab", { name: "Create account" }).click();
+  await pa.getByRole("button", { name: "Create an account" }).click();
   await pa.getByPlaceholder("you@yourbusiness.com").fill(email);
   await pa.locator('input[type="password"]').fill(password);
-  await pa.getByRole("button", { name: "Create account" }).click();
+  await pa.getByRole("button", { name: "Create account", exact: true }).click();
   await pa.getByText("Set up").first().waitFor({ timeout: 30000 });
   check("Live: account created and reached workspace setup", true);
   await pa.getByRole("button", { name: "Create workspace and open" }).click();
@@ -67,7 +67,7 @@ try {
   await pb.goto(U, { waitUntil: "networkidle" });
   await pb.getByPlaceholder("you@yourbusiness.com").fill(email);
   await pb.locator('input[type="password"]').fill(password);
-  await pb.getByRole("button", { name: "Sign in" }).click();
+  await pb.getByRole("button", { name: "Sign in", exact: true }).click();
   await pb.getByText("overview").first().waitFor({ timeout: 30000 });
   const body = await pb.locator("body").innerText();
   check("Live: second device downloads the workspace with its data ($1,234.00)", body.includes("$1,234.00") && body.includes("Retention Rules"), errsB.slice(0, 2).join(" | "));

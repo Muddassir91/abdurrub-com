@@ -2,38 +2,55 @@
 
 import React, { useState } from "react";
 import { clsx } from "clsx";
-import { Mail, KeyRound, Smartphone } from "lucide-react";
+import { ArrowRight, CheckCircle2, Loader2, Smartphone, ShieldCheck, LineChart, Wallet } from "lucide-react";
 import { useFinance } from "@/store/FinanceProvider";
-import { Button, Callout } from "./ui/primitives";
-import { Field, Input } from "./ui/forms";
 import { LogoMark, Wordmark } from "./Logo";
 
 type Mode = "signin" | "signup" | "magic" | "reset";
 
-/** Sign in / sign up. An account makes your workspaces follow you across devices; it is optional. */
+function GoogleIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+      <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.5l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.3l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z" />
+      <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10 7.1-17z" />
+      <path fill="#FBBC05" d="M10.5 28.6A14.5 14.5 0 0 1 9.7 24c0-1.6.3-3.1.8-4.6l-7.9-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.6 10.7l7.9-6.1z" />
+      <path fill="#34A853" d="M24 48c6.3 0 11.7-2.1 15.6-5.7l-7.5-5.8c-2.1 1.4-4.8 2.3-8.1 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z" />
+    </svg>
+  );
+}
+
+const field = "h-11 w-full rounded-xl border border-border bg-surface px-3.5 text-[15px] text-fg placeholder:text-fg-faint focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent/15";
+
+/** Sign in / create account. Accounts make workspaces follow you across devices; they are optional. */
 export function AuthScreen() {
-  const { signIn, signUp, sendMagicLink, sendPasswordReset, continueWithoutAccount, workspaces } = useFinance();
+  const { signIn, signUp, sendMagicLink, sendPasswordReset, signInWithGoogle, continueWithoutAccount, workspaces } = useFinance();
   const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy] = useState<"form" | "google" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+
+  const switchMode = (m: Mode) => {
+    setMode(m);
+    setError(null);
+    setNotice(null);
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setNotice(null);
-    setBusy(true);
+    setBusy("form");
     try {
       if (mode === "signin") await signIn(email.trim(), password);
       else if (mode === "signup") {
-        if (password.length < 8) throw new Error("Password must be at least 8 characters");
+        if (password.length < 8) throw new Error("Use at least 8 characters for your password.");
         const r = await signUp(email.trim(), password);
-        if (r.needsEmailConfirmation) setNotice("Check your inbox: click the confirmation link, then sign in here.");
+        if (r.needsEmailConfirmation) setNotice(`We sent a confirmation link to ${email.trim()}. Click it, then sign in here.`);
       } else if (mode === "magic") {
         await sendMagicLink(email.trim());
-        setNotice("Check your inbox for a sign-in link.");
+        setNotice(`A sign-in link is on its way to ${email.trim()}.`);
       } else {
         await sendPasswordReset(email.trim());
         setNotice("If that email has an account, a reset link is on its way.");
@@ -41,58 +58,144 @@ export function AuthScreen() {
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
-      setBusy(false);
+      setBusy(null);
     }
   };
 
-  const tabs: { value: Mode; label: string }[] = [
-    { value: "signin", label: "Sign in" },
-    { value: "signup", label: "Create account" },
-    { value: "magic", label: "Email link" },
-  ];
+  const google = async () => {
+    setError(null);
+    setBusy("google");
+    try {
+      await signInWithGoogle();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+      setBusy(null);
+    }
+  };
+
+  const title = mode === "signin" ? "Welcome back" : mode === "signup" ? "Create your account" : mode === "magic" ? "Sign in with a link" : "Reset your password";
+  const subtitle = mode === "signin" ? "Sign in to open your workspaces." : mode === "signup" ? "Free. Your numbers stay private to you." : mode === "magic" ? "No password needed. We email you a one-time link." : "We email you a link to choose a new password.";
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-bg p-4 sm:p-6">
-      <div className="w-full max-w-md">
-        <div className="mb-6 flex items-center justify-center gap-3">
+    <div className="flex min-h-screen bg-bg">
+      {/* Brand panel */}
+      <aside className="relative hidden w-[46%] flex-col justify-between overflow-hidden bg-[#1c1a4f] p-12 text-white lg:flex">
+        <div className="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full bg-accent/50 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-40 -right-20 h-[28rem] w-[28rem] rounded-full bg-[#2dd4bf]/25 blur-3xl" />
+        <div className="relative flex items-center gap-3">
           <LogoMark size={40} />
-          <Wordmark size="lg" />
+          <Wordmark size="lg" className="text-white [&>span:last-child]:text-[#c7c2ff]" />
         </div>
-        <form onSubmit={submit} className="rounded-2xl border border-border bg-surface p-6 shadow-card">
-          <div className="mb-4 inline-flex w-full rounded-lg border border-border bg-surface-2 p-1" role="tablist">
-            {tabs.map((t) => (
-              <button key={t.value} type="button" role="tab" aria-selected={mode === t.value} onClick={() => { setMode(t.value); setError(null); setNotice(null); }} className={clsx("flex-1 rounded-md px-2 py-1.5 text-xs font-medium", mode === t.value ? "bg-surface text-fg shadow-sm" : "text-fg-muted hover:text-fg")}>
-                {t.label}
-              </button>
-            ))}
+        <div className="relative max-w-md">
+          <h2 className="text-4xl font-semibold leading-tight tracking-tight">Know exactly what you can spend, save and pay yourself.</h2>
+          <p className="mt-4 text-base text-white/70">CFoh! is the CFO you did not hire: Profit First allocations, real cash versus budget, reserves, tax provisions and growth decisions, all from one ledger.</p>
+          <ul className="mt-8 space-y-3 text-sm text-white/85">
+            <li className="flex items-start gap-3"><Wallet size={18} className="mt-0.5 shrink-0 text-[#c7c2ff]" /> Every dollar collected is split into operating, owner pay, tax, profit, reserve and growth. Exactly, to the cent.</li>
+            <li className="flex items-start gap-3"><LineChart size={18} className="mt-0.5 shrink-0 text-[#c7c2ff]" /> Daily, weekly, monthly and yearly progress, month-end close and a forecast you can trust.</li>
+            <li className="flex items-start gap-3"><ShieldCheck size={18} className="mt-0.5 shrink-0 text-[#c7c2ff]" /> Private by design. Add a passphrase and even we cannot read your numbers.</li>
+          </ul>
+        </div>
+        <div className="relative text-xs text-white/50">Built by Retention Rules for owners who run lean.</div>
+      </aside>
+
+      {/* Form panel */}
+      <main className="flex flex-1 items-center justify-center px-5 py-10 sm:px-8">
+        <div className="w-full max-w-[400px]">
+          <div className="mb-8 flex items-center gap-3 lg:hidden">
+            <LogoMark size={36} />
+            <Wordmark size="lg" />
           </div>
-          <h1 className="text-base font-semibold text-fg">{mode === "signin" ? "Welcome back" : mode === "signup" ? "Create your account" : mode === "magic" ? "Sign in with an email link" : "Reset your password"}</h1>
-          <p className="mt-1 text-xs text-fg-muted">Your workspaces are stored privately under your account and follow you across devices. Set a passphrase on a workspace and even we cannot read it.</p>
-          <div className="mt-4 space-y-3">
-            <Field label="Email" required>
-              <Input type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@yourbusiness.com" required />
-            </Field>
+          <h1 className="text-2xl font-semibold tracking-tight text-fg">{title}</h1>
+          <p className="mt-1.5 text-sm text-fg-muted">{subtitle}</p>
+
+          {(mode === "signin" || mode === "signup") && (
+            <>
+              <button type="button" onClick={google} disabled={busy !== null} className="mt-7 flex h-11 w-full items-center justify-center gap-3 rounded-xl border border-border-strong bg-surface text-[15px] font-medium text-fg shadow-sm transition-colors hover:bg-surface-2 disabled:opacity-60">
+                {busy === "google" ? <Loader2 size={18} className="animate-spin" /> : <GoogleIcon />}
+                Continue with Google
+              </button>
+              <div className="my-5 flex items-center gap-3 text-[11px] uppercase tracking-wider text-fg-faint">
+                <span className="h-px flex-1 bg-border" />
+                or with email
+                <span className="h-px flex-1 bg-border" />
+              </div>
+            </>
+          )}
+
+          <form onSubmit={submit} className={clsx("space-y-3", mode !== "signin" && mode !== "signup" && "mt-7")}>
+            <label className="block">
+              <span className="mb-1.5 block text-xs font-medium text-fg-muted">Email</span>
+              <input className={field} type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@yourbusiness.com" required />
+            </label>
             {(mode === "signin" || mode === "signup") && (
-              <Field label="Password" required hint={mode === "signup" ? "At least 8 characters." : undefined}>
-                <Input type="password" autoComplete={mode === "signup" ? "new-password" : "current-password"} value={password} onChange={(e) => setPassword(e.target.value)} required />
-              </Field>
+              <label className="block">
+                <span className="mb-1.5 flex items-center justify-between text-xs font-medium text-fg-muted">
+                  Password
+                  {mode === "signin" && (
+                    <button type="button" className="font-medium text-accent hover:underline" onClick={() => switchMode("reset")}>
+                      Forgot password?
+                    </button>
+                  )}
+                </span>
+                <input className={field} type="password" autoComplete={mode === "signup" ? "new-password" : "current-password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder={mode === "signup" ? "At least 8 characters" : "Your password"} required minLength={mode === "signup" ? 8 : undefined} />
+              </label>
+            )}
+            {error && <div className="rounded-xl border border-critical/30 bg-critical-soft px-3.5 py-2.5 text-sm text-critical">{error}</div>}
+            {notice && (
+              <div className="flex items-start gap-2 rounded-xl border border-positive/30 bg-positive-soft px-3.5 py-2.5 text-sm text-fg">
+                <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-positive" /> {notice}
+              </div>
+            )}
+            <button type="submit" disabled={busy !== null || !email || ((mode === "signin" || mode === "signup") && !password)} className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-accent text-[15px] font-semibold text-accent-fg shadow-sm transition hover:brightness-110 disabled:opacity-50">
+              {busy === "form" ? <Loader2 size={18} className="animate-spin" /> : null}
+              {mode === "signin" ? "Sign in" : mode === "signup" ? "Create account" : mode === "magic" ? "Email me a sign-in link" : "Send reset link"}
+              {busy !== "form" && <ArrowRight size={16} />}
+            </button>
+          </form>
+
+          <div className="mt-5 space-y-2 text-center text-sm text-fg-muted">
+            {mode === "signin" && (
+              <>
+                <p>
+                  New to CFoh!?{" "}
+                  <button type="button" className="font-medium text-accent hover:underline" onClick={() => switchMode("signup")}>
+                    Create an account
+                  </button>
+                </p>
+                <p>
+                  <button type="button" className="text-fg-faint hover:text-fg" onClick={() => switchMode("magic")}>
+                    Prefer a sign-in link by email?
+                  </button>
+                </p>
+              </>
+            )}
+            {mode === "signup" && (
+              <p>
+                Already have an account?{" "}
+                <button type="button" className="font-medium text-accent hover:underline" onClick={() => switchMode("signin")}>
+                  Sign in
+                </button>
+              </p>
+            )}
+            {(mode === "magic" || mode === "reset") && (
+              <p>
+                <button type="button" className="font-medium text-accent hover:underline" onClick={() => switchMode("signin")}>
+                  Back to sign in
+                </button>
+              </p>
             )}
           </div>
-          {error && <Callout tone="critical" className="mt-3">{error}</Callout>}
-          {notice && <Callout tone="positive" className="mt-3">{notice}</Callout>}
-          <Button type="submit" variant="primary" className="mt-4 w-full" loading={busy} disabled={!email || ((mode === "signin" || mode === "signup") && !password)}>
-            {mode === "signin" ? <><KeyRound size={14} /> Sign in</> : mode === "signup" ? "Create account" : mode === "magic" ? <><Mail size={14} /> Send sign-in link</> : "Send reset link"}
-          </Button>
-          <div className="mt-3 flex items-center justify-between text-[11px] text-fg-faint">
-            {mode === "signin" ? <button type="button" className="hover:text-fg" onClick={() => setMode("reset")}>Forgot password?</button> : <span />}
-            <button type="button" className="hover:text-fg" onClick={() => setMode(mode === "signup" ? "signin" : "signup")}>{mode === "signup" ? "Already have an account? Sign in" : "New here? Create account"}</button>
+
+          <div className="mt-8 border-t border-border pt-5">
+            <button type="button" onClick={continueWithoutAccount} className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm text-fg-muted hover:bg-surface-2 hover:text-fg">
+              <Smartphone size={15} /> Continue without an account on this device only{workspaces.length > 0 ? ` (${workspaces.length} saved here)` : ""}
+            </button>
+            <p className="mt-3 text-center text-[11px] leading-relaxed text-fg-faint">
+              By continuing you agree this is a financial planning tool, not tax or legal advice. Sign in later and anything saved on this device joins your account.
+            </p>
           </div>
-        </form>
-        <button type="button" onClick={continueWithoutAccount} className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border-strong px-4 py-3 text-xs text-fg-muted hover:bg-surface-2 hover:text-fg">
-          <Smartphone size={14} /> Continue without an account on this device only{workspaces.length > 0 ? ` (${workspaces.length} local workspace${workspaces.length === 1 ? "" : "s"})` : ""}
-        </button>
-        <p className="mt-4 text-center text-[11px] text-fg-faint">Signing in later uploads this device&apos;s workspaces to your account automatically.</p>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

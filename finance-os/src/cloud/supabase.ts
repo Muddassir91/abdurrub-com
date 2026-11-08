@@ -65,6 +65,11 @@ export class SupabaseCloud implements CloudBackend {
     if (error) throw new Error(error.message);
   }
 
+  async signInWithOAuth(provider: "google", redirectTo: string) {
+    const { error } = await this.client.auth.signInWithOAuth({ provider, options: { redirectTo, queryParams: { access_type: "offline", prompt: "select_account" } } });
+    if (error) throw new Error(/not enabled|unsupported provider/i.test(error.message) ? "Google sign-in is not switched on yet for this app." : error.message);
+  }
+
   async sendPasswordReset(email: string, redirectTo: string) {
     const { error } = await this.client.auth.resetPasswordForEmail(email, { redirectTo });
     if (error) throw new Error(error.message);

@@ -46,6 +46,8 @@ export interface CloudBackend {
   signUp(email: string, password: string): Promise<{ needsEmailConfirmation: boolean }>;
   signInWithPassword(email: string, password: string): Promise<void>;
   sendMagicLink(email: string, redirectTo: string): Promise<void>;
+  /** Redirects the browser to the provider; the session arrives on return via onAuthChange. */
+  signInWithOAuth(provider: "google", redirectTo: string): Promise<void>;
   sendPasswordReset(email: string, redirectTo: string): Promise<void>;
   signOut(): Promise<void>;
   listWorkspaces(): Promise<RemoteWorkspace[]>;

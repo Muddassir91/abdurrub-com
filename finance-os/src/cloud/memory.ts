@@ -75,6 +75,12 @@ export class MemoryCloud implements CloudBackend {
   async sendPasswordReset() {
     /* no-op in memory */
   }
+  async signInWithOAuth(provider: "google") {
+    const email = `${provider}-user@example.com`;
+    if (!this.accounts.has(email)) this.accounts.set(email, { id: `user-${provider}`, password: "" });
+    this.user = { id: this.accounts.get(email)!.id, email };
+    this.emit();
+  }
   async signOut() {
     this.user = null;
     this.emit();

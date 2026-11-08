@@ -200,10 +200,11 @@ try {
   const errors2 = [];
   p2.on("pageerror", (e) => errors2.push(String(e)));
   await p2.goto(`http://localhost:${PORT}/cfoh/`, { waitUntil: "networkidle" });
-  await p2.getByRole("tab", { name: "Create account" }).click();
+  check("Cloud: sign-in screen offers Google", await p2.getByRole("button", { name: "Continue with Google" }).isVisible());
+  await p2.getByRole("button", { name: "Create an account" }).click();
   await p2.getByPlaceholder("you@yourbusiness.com").fill("owner@example.com");
   await p2.locator('input[type="password"]').fill("correct-horse-battery");
-  await p2.getByRole("button", { name: "Create account" }).click();
+  await p2.getByRole("button", { name: "Create account", exact: true }).click();
   await p2.getByText("Set up").first().waitFor({ timeout: 20000 });
   check("Cloud: sign-up leads to workspace setup", true);
   await p2.getByRole("button", { name: "Create workspace and open" }).click();
@@ -214,6 +215,17 @@ try {
   check("Cloud: account tab shows the signed-in email", (await p2.locator("body").innerText()).includes("owner@example.com"));
   check("Cloud: no runtime errors in account flow", errors2.length === 0, errors2.slice(0, 2).join(" | "));
   await ctx2.close();
+
+  // Google button path (memory backend signs in immediately).
+  const ctx3 = await browser.newContext({ viewport: { width: 1400, height: 900 } });
+  await ctx3.addInitScript(() => localStorage.setItem("finance-os:cloud", "memory"));
+  const p3 = await ctx3.newPage();
+  await p3.goto(`http://localhost:${PORT}/cfoh/`, { waitUntil: "networkidle" });
+  await p3.screenshot({ path: "../finance-os/.e2e/auth.png", fullPage: false }).catch(() => {});
+  await p3.getByRole("button", { name: "Continue with Google" }).click();
+  await p3.getByText("Set up").first().waitFor({ timeout: 20000 });
+  check("Cloud: Google sign-in path reaches workspace setup", true);
+  await ctx3.close();
 
   // Visit every page for runtime errors.
   for (const p of ["expenses", "clients", "personal", "accounts", "tax", "growth", "forecast", "alerts"]) {
