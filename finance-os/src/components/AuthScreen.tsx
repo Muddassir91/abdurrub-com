@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { clsx } from "clsx";
-import { ArrowRight, CheckCircle2, Loader2, Smartphone, ShieldCheck, LineChart, Wallet } from "lucide-react";
+import { ArrowRight, CheckCircle2, Loader2, Smartphone } from "lucide-react";
 import { useFinance } from "@/store/FinanceProvider";
 import { LogoMark, Wordmark } from "./Logo";
 
@@ -86,16 +86,11 @@ export function AuthScreen() {
           <LogoMark size={40} />
           <Wordmark size="lg" className="text-white [&>span:last-child]:text-[#c7c2ff]" />
         </div>
-        <div className="relative max-w-md">
-          <h2 className="text-4xl font-semibold leading-tight tracking-tight">Know exactly what you can spend, save and pay yourself.</h2>
-          <p className="mt-4 text-base text-white/70">CFoh! is the CFO you did not hire: Profit First allocations, real cash versus budget, reserves, tax provisions and growth decisions, all from one ledger.</p>
-          <ul className="mt-8 space-y-3 text-sm text-white/85">
-            <li className="flex items-start gap-3"><Wallet size={18} className="mt-0.5 shrink-0 text-[#c7c2ff]" /> Every dollar collected is split into operating, owner pay, tax, profit, reserve and growth. Exactly, to the cent.</li>
-            <li className="flex items-start gap-3"><LineChart size={18} className="mt-0.5 shrink-0 text-[#c7c2ff]" /> Daily, weekly, monthly and yearly progress, month-end close and a forecast you can trust.</li>
-            <li className="flex items-start gap-3"><ShieldCheck size={18} className="mt-0.5 shrink-0 text-[#c7c2ff]" /> Private by design. Add a passphrase and even we cannot read your numbers.</li>
-          </ul>
+        <div className="relative max-w-lg">
+          <h2 className="text-[2.75rem] font-semibold leading-[1.1] tracking-tight">Make better financial decisions.</h2>
+          <p className="mt-5 text-lg leading-relaxed text-white/70">Track your finances, spending and profit without hiring a CFO.</p>
         </div>
-        <div className="relative text-xs text-white/50">Built by Retention Rules for owners who run lean.</div>
+        <div className="relative" />
       </aside>
 
       {/* Form panel */}
