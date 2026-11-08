@@ -55,7 +55,7 @@ export default function HomePage() {
       <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute left-1/2 top-[-12rem] h-[34rem] w-[64rem] -translate-x-1/2 rounded-full bg-accent/15 blur-3xl" />
         <div className="relative mx-auto max-w-6xl px-5 pb-10 pt-16 text-center sm:px-8 sm:pt-24">
-          <RotatingHeadline className="mx-auto max-w-4xl text-4xl leading-[1.08] sm:text-6xl" fixed="Make better financial decisions" phrases={["on what you spend.", "on what you pay yourself.", "on what you set aside for tax.", "on when you can hire.", "on what you keep."]} />
+          <RotatingHeadline className="mx-auto max-w-4xl text-4xl leading-[1.08] sm:text-6xl" fixed="Make better financial decisions" phrases={["by tracking your spending.", "by tracking your cash flow.", "by tracking your profit.", "without hiring an accountant."]} />
           <p className="mx-auto mt-6 max-w-2xl text-lg text-fg-muted sm:text-xl">Track your finances, spending and profit without hiring a CFO.</p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Link href="/app/" className="inline-flex h-12 items-center gap-2 rounded-xl bg-accent px-6 text-base font-semibold text-accent-fg shadow-sm hover:brightness-110">
