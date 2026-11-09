@@ -1,0 +1,62 @@
+{
+  "voice": "af_heart",
+  "model": "onnx-community/Kokoro-82M-v1.0-ONNX (Apache-2.0)",
+  "lines": [
+    {
+      "id": "01",
+      "scene": "hook",
+      "text": "You made good money this month. So why is the account empty again?",
+      "file": "vo/01.wav",
+      "seconds": 4.275
+    },
+    {
+      "id": "02",
+      "scene": "dashboard",
+      "text": "One balance makes every dollar look spendable. CFoh gives every dollar a job the moment it lands.",
+      "file": "vo/02.wav",
+      "seconds": 7.025
+    },
+    {
+      "id": "03",
+      "scene": "dashboard-alloc",
+      "text": "Six envelopes: operating, your pay, tax, profit, reserve and growth. Set once, applied to the cent.",
+      "file": "vo/03.wav",
+      "seconds": 7.15
+    },
+    {
+      "id": "04",
+      "scene": "expenses",
+      "text": "A ceiling on tools and overhead. It warns you the day you cross it, not at month end.",
+      "file": "vo/04.wav",
+      "seconds": 5.625
+    },
+    {
+      "id": "05",
+      "scene": "personal",
+      "text": "Pay yourself on purpose. Household first, then the rest.",
+      "file": "vo/05.wav",
+      "seconds": 3.875
+    },
+    {
+      "id": "06",
+      "scene": "trends",
+      "text": "Watch the result line climb, week by week.",
+      "file": "vo/06.wav",
+      "seconds": 3.125
+    },
+    {
+      "id": "07",
+      "scene": "month-end",
+      "text": "Close the month in ten steps. The report writes itself.",
+      "file": "vo/07.wav",
+      "seconds": 3.85
+    },
+    {
+      "id": "08",
+      "scene": "cta",
+      "text": "Start your free month today. CFoh, by Retention Rules.",
+      "file": "vo/08.wav",
+      "seconds": 4.05
+    }
+  ]
+}

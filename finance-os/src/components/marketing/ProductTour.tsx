@@ -52,9 +52,9 @@ export function ProductTour({ scenes, interval = 5200, className, video }: { sce
           <video className="absolute inset-x-0 top-9 z-20 h-[calc(100%-2.25rem)] w-full bg-black object-cover" src={`${BASE}${video.src}`} poster={video.poster ? `${BASE}${video.poster}` : undefined} controls autoPlay playsInline onEnded={() => setShowVideo(false)} />
         )}
         {video && !showVideo && (
-          <button type="button" onClick={() => { setShowVideo(true); setPlaying(false); }} aria-label="Play the 30-second overview" className="absolute left-1/2 top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 items-center gap-3 rounded-full bg-white/95 py-2.5 pl-3 pr-5 text-sm font-semibold text-[#1c1a4f] shadow-2xl transition-transform hover:scale-105">
+          <button type="button" onClick={() => { setShowVideo(true); setPlaying(false); }} aria-label="Play the 45-second overview" className="absolute left-1/2 top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 items-center gap-3 rounded-full bg-white/95 py-2.5 pl-3 pr-5 text-sm font-semibold text-[#1c1a4f] shadow-2xl transition-transform hover:scale-105">
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-white"><Play size={16} className="ml-0.5" /></span>
-            Watch the 30-second overview
+            Watch the 45-second overview
           </button>
         )}
         {scenes.map((sc, idx) => (

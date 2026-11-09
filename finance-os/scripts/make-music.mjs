@@ -59,7 +59,7 @@ for (let t = 0; t < DURATION - 0.3; t += beat * 2) {
 }
 
 const mixInputs = labels.map((l) => l.match(/\[(\w+)\]$/)[1]).map((l) => `[${l}]`).join("");
-const graph = `${labels.join(";")};${mixInputs}amix=inputs=${labels.length}:normalize=0,lowpass=f=2400,aecho=0.7:0.4:180|320:0.25|0.15,highpass=f=60,alimiter=limit=0.9,afade=t=in:st=0:d=0.8,afade=t=out:st=${(DURATION - 2.5).toFixed(2)}:d=2.5,aformat=sample_rates=44100:channel_layouts=stereo[out]`;
+const graph = `${labels.join(";")};${mixInputs}amix=inputs=${labels.length}:normalize=0,lowpass=f=2400,aecho=0.7:0.4:180|320:0.25|0.15,highpass=f=60,loudnorm=I=-18:TP=-1.5:LRA=9,afade=t=in:st=0:d=0.8,afade=t=out:st=${(DURATION - 2.5).toFixed(2)}:d=2.5,aformat=sample_rates=44100:channel_layouts=stereo[out]`;
 
 const music = resolve(process.cwd(), "public", "cfoh-music.mp3");
 execFileSync("ffmpeg", ["-y", "-loglevel", "error", ...inputs, "-filter_complex", graph, "-map", "[out]", "-t", String(DURATION), "-c:a", "libmp3lame", "-q:a", "4", music], { stdio: "inherit" });
@@ -67,7 +67,7 @@ console.log(`music written: ${music} (${(statSync(music).size / 1024).toFixed(0)
 
 // --- Mux under the demo video, if present.
 const video = resolve(process.cwd(), "public", "cfoh-demo.mp4");
-if (existsSync(video)) {
+if (existsSync(video) && !process.env.MUSIC_NO_MUX) {
   const tmp = resolve(process.cwd(), "public", "cfoh-demo.tmp.mp4");
   execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-i", video, "-i", music, "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy", "-c:a", "aac", "-b:a", "128k", "-shortest", "-movflags", "+faststart", tmp], { stdio: "inherit" });
   renameSync(tmp, video);
