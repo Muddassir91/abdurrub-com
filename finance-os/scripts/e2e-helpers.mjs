@@ -63,8 +63,12 @@ export async function runOnboarding(page, o = {}) {
         await page.getByRole("button", { name: /Pay myself consistently/ }).click();
         await cont.click();
         break;
+      case "registration":
+        await page.getByRole("radio", { name: /registered where I live/ }).click();
+        break;
       case "tax":
-        await page.getByRole("radio", { name: /About 15%/ }).click();
+        await page.getByLabel("Percentage").fill("15");
+        await cont.click();
         break;
       case "reserve":
         await page.getByRole("radio", { name: /^3 months/ }).click();

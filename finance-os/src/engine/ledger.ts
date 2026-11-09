@@ -10,7 +10,7 @@ import {
   type Bucket,
   type TransactionType,
 } from "@/lib/constants";
-import { convertFromUsdCents, type CurrencyCode, type Minor } from "@/lib/money";
+import { convertFromUsdCents, convertToUsdCents, type CurrencyCode, type Minor } from "@/lib/money";
 import type { Allocations } from "./types";
 
 export const isRevenue = (t: Transaction) => REVENUE_TYPES.includes(t.type as TransactionType);
@@ -87,8 +87,8 @@ export function accountBalance(account: Account, transactions: Transaction[], se
 export function accountBalanceUsd(account: Account, transactions: Transaction[], settings: Settings, upToDate?: string): Minor {
   const bal = accountBalance(account, transactions, settings, upToDate);
   if (isBase(account.currency, settings)) return bal;
-  const rate = Number(settings.defaultFxRatePkrPerUsd) || 1;
-  return Math.round(bal / rate);
+  const rate = Number(settings.defaultFxRatePkrPerUsd) > 0 ? settings.defaultFxRatePkrPerUsd : "1";
+  return convertToUsdCents(bal, account.currency as CurrencyCode, rate);
 }
 
 /** Which virtual envelope a ledger row draws from. Explicit bucket wins; otherwise inferred from the type. */

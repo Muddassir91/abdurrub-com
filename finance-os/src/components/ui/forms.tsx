@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { clsx } from "clsx";
-import { CURRENCIES, minorToMajor, parseMajorToMinor, type CurrencyCode, type Minor } from "@/lib/money";
+import { currencyMeta, minorToMajor, parseMajorToMinor, type CurrencyCode, type Minor } from "@/lib/money";
 
 const inputCls = "h-9 w-full rounded-lg border border-border bg-surface px-3 text-sm text-fg placeholder:text-fg-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30 disabled:opacity-60 tabular";
 
@@ -39,7 +39,7 @@ export function Select({ className, children, ...props }: React.SelectHTMLAttrib
 
 /** Money input: edits in major units, emits integer minor units. */
 export function MoneyInput({ value, onChange, currency = "USD", className, allowNegative, ...props }: { value: Minor; onChange: (minor: Minor) => void; currency?: CurrencyCode; className?: string; allowNegative?: boolean } & Omit<React.InputHTMLAttributes<HTMLInputElement>, "value" | "onChange">) {
-  const digits = CURRENCIES[currency].digits;
+  const digits = currencyMeta(currency).digits;
   const toText = (v: Minor) => (v === 0 ? "" : minorToMajor(v, currency).toFixed(digits));
   const [text, setText] = useState(toText(value));
   useEffect(() => {
@@ -50,7 +50,7 @@ export function MoneyInput({ value, onChange, currency = "USD", className, allow
   }, [value, currency]);
   return (
     <div className={clsx("relative", className)}>
-      <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-xs text-fg-faint">{CURRENCIES[currency].symbol}</span>
+      <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-xs text-fg-faint">{currencyMeta(currency).symbol}</span>
       <input
         inputMode="decimal"
         className={clsx(inputCls, "pl-9")}

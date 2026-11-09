@@ -4,7 +4,7 @@ import * as s from "@/db/schema";
 import { IDS, categoryId } from "@/db/seed";
 import { updateSettings, upsertPolicy, upsertHouseholdLine, upsertRecurring, upsertAccount } from "@/db/repo";
 import { todayKey, addMonths, currentMonthKey } from "@/lib/dates";
-import { nowIso } from "@/lib/ids";
+import { nowIso, uid } from "@/lib/ids";
 import { householdInBaseMinor, isPersonal, normaliseSplit, splitTotal, type OnboardingAnswers } from "./model";
 
 /**
@@ -28,6 +28,7 @@ export function applyOnboarding(db: Db, raw: OnboardingAnswers): void {
     householdCurrency: a.householdCurrency,
     defaultFxRatePkrPerUsd: fxRate,
     householdBudgetUsdCents: householdInBaseMinor({ ...a, fxRate }),
+    // The questionnaire asks for home-currency units per 1 base unit, which is exactly this setting.
     discretionaryGoalUsdCents: 0,
     reserveTargetMonths: String(a.reserveMonths),
     reserveMinMonths: String(Math.min(a.reserveMonths, 3)),
@@ -110,13 +111,20 @@ export function applyOnboarding(db: Db, raw: OnboardingAnswers): void {
     upsertHouseholdLine(db, { name: h.name, categoryId: catIds.has(id) ? id : categoryId("personal", "Other"), amountMinor: h.amountMinor, currency: a.householdCurrency, isActive: true, sortOrder: i + 1, notes: null });
   });
 
-  // Where the business lives, and the share they told us goes to tax (an estimate, theirs).
+  // Where the person pays tax (home), where the business is registered (may differ), and the share they told us goes to tax.
   const country = a.country.trim();
-  if (country) {
-    for (const e of db.select().from(s.entities).all()) db.update(s.entities).set({ name: businessName, jurisdiction: country }).where(eq(s.entities.id, e.id)).run();
-    for (const t of db.select().from(s.taxProfiles).all()) db.update(s.taxProfiles).set({ jurisdiction: country, assumedRatePct: String(a.taxPct), isEstimate: true }).where(eq(s.taxProfiles.id, t.id)).run();
-    for (const c of db.select().from(s.complianceItems).all()) if (c.jurisdiction === "To be set") db.update(s.complianceItems).set({ jurisdiction: country }).where(eq(s.complianceItems.id, c.id)).run();
-  } else {
-    for (const t of db.select().from(s.taxProfiles).all()) db.update(s.taxProfiles).set({ assumedRatePct: String(a.taxPct) }).where(eq(s.taxProfiles.id, t.id)).run();
+  const abroad = a.registration === "abroad" && a.registrationCountry.trim().length > 0;
+  const regCountry = abroad ? a.registrationCountry.trim() : country;
+  const entityType = abroad ? (/united states|^usa?$|u\.s\./i.test(regCountry) ? "us_llc" : "other") : "other";
+  const taxNote = abroad
+    ? `Registered in ${regCountry}; tax is paid where the owner lives${country ? ` (${country})` : ""}. Filings in ${regCountry} may be information-only (nil) returns. Confirm both with a professional.`
+    : "Rate entered during setup. Confirm with a professional.";
+  for (const e of db.select().from(s.entities).all()) db.update(s.entities).set({ name: businessName, type: entityType, ...(regCountry ? { jurisdiction: regCountry } : {}) }).where(eq(s.entities.id, e.id)).run();
+  for (const t of db.select().from(s.taxProfiles).all()) db.update(s.taxProfiles).set({ ...(country ? { jurisdiction: country } : {}), assumedRatePct: String(a.taxPct), isEstimate: true, notes: taxNote }).where(eq(s.taxProfiles.id, t.id)).run();
+  if (country) for (const c of db.select().from(s.complianceItems).all()) if (c.jurisdiction === "To be set") db.update(s.complianceItems).set({ jurisdiction: country }).where(eq(s.complianceItems.id, c.id)).run();
+  if (abroad) {
+    const title = `Annual filing in ${regCountry}`;
+    const exists = db.select().from(s.complianceItems).all().some((c) => c.title === title);
+    if (!exists) db.insert(s.complianceItems).values({ id: uid(), title, jurisdiction: regCountry, description: `The business is registered in ${regCountry} but tax is paid at home. Most registries still expect an annual return or information filing even when nothing is owed. Add the due date once you know it.`, frequency: "annual", status: "pending", applicable: true, sortOrder: 50 }).run();
   }
 }

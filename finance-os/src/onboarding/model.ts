@@ -1,4 +1,4 @@
-import type { CurrencyCode, Minor } from "@/lib/money";
+import { convertToUsdCents, currencyMeta, type CurrencyCode, type Minor } from "@/lib/money";
 import type { Frequency } from "@/lib/constants";
 
 /**
@@ -41,7 +41,11 @@ export interface OnboardingAnswers {
   householdCurrency: CurrencyCode;
   /** Household-currency units per 1 base unit ("1" when both are the same). */
   fxRate: string;
+  /** Where the person lives and pays tax. */
   country: string;
+  /** "abroad" when the business is registered somewhere else (e.g. a US LLC owned from Pakistan that files nil returns there). */
+  registration: "home" | "abroad";
+  registrationCountry: string;
   /** Typical monthly income before costs, base currency. */
   monthlyIncomeMinor: Minor;
   steadiness: Steadiness;
@@ -109,7 +113,8 @@ export const GOALS: { value: Goal; label: string; emoji: string }[] = [
   { value: "see_where", label: "See where my money goes", emoji: "🔍" },
 ];
 
-export const TAX_OPTIONS = [0, 10, 15, 20, 25, 30];
+/** Quick picks for the tax share; any number can be typed (Pakistan's export remittance rate is 1%, for example). */
+export const TAX_OPTIONS = [0, 1, 5, 10, 15, 20, 25, 30];
 export const RESERVE_OPTIONS = [1, 3, 6];
 
 export function emptyAnswers(): OnboardingAnswers {
@@ -122,6 +127,8 @@ export function emptyAnswers(): OnboardingAnswers {
     householdCurrency: "USD",
     fxRate: "1",
     country: "",
+    registration: "home",
+    registrationCountry: "",
     monthlyIncomeMinor: 0,
     steadiness: "varies",
     paymentMethods: [],
@@ -155,8 +162,9 @@ export function monthlyCostsMinor(a: OnboardingAnswers): Minor {
 /** Household essentials converted to base minor units. */
 export function householdInBaseMinor(a: OnboardingAnswers): Minor {
   const total = a.household.reduce((s, x) => s + x.amountMinor, 0);
-  const rate = Number(a.fxRate) > 0 ? Number(a.fxRate) : 1;
-  return Math.round(total / rate);
+  if (a.householdCurrency === a.baseCurrency) return total;
+  const rate = Number(a.fxRate) > 0 ? a.fxRate : "1";
+  return convertToUsdCents(total, a.householdCurrency, rate, currencyMeta(a.baseCurrency).digits);
 }
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
@@ -169,7 +177,7 @@ const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v
  */
 export function suggestSplit(a: OnboardingAnswers): SplitPct {
   const income = a.monthlyIncomeMinor;
-  const tax = clamp(Math.round(a.taxPct), 0, 40);
+  const tax = clamp(Math.round(a.taxPct), 0, 60);
   let opex: number;
   let owner: number;
   if (income > 0) {

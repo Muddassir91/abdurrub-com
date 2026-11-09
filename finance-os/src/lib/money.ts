@@ -3,28 +3,85 @@ import Decimal from "decimal.js";
 /**
  * Money primitives.
  *
- * Every amount is stored as an INTEGER in the currency's minor unit
- * (USD cents, PKR paisa). All arithmetic goes through decimal.js so we never
- * rely on binary floating point for currency math. Percentages and exchange
- * rates are stored as decimal strings ("25", "280.5") and parsed on demand.
+ * Every amount is stored as an INTEGER in the currency's minor unit (cents,
+ * paisa, fils…). All arithmetic goes through decimal.js so we never rely on
+ * binary floating point for currency math. Percentages and exchange rates are
+ * stored as decimal strings ("25", "280.5") and parsed on demand.
+ *
+ * The ledger's unit is the workspace's base currency; historically it is
+ * called "USD cents" throughout the code and the functions below keep those
+ * names.
  */
 
 Decimal.set({ precision: 40, rounding: Decimal.ROUND_HALF_UP });
 
 export type Minor = number; // integer minor units
-export type CurrencyCode = "USD" | "PKR" | "EUR" | "GBP" | "AED" | "CAD" | "AUD";
+/** ISO 4217 code. Any code in ISO_CURRENCIES is accepted everywhere. */
+export type CurrencyCode = string;
 
-export const CURRENCIES: Record<CurrencyCode, { symbol: string; name: string; digits: number; locale: string }> = {
-  USD: { symbol: "$", name: "US Dollar", digits: 2, locale: "en-US" },
-  PKR: { symbol: "Rs", name: "Pakistani Rupee", digits: 2, locale: "en-PK" },
-  EUR: { symbol: "€", name: "Euro", digits: 2, locale: "de-DE" },
-  GBP: { symbol: "£", name: "British Pound", digits: 2, locale: "en-GB" },
-  AED: { symbol: "AED", name: "UAE Dirham", digits: 2, locale: "en-AE" },
-  CAD: { symbol: "C$", name: "Canadian Dollar", digits: 2, locale: "en-CA" },
-  AUD: { symbol: "A$", name: "Australian Dollar", digits: 2, locale: "en-AU" },
-};
+export interface CurrencyMeta {
+  code: string;
+  symbol: string;
+  name: string;
+  digits: number;
+}
 
-export const CURRENCY_CODES = Object.keys(CURRENCIES) as CurrencyCode[];
+/** Every active ISO 4217 currency, with minor-unit digits where they are not 2. */
+const ZERO_DIGITS = new Set(["BIF", "CLP", "DJF", "GNF", "ISK", "JPY", "KMF", "KRW", "PYG", "RWF", "UGX", "VND", "VUV", "XAF", "XOF", "XPF"]);
+const THREE_DIGITS = new Set(["BHD", "IQD", "JOD", "KWD", "LYD", "OMR", "TND"]);
+export const ISO_CURRENCIES = [
+  "AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS", "AUD", "AWG", "AZN", "BAM", "BBD", "BDT", "BGN", "BHD", "BIF", "BMD", "BND", "BOB", "BRL", "BSD", "BTN", "BWP", "BYN", "BZD",
+  "CAD", "CDF", "CHF", "CLP", "CNY", "COP", "CRC", "CUP", "CVE", "CZK", "DJF", "DKK", "DOP", "DZD", "EGP", "ERN", "ETB", "EUR", "FJD", "FKP", "GBP", "GEL", "GHS", "GIP", "GMD", "GNF", "GTQ", "GYD",
+  "HKD", "HNL", "HTG", "HUF", "IDR", "ILS", "INR", "IQD", "IRR", "ISK", "JMD", "JOD", "JPY", "KES", "KGS", "KHR", "KMF", "KPW", "KRW", "KWD", "KYD", "KZT", "LAK", "LBP", "LKR", "LRD", "LSL", "LYD",
+  "MAD", "MDL", "MGA", "MKD", "MMK", "MNT", "MOP", "MRU", "MUR", "MVR", "MWK", "MXN", "MYR", "MZN", "NAD", "NGN", "NIO", "NOK", "NPR", "NZD", "OMR", "PAB", "PEN", "PGK", "PHP", "PKR", "PLN", "PYG",
+  "QAR", "RON", "RSD", "RUB", "RWF", "SAR", "SBD", "SCR", "SDG", "SEK", "SGD", "SHP", "SLE", "SOS", "SRD", "SSP", "STN", "SYP", "SZL", "THB", "TJS", "TMT", "TND", "TOP", "TRY", "TTD", "TWD", "TZS",
+  "UAH", "UGX", "USD", "UYU", "UZS", "VES", "VND", "VUV", "WST", "XAF", "XCD", "XOF", "XPF", "YER", "ZAR", "ZMW", "ZWL",
+] as const;
+
+/** Symbols kept short and unambiguous; everything else comes from Intl or falls back to the code. */
+const SYMBOLS: Record<string, string> = { USD: "$", EUR: "€", GBP: "£", PKR: "Rs", INR: "₹", JPY: "¥", CNY: "CN¥", KRW: "₩", AED: "AED", SAR: "SAR", CAD: "C$", AUD: "A$", NZD: "NZ$", SGD: "S$", HKD: "HK$", MXN: "MX$", BRL: "R$", ZAR: "R", NGN: "₦", PHP: "₱", TRY: "₺", RUB: "₽", UAH: "₴", ILS: "₪", THB: "฿", VND: "₫", BDT: "৳", LKR: "Rs", NPR: "Rs", EGP: "E£", KES: "KSh", GHS: "GH₵", IDR: "Rp", MYR: "RM", CHF: "CHF", SEK: "kr", NOK: "kr", DKK: "kr", PLN: "zł", CZK: "Kč", HUF: "Ft" };
+
+const names = (() => {
+  try {
+    return new Intl.DisplayNames(["en"], { type: "currency" });
+  } catch {
+    return null;
+  }
+})();
+
+function build(code: string): CurrencyMeta {
+  const digits = ZERO_DIGITS.has(code) ? 0 : THREE_DIGITS.has(code) ? 3 : 2;
+  let name = code;
+  try {
+    name = names?.of(code) ?? code;
+  } catch {
+    name = code;
+  }
+  let symbol = SYMBOLS[code];
+  if (!symbol) {
+    try {
+      const part = new Intl.NumberFormat("en", { style: "currency", currency: code, currencyDisplay: "narrowSymbol" }).formatToParts(1).find((p) => p.type === "currency")?.value ?? code;
+      // "$" alone would be ambiguous for anything but USD; letters-only symbols read better as the code.
+      symbol = part === "$" || /^[A-Za-z]+$/.test(part) ? code : part;
+    } catch {
+      symbol = code;
+    }
+  }
+  return { code, symbol, name, digits };
+}
+
+export const CURRENCIES: Record<string, CurrencyMeta> = Object.fromEntries(ISO_CURRENCIES.map((c) => [c, build(c)]));
+export const CURRENCY_CODES: CurrencyCode[] = [...ISO_CURRENCIES];
+/** Shown first in pickers. */
+export const POPULAR_CURRENCIES: CurrencyCode[] = ["USD", "EUR", "GBP", "PKR", "INR", "AED", "SAR", "CAD", "AUD", "NGN", "PHP", "BDT", "EGP", "ZAR", "TRY", "IDR", "MYR", "SGD", "JPY", "CNY", "BRL", "MXN", "KES", "LKR"];
+
+/** Metadata for a code; unknown codes get a sensible fallback instead of a crash. */
+export function currencyMeta(code: CurrencyCode | null | undefined): CurrencyMeta {
+  const c = (code ?? "USD").toUpperCase();
+  return CURRENCIES[c] ?? { code: c, symbol: c, name: c, digits: 2 };
+}
+
+export const isKnownCurrency = (code: string) => code.toUpperCase() in CURRENCIES;
 
 export const D = (v: Decimal.Value) => new Decimal(v);
 
@@ -34,15 +91,15 @@ export function parseMajorToMinor(input: string | number, currency: CurrencyCode
   if (cleaned === "" || cleaned === "-" || cleaned === ".") return 0;
   const d = new Decimal(cleaned);
   if (!d.isFinite()) throw new Error("Invalid amount");
-  return d.mul(Decimal.pow(10, CURRENCIES[currency].digits)).toDecimalPlaces(0, Decimal.ROUND_HALF_UP).toNumber();
+  return d.mul(Decimal.pow(10, currencyMeta(currency).digits)).toDecimalPlaces(0, Decimal.ROUND_HALF_UP).toNumber();
 }
 
 export function minorToMajor(minor: Minor, currency: CurrencyCode = "USD"): Decimal {
-  return new Decimal(minor).div(Decimal.pow(10, CURRENCIES[currency].digits));
+  return new Decimal(minor).div(Decimal.pow(10, currencyMeta(currency).digits));
 }
 
 export function majorToMinor(major: Decimal.Value, currency: CurrencyCode = "USD"): Minor {
-  return new Decimal(major).mul(Decimal.pow(10, CURRENCIES[currency].digits)).toDecimalPlaces(0, Decimal.ROUND_HALF_UP).toNumber();
+  return new Decimal(major).mul(Decimal.pow(10, currencyMeta(currency).digits)).toDecimalPlaces(0, Decimal.ROUND_HALF_UP).toNumber();
 }
 
 /** Round a Decimal to an integer minor amount (half-up). */
@@ -92,22 +149,27 @@ export function allocateExact<K extends string>(total: Minor, weights: { key: K;
   return result;
 }
 
-/** Convert a foreign minor amount to USD cents using a rate expressed as "quote units per 1 USD". */
-export function convertToUsdCents(amountMinor: Minor, currency: CurrencyCode, ratePerUsd: Decimal.Value): Minor {
+/**
+ * Convert a foreign minor amount to ledger (base) minor units using a rate
+ * expressed as "quote units per 1 base unit". Minor-unit digits of the quote
+ * currency are respected (¥1,000 is 1000 minor units, not 10.00).
+ */
+export function convertToUsdCents(amountMinor: Minor, currency: CurrencyCode, ratePerUsd: Decimal.Value, baseDigits = 2): Minor {
   if (currency === "USD") return amountMinor;
   const rate = new Decimal(ratePerUsd);
   if (rate.lte(0)) throw new Error("Exchange rate must be positive");
-  // Both currencies have 2 minor digits so minor/minor conversion is direct.
-  return toMinor(new Decimal(amountMinor).div(rate));
+  const major = new Decimal(amountMinor).div(Decimal.pow(10, currencyMeta(currency).digits));
+  return toMinor(major.div(rate).mul(Decimal.pow(10, baseDigits)));
 }
 
-export function convertFromUsdCents(usdCents: Minor, currency: CurrencyCode, ratePerUsd: Decimal.Value): Minor {
+export function convertFromUsdCents(usdCents: Minor, currency: CurrencyCode, ratePerUsd: Decimal.Value, baseDigits = 2): Minor {
   if (currency === "USD") return usdCents;
-  return toMinor(new Decimal(usdCents).mul(ratePerUsd));
+  const major = new Decimal(usdCents).div(Decimal.pow(10, baseDigits)).mul(ratePerUsd);
+  return toMinor(major.mul(Decimal.pow(10, currencyMeta(currency).digits)));
 }
 
 export function formatMoney(minor: Minor, currency: CurrencyCode = "USD", opts: { compact?: boolean; signed?: boolean; decimals?: number } = {}): string {
-  const meta = CURRENCIES[currency];
+  const meta = currencyMeta(currency);
   const major = minorToMajor(minor, currency);
   const abs = major.abs();
   const sign = major.isNegative() ? "-" : opts.signed && major.gt(0) ? "+" : "";
@@ -117,10 +179,11 @@ export function formatMoney(minor: Minor, currency: CurrencyCode = "USD", opts: 
   } else if (opts.compact && abs.gte(10_000)) {
     body = abs.div(1_000).toDecimalPlaces(1).toString() + "k";
   } else {
-    const decimals = opts.decimals ?? (currency === "PKR" ? 0 : 2);
+    const decimals = opts.decimals ?? (currency === "PKR" || meta.digits === 0 ? 0 : meta.digits);
     body = abs.toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
-  return `${sign}${meta.symbol}${currency === "PKR" || currency === "AED" ? " " : ""}${body}`;
+  const space = /^[A-Za-z]/.test(meta.symbol) ? " " : "";
+  return `${sign}${meta.symbol}${space}${body}`;
 }
 
 export function formatPct(value: Decimal.Value | null | undefined, digits = 1): string {

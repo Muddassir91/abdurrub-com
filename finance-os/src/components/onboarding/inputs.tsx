@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { clsx } from "clsx";
 import { Check, Minus, Plus, X } from "lucide-react";
-import { CURRENCIES, formatMoney, minorToMajor, parseMajorToMinor, type CurrencyCode, type Minor } from "@/lib/money";
+import { currencyMeta, formatMoney, minorToMajor, parseMajorToMinor, CURRENCY_CODES, POPULAR_CURRENCIES, type CurrencyCode, type Minor } from "@/lib/money";
 import type { NamedAmount, SplitPct } from "@/onboarding/model";
 import { BUCKET_COLORS } from "@/components/charts";
 import { BUCKETS, type Bucket } from "@/lib/constants";
@@ -36,7 +36,7 @@ export function BigMoney({ value, onChange, currency, autoFocus = true, placehol
   };
   return (
     <div className="relative">
-      <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-xl font-semibold text-fg-faint sm:text-2xl">{CURRENCIES[currency].symbol}</span>
+      <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-xl font-semibold text-fg-faint sm:text-2xl">{currencyMeta(currency).symbol}</span>
       <input
         inputMode="decimal"
         autoFocus={autoFocus}
@@ -50,7 +50,7 @@ export function BigMoney({ value, onChange, currency, autoFocus = true, placehol
           last.current = v;
           onChange(v);
         }}
-        className={clsx(big, "h-16 text-2xl font-semibold sm:h-20 sm:text-3xl", CURRENCIES[currency].symbol.length > 1 ? "pl-16 sm:pl-20" : "pl-11 sm:pl-14")}
+        className={clsx(big, "h-16 text-2xl font-semibold sm:h-20 sm:text-3xl", currencyMeta(currency).symbol.length > 1 ? "pl-16 sm:pl-20" : "pl-11 sm:pl-14")}
         aria-label="Amount"
       />
       <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-sm font-medium text-fg-faint">{currency}</span>
@@ -175,7 +175,7 @@ export function SmallMoney({ value, onChange, currency, autoFocus, className }: 
   }, [value]);
   return (
     <div className={clsx("relative w-32 shrink-0", className)}>
-      <span className="pointer-events-none absolute inset-y-0 left-2.5 flex items-center text-xs text-fg-faint">{CURRENCIES[currency].symbol}</span>
+      <span className="pointer-events-none absolute inset-y-0 left-2.5 flex items-center text-xs text-fg-faint">{currencyMeta(currency).symbol}</span>
       <input
         inputMode="decimal"
         autoFocus={autoFocus}
@@ -195,7 +195,7 @@ export function SmallMoney({ value, onChange, currency, autoFocus, className }: 
           last.current = v;
           onChange(v);
         }}
-        className={clsx("h-11 w-full rounded-xl border border-border bg-surface-2 pr-2 text-right text-sm font-semibold tabular text-fg focus:border-accent focus:outline-none", CURRENCIES[currency].symbol.length > 1 ? "pl-10" : "pl-7")}
+        className={clsx("h-11 w-full rounded-xl border border-border bg-surface-2 pr-2 text-right text-sm font-semibold tabular text-fg focus:border-accent focus:outline-none", currencyMeta(currency).symbol.length > 1 ? "pl-10" : "pl-7")}
       />
     </div>
   );
@@ -264,6 +264,83 @@ export function SplitEditor({ value, onChange, incomeMinor, currency, personal }
       <div className={clsx("flex items-center justify-between rounded-xl px-3 py-2 text-sm", total === 100 ? "bg-positive-soft text-positive" : "bg-caution-soft text-caution")}>
         <span>{total === 100 ? "Adds up to 100%. Every unit that comes in has a job." : total > 100 ? `${total - 100}% too much. Take a little off somewhere.` : `${100 - total}% not yet assigned.`}</span>
         <span className="tabular font-semibold">{total}%</span>
+      </div>
+    </div>
+  );
+}
+
+/** Searchable picker over every ISO currency; popular ones first. Selecting a tile calls onChange. */
+export function CurrencyPicker({ value, onChange }: { value: CurrencyCode | null | undefined; onChange: (v: CurrencyCode) => void }) {
+  const [q, setQ] = useState("");
+  const query = q.trim().toLowerCase();
+  const list = (query
+    ? CURRENCY_CODES.filter((c) => {
+        const m = currencyMeta(c);
+        return c.toLowerCase().includes(query) || m.name.toLowerCase().includes(query) || m.symbol.toLowerCase() === query;
+      })
+    : POPULAR_CURRENCIES
+  ).slice(0, 36);
+  return (
+    <div className="space-y-3">
+      <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by code or name, e.g. PKR, euro, rupee" autoFocus className={clsx(big, "h-12 text-base")} aria-label="Search currencies" />
+      {!query && <div className="text-xs text-fg-faint">Common choices. Type to find any of the {CURRENCY_CODES.length} world currencies.</div>}
+      {list.length === 0 && <div className="text-sm text-fg-muted">No currency matches “{q}”.</div>}
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" role="radiogroup">
+        {list.map((c) => {
+          const m = currencyMeta(c);
+          const active = c === value;
+          return (
+            <button key={c} type="button" role="radio" aria-checked={active} aria-label={`${c} ${m.name}`} onClick={() => onChange(c)} className={clsx("flex items-center gap-2.5 rounded-2xl border-2 px-3 py-2.5 text-left transition-all active:scale-[0.99]", active ? "border-accent bg-accent-soft" : "border-border bg-surface hover:border-border-strong hover:bg-surface-2")}>
+              <span className={clsx("flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-sm font-bold", active ? "bg-accent text-accent-fg" : "bg-surface-2 text-fg-muted")}>{m.symbol.length > 3 ? c.slice(0, 2) : m.symbol}</span>
+              <span className="min-w-0">
+                <span className={clsx("block text-sm font-semibold", active ? "text-accent" : "text-fg")}>{c}</span>
+                <span className="block truncate text-[11px] text-fg-muted">{m.name}</span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/** A percentage typed freely, with quick picks. */
+export function PercentPicker({ value, onChange, presets }: { value: number; onChange: (v: number) => void; presets: number[] }) {
+  const [text, setText] = useState(String(value));
+  const last = useRef(value);
+  useEffect(() => {
+    if (value !== last.current) {
+      last.current = value;
+      setText(String(value));
+    }
+  }, [value]);
+  return (
+    <div className="space-y-3">
+      <div className="relative">
+        <input
+          inputMode="decimal"
+          autoFocus
+          value={text}
+          placeholder="e.g. 15"
+          aria-label="Percentage"
+          onChange={(e) => {
+            const t = e.target.value;
+            if (!/^[0-9]{0,3}\.?[0-9]{0,2}$/.test(t)) return;
+            setText(t);
+            const v = t === "" || t === "." ? 0 : Number(t);
+            last.current = v;
+            onChange(v);
+          }}
+          className={clsx(big, "h-16 pr-14 text-2xl font-semibold sm:h-20 sm:text-3xl")}
+        />
+        <span className="pointer-events-none absolute inset-y-0 right-5 flex items-center text-2xl font-semibold text-fg-faint">%</span>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {presets.map((p) => (
+          <button key={p} type="button" onClick={() => { last.current = p; setText(String(p)); onChange(p); }} className={clsx("rounded-full border-2 px-3.5 py-1.5 text-sm font-medium transition-colors", value === p ? "border-accent bg-accent text-accent-fg" : "border-border bg-surface text-fg-muted hover:border-border-strong hover:text-fg")}>
+            {p === 0 ? "None" : `${p}%`}
+          </button>
+        ))}
       </div>
     </div>
   );

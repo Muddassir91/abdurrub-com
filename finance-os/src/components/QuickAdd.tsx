@@ -10,7 +10,8 @@ import { BigMoney } from "@/components/onboarding/inputs";
 import { addTransaction, validateTransactionInput, type TransactionInput } from "@/db/repo";
 import { parseAnswers, isPersonal } from "@/onboarding/model";
 import { todayKey, addDays } from "@/lib/dates";
-import type { CurrencyCode } from "@/lib/money";
+import { CURRENCY_CODES, currencyMeta, type CurrencyCode } from "@/lib/money";
+import { latestRate } from "@/engine/fx";
 
 /**
  * The one thing people do every day: add money in or money out, in a few taps.
@@ -65,6 +66,11 @@ function QuickAddForm({ tab, onTab, onClose }: { tab: QuickAddTab; onTab: (t: Qu
   const [side, setSide] = useState<Side>("business");
   const [amount, setAmount] = useState(0);
   const [currency, setCurrency] = useState<CurrencyCode>(base);
+  const isOther = currency !== base && currency !== household;
+  const [rate, setRate] = useState("");
+  useEffect(() => {
+    if (isOther) setRate(latestRate(currency, data.fxRates, data.settings));
+  }, [isOther, currency, data.fxRates, data.settings]);
   const [what, setWhat] = useState("");
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [essential, setEssential] = useState<boolean | null>(null);
@@ -100,19 +106,21 @@ function QuickAddForm({ tab, onTab, onClose }: { tab: QuickAddTab; onTab: (t: Qu
   };
 
   const build = (): TransactionInput => {
+    const fx = isOther ? { fxRatePerUsd: rate } : {};
     if (tab === "in") {
-      return { date, type: clientId ? "client_payment" : "income", amountMinor: amount, currency, description: what.trim() || (clientId ? `Payment from ${clients.find((c) => c.id === clientId)?.name ?? "client"}` : "Money in"), accountId: byRole(personalOnly ? "operating" : "operating"), clientId };
+      return { date, type: clientId ? "client_payment" : "income", amountMinor: amount, currency, ...fx, description: what.trim() || (clientId ? `Payment from ${clients.find((c) => c.id === clientId)?.name ?? "client"}` : "Money in"), accountId: byRole("operating"), clientId };
     }
     if (side === "personal") {
-      return { date, type: isHousehold ? "household_expense" : "personal_expense", amountMinor: amount, currency, description: what.trim() || chosenCat?.name || "Personal spending", categoryId, accountId: byRole("personal") };
+      return { date, type: isHousehold ? "household_expense" : "personal_expense", amountMinor: amount, currency, ...fx, description: what.trim() || chosenCat?.name || "Personal spending", categoryId, accountId: byRole("personal") };
     }
-    return { date, type: "expense", amountMinor: amount, currency, description: what.trim() || chosenCat?.name || "Business expense", categoryId, accountId: byRole("operating"), costType: "overhead", bucket: "opex", isRecurring: repeats, isEssential: repeats };
+    return { date, type: "expense", amountMinor: amount, currency, ...fx, description: what.trim() || chosenCat?.name || "Business expense", categoryId, accountId: byRole("operating"), costType: "overhead", bucket: "opex", isRecurring: repeats, isEssential: repeats };
   };
 
   const save = (another: boolean) => {
     const input = build();
     const errs = validateTransactionInput(input, data.accounts);
     if (amount <= 0) errs.unshift("Enter an amount first.");
+    if (isOther && !(Number(rate) > 0)) errs.push(`Enter how many ${currency} make 1 ${base}.`);
     if (errs.length) return setErrors([...new Set(errs)]);
     try {
       mutate((db, d) => addTransaction(db, input, d.settings, d.fxRates));
@@ -164,14 +172,30 @@ function QuickAddForm({ tab, onTab, onClose }: { tab: QuickAddTab; onTab: (t: Qu
 
         <div>
           <BigMoney value={amount} onChange={setAmount} currency={currency} />
-          {base !== household && (
-            <div className="mt-2 flex gap-1.5">
-              {[base, household].map((c) => (
-                <button key={c} type="button" onClick={() => setCurrency(c)} className={clsx("rounded-full border px-3 py-1 text-xs font-medium", currency === c ? "border-accent bg-accent-soft text-accent" : "border-border text-fg-muted")}>
-                  {c}
-                </button>
+          <div className="mt-2 flex flex-wrap items-center gap-1.5">
+            {[...new Set([base, household])].map((c) => (
+              <button key={c} type="button" onClick={() => setCurrency(c)} className={clsx("rounded-full border px-3 py-1 text-xs font-medium", currency === c ? "border-accent bg-accent-soft text-accent" : "border-border text-fg-muted")}>
+                {c}
+              </button>
+            ))}
+            <select value={isOther ? currency : ""} onChange={(e) => e.target.value && setCurrency(e.target.value)} aria-label="Other currency" className={clsx("h-7 rounded-full border bg-surface px-2 text-xs font-medium focus:outline-none", isOther ? "border-accent text-accent" : "border-border text-fg-muted")}>
+              <option value="">Other currency…</option>
+              {CURRENCY_CODES.filter((c) => c !== base && c !== household).map((c) => (
+                <option key={c} value={c}>
+                  {c} · {currencyMeta(c).name}
+                </option>
               ))}
-            </div>
+            </select>
+          </div>
+          {isOther && (
+            <label className="mt-2 flex items-center gap-2 text-xs text-fg-muted">
+              <span>
+                1 {base} =
+              </span>
+              <input inputMode="decimal" value={rate} onChange={(e) => /^[0-9]*\.?[0-9]*$/.test(e.target.value) && setRate(e.target.value)} aria-label={`Rate: ${currency} per 1 ${base}`} className="h-8 w-28 rounded-lg border border-border bg-surface px-2 text-sm tabular text-fg focus:border-accent focus:outline-none" />
+              <span>{currency}</span>
+              <span className="text-fg-faint">(today&rsquo;s rate; edit if you know better)</span>
+            </label>
           )}
         </div>
 

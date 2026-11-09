@@ -88,6 +88,23 @@ describe("onboarding", () => {
     expect(loadEngineData(opened.db).recurringExpenses.map((r) => r.name)).toEqual(["Notion"]);
   });
 
+  it("handles a business registered abroad that pays tax at home, and any world currency", async () => {
+    const opened = await openDatabase();
+    seedDatabase(opened.db, { template: "blank", businessName: "x", ownerName: "y" });
+    applyOnboarding(opened.db, { ...answers(), registration: "abroad", registrationCountry: "United States (Wyoming LLC)", taxPct: 1, baseCurrency: "USD", householdCurrency: "JPY", fxRate: "150", household: [{ name: "Rent", amountMinor: 150000, category: "Utilities" }], personalCashMinor: 300000 });
+    const data = loadEngineData(opened.db);
+    expect(data.entities[0].jurisdiction).toBe("United States (Wyoming LLC)");
+    expect(data.entities[0].type).toBe("us_llc");
+    expect(data.taxProfiles[0].jurisdiction).toBe("Pakistan");
+    expect(data.taxProfiles[0].assumedRatePct).toBe("1");
+    expect(data.complianceItems.some((c) => c.title.startsWith("Annual filing in United States"))).toBe(true);
+    expect(data.policies.find((p) => p.isDefault)?.taxPct).toBe("15"); // the split keeps the shares the person reviewed
+    // Yen has no minor digits: ¥150,000 at 150 per dollar is $1,000.00.
+    expect(data.settings.householdBudgetUsdCents).toBe(100000);
+    const snap = buildSnapshot(data, "2026-11", "2026-11-15");
+    expect(snap.cash.personalCash).toBe(200000);
+  });
+
   it("marks the templates as already set up", async () => {
     const demo = await openDatabase();
     seedDatabase(demo.db, { template: "demo" });

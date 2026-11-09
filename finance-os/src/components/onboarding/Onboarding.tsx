@@ -5,10 +5,10 @@ import { clsx } from "clsx";
 import { ArrowLeft, ArrowRight, Check, Sparkles } from "lucide-react";
 import { useFinance } from "@/store/FinanceProvider";
 import { LogoMark, Wordmark } from "@/components/Logo";
-import { CURRENCIES, CURRENCY_CODES, formatMoney, type CurrencyCode } from "@/lib/money";
+import { formatMoney, type CurrencyCode } from "@/lib/money";
 import { applyOnboarding } from "@/onboarding/apply";
 import { emptyAnswers, GOALS, isPersonal, PAYMENT_METHODS, PERSONAS, RESERVE_OPTIONS, SUBSCRIPTION_PRESETS, suggestSplit, splitTotal, TAX_OPTIONS, type Goal, type OnboardingAnswers, type PayCadence, type Steadiness, type ClientCount, type Persona } from "@/onboarding/model";
-import { AmountList, BigMoney, BigText, ChipMulti, ChoiceGrid, HouseholdList, SplitEditor } from "./inputs";
+import { AmountList, BigMoney, BigText, ChipMulti, ChoiceGrid, CurrencyPicker, HouseholdList, PercentPicker, SplitEditor } from "./inputs";
 
 /**
  * The setup questionnaire: one question per screen, a progress bar, answers
@@ -90,9 +90,7 @@ const STEPS: Step[] = [
     subtitle: () => "Everything is counted in this currency.",
     auto: true,
     render: ({ a, set, next }) => (
-      <ChoiceGrid
-        columns={3}
-        options={CURRENCY_CODES.map((c) => ({ value: c, label: `${CURRENCIES[c].symbol} ${c}`, body: CURRENCIES[c].name }))}
+      <CurrencyPicker
         value={a.baseCurrency}
         onChange={(v: CurrencyCode) => {
           set({ baseCurrency: v, householdCurrency: a.householdCurrency === a.baseCurrency ? v : a.householdCurrency });
@@ -108,9 +106,7 @@ const STEPS: Step[] = [
     subtitle: () => "Pick the same one if you live where you earn.",
     auto: true,
     render: ({ a, set, next }) => (
-      <ChoiceGrid
-        columns={3}
-        options={CURRENCY_CODES.map((c) => ({ value: c, label: `${CURRENCIES[c].symbol} ${c}`, body: CURRENCIES[c].name }))}
+      <CurrencyPicker
         value={a.householdCurrency}
         onChange={(v: CurrencyCode) => {
           set({ householdCurrency: v, fxRate: v === a.baseCurrency ? "1" : a.fxRate === "1" ? (v === "PKR" && a.baseCurrency === "USD" ? "280" : "") : a.fxRate });
@@ -131,10 +127,41 @@ const STEPS: Step[] = [
   {
     id: "country",
     chapter: "you",
-    title: (a) => (isPersonal(a) ? "Where do you live?" : "Where is the business based?"),
+    title: (a) => (isPersonal(a) ? "Where do you live?" : "Where do you live and pay your taxes?"),
     subtitle: () => "Country is enough. It labels your tax notes; nothing here is tax advice.",
     optional: true,
     render: ({ a, set }) => <BigText value={a.country} onChange={(v) => set({ country: v })} placeholder="e.g. Pakistan, United States, UAE" />,
+  },
+  {
+    id: "registration",
+    chapter: "you",
+    title: () => "Is the business registered somewhere else?",
+    subtitle: () => "For example a US LLC owned from Pakistan, where the US side files nil returns and tax is paid at home.",
+    when: (a) => !isPersonal(a),
+    auto: true,
+    render: ({ a, set, next }) => (
+      <ChoiceGrid
+        columns={1}
+        options={[
+          { value: "home", label: "No, registered where I live", emoji: "🏠" },
+          { value: "abroad", label: "Yes, registered in another country", body: "I file there, but I pay my taxes at home.", emoji: "🌍" },
+        ]}
+        value={a.registration}
+        onChange={(v: "home" | "abroad") => {
+          set({ registration: v });
+          next();
+        }}
+      />
+    ),
+  },
+  {
+    id: "registrationCountry",
+    chapter: "you",
+    title: () => "Where is the business registered?",
+    subtitle: () => "This only labels the entity and adds a reminder for the annual filing there.",
+    when: (a) => !isPersonal(a) && a.registration === "abroad",
+    valid: (a) => a.registrationCountry.trim().length > 0,
+    render: ({ a, set }) => <BigText value={a.registrationCountry} onChange={(v) => set({ registrationCountry: v })} placeholder="e.g. United States (Wyoming LLC), United Kingdom, Estonia" />,
   },
   {
     id: "income",
@@ -275,27 +302,17 @@ const STEPS: Step[] = [
     id: "goals",
     chapter: "goals",
     title: () => "What do you want most from CFoh!?",
-    subtitle: () => "Pick up to two. Your dashboard leads with these.",
+    subtitle: () => "Pick as many as you like. Your dashboard leads with these.",
     valid: (a) => a.goals.length > 0,
-    render: ({ a, set }) => <ChipMulti options={GOALS.map((g) => ({ value: g.value, label: g.label, emoji: g.emoji }))} value={a.goals} onChange={(v: Goal[]) => set({ goals: v })} max={2} />,
+    render: ({ a, set }) => <ChipMulti options={GOALS.map((g) => ({ value: g.value, label: g.label, emoji: g.emoji }))} value={a.goals} onChange={(v: Goal[]) => set({ goals: v })} />,
   },
   {
     id: "tax",
     chapter: "goals",
-    title: () => "Roughly what share of your income goes to tax where you live?",
-    subtitle: () => "Your estimate, or your accountant's. CFoh! sets this share aside as money comes in; it does not calculate your tax.",
-    auto: true,
-    render: ({ a, set, next }) => (
-      <ChoiceGrid
-        columns={3}
-        options={TAX_OPTIONS.map((t) => ({ value: String(t), label: t === 0 ? "None" : `About ${t}%` }))}
-        value={String(a.taxPct)}
-        onChange={(v) => {
-          set({ taxPct: Number(v) });
-          next();
-        }}
-      />
-    ),
+    title: (a) => (a.registration === "abroad" && !isPersonal(a) ? `What share of your income goes to tax at home${a.country.trim() ? ` in ${a.country.trim()}` : ""}?` : "What share of your income goes to tax where you live?"),
+    subtitle: (a) => `Type any number: your estimate, or your accountant's. ${a.registration === "abroad" && !isPersonal(a) ? "Nil filings where the business is registered do not count here. " : ""}CFoh! sets this share aside as money comes in; it does not calculate your tax.`,
+    valid: (a) => a.taxPct >= 0 && a.taxPct <= 60,
+    render: ({ a, set }) => <PercentPicker value={a.taxPct} onChange={(v) => set({ taxPct: v })} presets={TAX_OPTIONS} />,
   },
   {
     id: "reserve",
