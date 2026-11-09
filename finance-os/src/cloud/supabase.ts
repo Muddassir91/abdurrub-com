@@ -1,5 +1,5 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { CloudBackend, CloudUser, ImageMeta, RemoteWorkspace } from "./types";
+import type { AccessStatus, CloudBackend, CloudUser, ImageMeta, Profile, RemoteWorkspace } from "./types";
 import type { SeedTemplate } from "@/db/persistence";
 
 /**
@@ -23,6 +23,17 @@ interface Row {
   iv: string | null;
   created_at: string;
   updated_at: string;
+}
+
+interface ProfileRow {
+  user_id: string;
+  email: string | null;
+  trial_ends_at: string;
+  access_status: string;
+  plan: string | null;
+  notes: string | null;
+  created_at: string;
+  last_seen_at: string | null;
 }
 
 const BUCKET = "workspaces";
@@ -77,6 +88,43 @@ export class SupabaseCloud implements CloudBackend {
 
   async signOut() {
     await this.client.auth.signOut();
+  }
+
+  private toProfile(r: ProfileRow): Profile {
+    return { userId: r.user_id, email: r.email, trialEndsAt: r.trial_ends_at, accessStatus: r.access_status as AccessStatus, plan: r.plan, notes: r.notes, createdAt: r.created_at, lastSeenAt: r.last_seen_at };
+  }
+
+  async touchProfile() {
+    const { data, error } = await this.client.rpc("touch_profile");
+    if (error) {
+      // Access control not installed yet (function missing): treat as unrestricted.
+      if (/function|does not exist|404|schema cache/i.test(error.message)) return null;
+      throw new Error(error.message);
+    }
+    const row = (Array.isArray(data) ? data[0] : data) as ProfileRow | null;
+    return row ? this.toProfile(row) : null;
+  }
+
+  async isAdmin() {
+    const { data, error } = await this.client.rpc("is_admin");
+    if (error) return false;
+    return data === true;
+  }
+
+  async listProfiles() {
+    const { data, error } = await this.client.from("profiles").select("*").order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return ((data ?? []) as ProfileRow[]).map((r) => this.toProfile(r));
+  }
+
+  async updateProfile(userId: string, patch: Partial<Pick<Profile, "trialEndsAt" | "accessStatus" | "plan" | "notes">>) {
+    const row: Record<string, unknown> = { updated_at: new Date().toISOString() };
+    if (patch.trialEndsAt !== undefined) row.trial_ends_at = patch.trialEndsAt;
+    if (patch.accessStatus !== undefined) row.access_status = patch.accessStatus;
+    if (patch.plan !== undefined) row.plan = patch.plan;
+    if (patch.notes !== undefined) row.notes = patch.notes;
+    const { error } = await this.client.from("profiles").update(row).eq("user_id", userId);
+    if (error) throw new Error(error.message);
   }
 
   private async userId() {

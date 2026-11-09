@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
-import { LayoutDashboard, LineChart, ArrowLeftRight, Receipt, Users, CreditCard, Wallet, Landmark, PiggyBank, Scale, Rocket, SlidersHorizontal, Bell, CalendarCheck, Settings, Lock, Sun, Moon, Menu, X, ChevronLeft, ChevronRight, TrendingUp, Save, ChevronsUpDown, Plus, Check } from "lucide-react";
+import { LayoutDashboard, LineChart, ArrowLeftRight, ShieldCheck, Receipt, Users, CreditCard, Wallet, Landmark, PiggyBank, Scale, Rocket, SlidersHorizontal, Bell, CalendarCheck, Settings, Lock, Sun, Moon, Menu, X, ChevronLeft, ChevronRight, TrendingUp, Save, ChevronsUpDown, Plus, Check } from "lucide-react";
 import { useFinance } from "@/store/FinanceProvider";
 import { addMonths, monthLabel, currentMonthKey } from "@/lib/dates";
 import { Modal } from "./ui/Modal";
@@ -166,7 +166,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
   const path = pathname.startsWith(base) ? pathname.slice(base.length) || "/" : pathname;
-  const { month, setMonth, alerts, displayCurrency, setDisplayCurrency, isEncrypted, lock, saving, lastSavedAt, data, createWorkspace, cloudUser, cloudStatus } = useFinance();
+  const { month, setMonth, alerts, displayCurrency, setDisplayCurrency, isEncrypted, lock, saving, lastSavedAt, data, createWorkspace, cloudUser, cloudStatus, access } = useFinance();
   const { resolved, toggle } = useTheme();
   const [open, setOpen] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -175,9 +175,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isClosed = data?.monthCloses.some((c) => c.month === month && c.status === "closed");
   const processorName = data?.processors[0]?.name ?? "Payment processor";
 
+  const navItems = access?.isAdmin ? [...NAV, { href: "/app/admin/", label: "Accounts & trials", icon: ShieldCheck }] : NAV;
+  const trialDays = access?.profile?.accessStatus === "trial" ? access.daysLeft : null;
   const nav = (
     <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-2">
-      {NAV.map((item) => {
+      {navItems.map((item) => {
         const active = item.href === "/app/" ? path === "/app/" || path === "/app" : path.startsWith(item.href);
         const Icon = item.icon;
         return (
@@ -240,6 +242,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
           {isClosed && <span className="hidden rounded-md bg-surface-2 px-2 py-0.5 text-[11px] font-medium text-fg-muted sm:inline">Closed</span>}
           <div className="flex-1" />
+          {trialDays !== null && !access?.isAdmin && (
+            <Link href="/app/settings/?tab=account" className={clsx("hidden rounded-md px-2 py-1 text-[11px] font-medium sm:inline", trialDays <= 7 ? "bg-caution-soft text-caution" : "bg-accent-soft text-accent")} title="Your free month">
+              {trialDays} day{trialDays === 1 ? "" : "s"} left in your free month
+            </Link>
+          )}
           <div className="flex items-center gap-1 rounded-lg border border-border bg-surface-2 p-0.5 text-xs">
             {(["USD", "PKR"] as const).map((c) => (
               <button key={c} onClick={() => setDisplayCurrency(c)} className={clsx("rounded-md px-2 py-1 font-medium", displayCurrency === c ? "bg-surface text-fg shadow-sm" : "text-fg-muted hover:text-fg")}>
@@ -256,7 +263,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </button>
           )}
         </header>
-        <main className="mx-auto w-full max-w-[1400px] flex-1 px-4 py-6 sm:px-6">{children}</main>
+        <main className="mx-auto w-full min-w-0 max-w-[1400px] flex-1 overflow-x-hidden px-4 py-6 sm:px-6">{children}</main>
       </div>
 
       <Modal open={creating} onClose={() => setCreating(false)} title="Add a business or person" description="Creates a separate workspace with its own database, settings and optional passphrase. Switch between workspaces from the sidebar." size="lg">

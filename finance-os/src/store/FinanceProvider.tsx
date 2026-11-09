@@ -13,7 +13,7 @@ import { currentMonthKey, todayKey } from "@/lib/dates";
 import { uid } from "@/lib/ids";
 import { getCloud } from "@/cloud";
 import { decideSync } from "@/cloud/sync";
-import type { CloudBackend, CloudUser, RemoteWorkspace } from "@/cloud/types";
+import type { CloudBackend, CloudUser, Profile, RemoteWorkspace } from "@/cloud/types";
 
 /**
  * status
@@ -24,7 +24,25 @@ import type { CloudBackend, CloudUser, RemoteWorkspace } from "@/cloud/types";
  *  ready    data loaded
  *  error    unrecoverable
  */
-export type Status = "loading" | "auth" | "setup" | "locked" | "ready" | "error";
+export type Status = "loading" | "auth" | "setup" | "locked" | "ready" | "error" | "blocked";
+
+export interface AccessState {
+  profile: Profile | null;
+  isAdmin: boolean;
+  /** False when the trial has ended or the account was blocked. */
+  allowed: boolean;
+  daysLeft: number | null;
+}
+
+export function evaluateAccess(profile: Profile | null, isAdmin: boolean, now = new Date()): AccessState {
+  if (isAdmin) return { profile, isAdmin, allowed: true, daysLeft: null };
+  if (!profile) return { profile, isAdmin, allowed: true, daysLeft: null };
+  if (profile.accessStatus === "blocked") return { profile, isAdmin, allowed: false, daysLeft: 0 };
+  if (profile.accessStatus === "active") return { profile, isAdmin, allowed: true, daysLeft: null };
+  const ms = Date.parse(profile.trialEndsAt) - now.getTime();
+  const daysLeft = Math.max(0, Math.ceil(ms / 86400000));
+  return { profile, isAdmin, allowed: ms > 0, daysLeft };
+}
 export type CloudStatus = "off" | "signed_out" | "idle" | "syncing" | "error";
 
 export interface CreateWorkspaceInput {
@@ -80,6 +98,12 @@ export interface FinanceContextValue {
   signOut: (removeLocalData: boolean) => Promise<void>;
   continueWithoutAccount: () => void;
   syncNow: () => Promise<void>;
+  // Trials, access and admin
+  access: AccessState | null;
+  adminListProfiles: () => Promise<Profile[]>;
+  adminUpdateProfile: (userId: string, patch: Partial<Pick<Profile, "trialEndsAt" | "accessStatus" | "plan" | "notes">>) => Promise<void>;
+  /** Opens (creating if needed) the sample-data workspace without an account. */
+  openDemo: () => Promise<void>;
 }
 
 const Ctx = createContext<FinanceContextValue | null>(null);
@@ -101,6 +125,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   const [cloudStatus, setCloudStatus] = useState<CloudStatus>("off");
   const [cloudError, setCloudError] = useState<string | null>(null);
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
+  const [access, setAccess] = useState<AccessState | null>(null);
   const sqlRef = useRef<Database | null>(null);
   const dbRef = useRef<Db | null>(null);
   const passRef = useRef<string | null>(null);
@@ -377,7 +402,22 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   /** Entry point after auth state is known: open the current workspace or show setup. */
   const enter = useCallback(async () => {
     let remote: RemoteWorkspace[] = [];
-    if (cloudRef.current && userRef.current) remote = await reconcileWithCloud();
+    if (cloudRef.current && userRef.current) {
+      try {
+        const [profile, isAdmin] = await Promise.all([cloudRef.current.touchProfile(), cloudRef.current.isAdmin()]);
+        const a = evaluateAccess(profile, isAdmin);
+        setAccess(a);
+        if (!a.allowed) {
+          closeCurrent();
+          setStatus("blocked");
+          return;
+        }
+      } catch (e) {
+        console.error("Access check failed", e);
+        setAccess(null);
+      }
+      remote = await reconcileWithCloud();
+    } else setAccess(null);
     const reg = registryRef.current;
     const visible = visibleWorkspaces(reg, userRef.current);
     const current = visible.find((w) => w.id === reg.currentId) ?? visible[0];
@@ -406,6 +446,19 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
         setRegistry(reg);
         const cloud = getCloud();
         cloudRef.current = cloud;
+        if (new URLSearchParams(window.location.search).get("demo") === "1") {
+          window.history.replaceState({}, "", window.location.pathname);
+          const list = reg.list;
+          let ws = list.find((w) => w.template === "demo" && !w.userId);
+          if (!ws) {
+            ws = { id: uid(), name: "Northstar Studio (demo)", businessName: "Northstar Studio (demo)", ownerName: "Sam Rivera", template: "demo", createdAt: new Date().toISOString(), cloud: false, userId: null };
+            await updateRegistry({ list: [...list, ws], currentId: ws.id });
+          } else await updateRegistry({ ...reg, currentId: ws.id });
+          localStorage.setItem(DEVICE_ONLY_KEY, "1");
+          setStatus("loading");
+          await boot(ws.id, await loadImage(ws.id), { template: "demo" });
+          return;
+        }
         if (cloud) {
           const user = await cloud.getUser();
           userRef.current = user;
@@ -435,7 +488,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
       cancelled = true;
       unsub?.();
     };
-  }, [enter]);
+  }, [enter, updateRegistry, boot]);
 
   // ------------------------------------------------------------------ auth actions
 
@@ -520,6 +573,31 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem(DEVICE_ONLY_KEY, "1");
     void enter();
   }, [enter]);
+
+  const adminListProfiles = useCallback(async () => {
+    const cloud = cloudRef.current;
+    if (!cloud) throw new Error("Accounts are not available in this build");
+    return cloud.listProfiles();
+  }, []);
+  const adminUpdateProfile = useCallback(async (userId: string, patch: Partial<Pick<Profile, "trialEndsAt" | "accessStatus" | "plan" | "notes">>) => {
+    const cloud = cloudRef.current;
+    if (!cloud) throw new Error("Accounts are not available in this build");
+    await cloud.updateProfile(userId, patch);
+  }, []);
+
+  const openDemo = useCallback(async () => {
+    localStorage.setItem(DEVICE_ONLY_KEY, "1");
+    const reg = registryRef.current;
+    let ws = reg.list.find((w) => w.template === "demo" && !w.userId);
+    if (!ws) {
+      ws = { id: uid(), name: "Northstar Studio (demo)", businessName: "Northstar Studio (demo)", ownerName: "Sam Rivera", template: "demo", createdAt: new Date().toISOString(), cloud: false, userId: null };
+      await updateRegistry({ list: [...reg.list, ws], currentId: ws.id });
+    } else await updateRegistry({ ...reg, currentId: ws.id });
+    passRef.current = null;
+    setStatus("loading");
+    const image = await loadImage(ws.id);
+    await boot(ws.id, image, { template: "demo" });
+  }, [updateRegistry, boot]);
 
   const syncNow = useCallback(async () => {
     if (!cloudRef.current || !userRef.current) return;
@@ -752,6 +830,10 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     signOut,
     continueWithoutAccount,
     syncNow,
+    access,
+    adminListProfiles,
+    adminUpdateProfile,
+    openDemo,
   };
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

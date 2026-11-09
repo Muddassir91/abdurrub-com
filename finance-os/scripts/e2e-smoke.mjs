@@ -47,8 +47,11 @@ try {
   const home = await page.locator("body").innerText();
   const homeLc = home.toLowerCase();
   check("Homepage renders header, subheader, demo, comparison and use cases", homeLc.includes("make better financial decisions") && homeLc.includes("without hiring a cfo") && homeLc.includes("the old way") && homeLc.includes("freelancers"));
+  await page.locator("#demo").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(1400);
   const demoBefore = await page.locator("#demo").innerText();
   await page.locator('input[aria-label="Monthly revenue"]').fill("4");
+  await page.waitForTimeout(1400);
   const demoAfter = await page.locator("#demo").innerText();
   check("Homepage demo recalculates when the slider moves", demoBefore.includes("$4,000") && demoAfter.includes("$10,000") && demoAfter.includes("$3,500"));
   const firstPhrase = await page.locator("h1 [aria-live]").innerText();
@@ -242,6 +245,48 @@ try {
   await p3.getByText("Set up").first().waitFor({ timeout: 20000 });
   check("Cloud: Google sign-in path reaches workspace setup", true);
   await ctx3.close();
+
+  // Live demo link seeds the sample workspace without an account.
+  const ctxD = await browser.newContext({ viewport: { width: 1400, height: 900 } });
+  const pd = await ctxD.newPage();
+  await pd.goto(`http://localhost:${PORT}/cfoh/app/?demo=1`, { waitUntil: "networkidle" });
+  await pd.getByText("overview").first().waitFor({ timeout: 30000 });
+  const demoBody = await pd.locator("body").innerText();
+  check("Live demo opens the Northstar sample workspace with data", demoBody.includes("Northstar Studio") && demoBody.includes("Harbor") === false && /\$[1-9]/.test(demoBody));
+  await pd.screenshot({ path: "../finance-os/.e2e/demo-dashboard.png", fullPage: false }).catch(() => {});
+  await ctxD.close();
+
+  // Admin page with the in-memory backend (admin@ accounts are admins there).
+  const ctxA = await browser.newContext({ viewport: { width: 1400, height: 900 } });
+  await ctxA.addInitScript(() => localStorage.setItem("finance-os:cloud", "memory"));
+  const pa2 = await ctxA.newPage();
+  await pa2.goto(`http://localhost:${PORT}/cfoh/app/`, { waitUntil: "networkidle" });
+  await pa2.getByRole("button", { name: "Create an account" }).click();
+  await pa2.getByPlaceholder("you@yourbusiness.com").fill("admin@example.com");
+  await pa2.locator('input[type="password"]').fill("correct-horse-battery");
+  await pa2.getByRole("button", { name: "Create account", exact: true }).click();
+  await pa2.getByText("Set up").first().waitFor({ timeout: 20000 });
+  await pa2.getByRole("button", { name: "Create workspace and open" }).click();
+  await pa2.getByText("overview").first().waitFor({ timeout: 20000 });
+  check("Admin sees the Accounts & trials nav item", await pa2.locator("aside").getByText("Accounts & trials").isVisible());
+  await pa2.goto(`http://localhost:${PORT}/cfoh/app/admin/`, { waitUntil: "networkidle" });
+  const adminBody = await pa2.locator("body").innerText();
+  check("Admin page lists the signed-up account with its trial", adminBody.includes("admin@example.com") && /trial · \d+d left/.test(adminBody));
+  await ctxA.close();
+
+  // Mobile: homepage and app render without horizontal overflow.
+  const ctxM = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+  const pm = await ctxM.newPage();
+  await pm.goto(`http://localhost:${PORT}/cfoh/`, { waitUntil: "networkidle" });
+  const homeOverflow = await pm.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  await pm.screenshot({ path: "../finance-os/.e2e/mobile-home.png", fullPage: false }).catch(() => {});
+  await pm.goto(`http://localhost:${PORT}/cfoh/app/?demo=1`, { waitUntil: "networkidle" });
+  await pm.getByText("overview").first().waitFor({ timeout: 30000 });
+  const appOverflow = await pm.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  await pm.screenshot({ path: "../finance-os/.e2e/mobile-app.png", fullPage: false }).catch(() => {});
+  await pm.getByRole("button", { name: "Open navigation" }).click();
+  check("Mobile: homepage and dashboard have no horizontal overflow and the menu opens", homeOverflow <= 1 && appOverflow <= 1 && (await pm.getByText("Trends & progress").last().isVisible()), `home=${homeOverflow} app=${appOverflow}`);
+  await ctxM.close();
 
   // Visit every page for runtime errors.
   for (const p of ["expenses", "clients", "personal", "accounts", "tax", "growth", "forecast", "alerts"]) {

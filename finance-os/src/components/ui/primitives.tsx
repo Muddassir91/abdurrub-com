@@ -27,7 +27,7 @@ export function Button({ variant = "secondary", size = "md", className, loading,
 
 export function Card({ className, children, title, subtitle, actions, padded = true }: { className?: string; children?: React.ReactNode; title?: React.ReactNode; subtitle?: React.ReactNode; actions?: React.ReactNode; padded?: boolean }) {
   return (
-    <section className={clsx("rounded-xl border border-border bg-surface shadow-card", className)}>
+    <section className={clsx("min-w-0 rounded-xl border border-border bg-surface shadow-card", className)}>
       {(title || actions) && (
         <header className="flex items-start justify-between gap-3 border-b border-border px-5 py-3.5">
           <div>

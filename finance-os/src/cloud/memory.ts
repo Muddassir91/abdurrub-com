@@ -1,4 +1,4 @@
-import type { CloudBackend, CloudUser, ImageMeta, RemoteWorkspace } from "./types";
+import type { CloudBackend, CloudUser, ImageMeta, Profile, RemoteWorkspace } from "./types";
 
 /** In-memory backend for tests and for the browser smoke test. Behaves like Supabase without a network. */
 export class MemoryCloud implements CloudBackend {
@@ -8,6 +8,7 @@ export class MemoryCloud implements CloudBackend {
   private accounts = new Map<string, { id: string; password: string }>();
   private rows = new Map<string, RemoteWorkspace & { userId: string }>();
   private images = new Map<string, Uint8Array>();
+  private profiles = new Map<string, Profile>();
 
   private static KEY = "finance-os:memory-cloud";
 
@@ -22,8 +23,9 @@ export class MemoryCloud implements CloudBackend {
     try {
       const raw = sessionStorage.getItem(MemoryCloud.KEY);
       if (!raw) return;
-      const j = JSON.parse(raw) as { user: CloudUser | null; accounts: [string, { id: string; password: string }][]; rows: [string, RemoteWorkspace & { userId: string }][]; images: [string, string][] };
+      const j = JSON.parse(raw) as { user: CloudUser | null; accounts: [string, { id: string; password: string }][]; rows: [string, RemoteWorkspace & { userId: string }][]; images: [string, string][]; profiles?: [string, Profile][] };
       this.user = j.user;
+      this.profiles = new Map(j.profiles ?? []);
       this.accounts = new Map(j.accounts);
       this.rows = new Map(j.rows);
       this.images = new Map(j.images.map(([k, v]) => [k, Uint8Array.from(atob(v), (c) => c.charCodeAt(0))]));
@@ -36,7 +38,7 @@ export class MemoryCloud implements CloudBackend {
     if (typeof window === "undefined") return;
     try {
       const images: [string, string][] = [...this.images.entries()].map(([k, v]) => [k, btoa(Array.from(v, (b) => String.fromCharCode(b)).join(""))]);
-      sessionStorage.setItem(MemoryCloud.KEY, JSON.stringify({ user: this.user, accounts: [...this.accounts.entries()], rows: [...this.rows.entries()], images }));
+      sessionStorage.setItem(MemoryCloud.KEY, JSON.stringify({ user: this.user, accounts: [...this.accounts.entries()], rows: [...this.rows.entries()], images, profiles: [...this.profiles.entries()] }));
     } catch {
       /* ignore */
     }
@@ -54,6 +56,28 @@ export class MemoryCloud implements CloudBackend {
   private emit() {
     this.persist();
     for (const l of this.listeners) l(this.user);
+  }
+  async touchProfile() {
+    const u = this.requireUser();
+    const existing = this.profiles.get(u.id);
+    const now = new Date();
+    const p: Profile = existing ? { ...existing, lastSeenAt: now.toISOString() } : { userId: u.id, email: u.email, trialEndsAt: new Date(now.getTime() + 30 * 86400000).toISOString(), accessStatus: "trial", plan: null, notes: null, createdAt: now.toISOString(), lastSeenAt: now.toISOString() };
+    this.profiles.set(u.id, p);
+    this.persist();
+    return p;
+  }
+  async isAdmin() {
+    return (this.user?.email ?? "").startsWith("admin@");
+  }
+  async listProfiles() {
+    if (!(await this.isAdmin())) throw new Error("Forbidden");
+    return [...this.profiles.values()];
+  }
+  async updateProfile(userId: string, patch: Partial<Pick<Profile, "trialEndsAt" | "accessStatus" | "plan" | "notes">>) {
+    if (!(await this.isAdmin())) throw new Error("Forbidden");
+    const p = this.profiles.get(userId);
+    if (p) this.profiles.set(userId, { ...p, ...patch });
+    this.persist();
   }
   async signUp(email: string, password: string) {
     if (this.accounts.has(email)) throw new Error("An account with this email already exists");

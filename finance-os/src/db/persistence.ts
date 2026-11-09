@@ -28,7 +28,7 @@ export interface StoredMeta {
   lastSyncedVersion?: number;
 }
 
-export type SeedTemplate = "retention_rules" | "blank";
+export type SeedTemplate = "retention_rules" | "blank" | "demo";
 
 export interface WorkspaceInfo {
   id: string;

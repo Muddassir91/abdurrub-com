@@ -15,7 +15,7 @@ function Centered({ children }: { children: React.ReactNode }) {
 }
 
 export function Gate({ children }: { children: React.ReactNode }) {
-  const { status, error, unlock, createWorkspace, workspaces, currentWorkspace, switchWorkspace } = useFinance();
+  const { status, error, unlock, createWorkspace, workspaces, currentWorkspace, switchWorkspace, access, cloudUser, signOut } = useFinance();
   const [pass, setPass] = useState("");
   const [bad, setBad] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -42,6 +42,23 @@ export function Gate({ children }: { children: React.ReactNode }) {
     );
   }
   if (status === "auth") return <AuthScreen />;
+  if (status === "blocked") {
+    const blocked = access?.profile?.accessStatus === "blocked";
+    return (
+      <Centered>
+        <div className="w-full max-w-md rounded-2xl border border-border bg-surface p-7 text-center shadow-card">
+          <div className="mx-auto flex w-fit items-center gap-2"><LogoMark size={32} /><Wordmark size="md" /></div>
+          <h1 className="mt-5 text-xl font-semibold text-fg">{blocked ? "Access is paused" : "Your free month has ended"}</h1>
+          <p className="mt-2 text-sm text-fg-muted">{blocked ? "This account's access has been switched off. If you think that is a mistake, reply to any CFoh! email and we will sort it out." : "Thanks for trying CFoh!. Your workspaces are safe in your account and nothing has been deleted. Paid plans are coming soon; until then, reply to any CFoh! email to extend your access."}</p>
+          <p className="mt-3 text-xs text-fg-faint">Signed in as {cloudUser?.email}</p>
+          <div className="mt-5 flex flex-col gap-2">
+            <a href="mailto:muddassir@retentionrules.com?subject=CFoh!%20access" className="inline-flex h-10 items-center justify-center rounded-lg bg-accent px-4 text-sm font-semibold text-accent-fg hover:brightness-110">Request an extension</a>
+            <Button onClick={() => void signOut(false)}>Sign out</Button>
+          </div>
+        </div>
+      </Centered>
+    );
+  }
   if (status === "setup") {
     return (
       <Centered>

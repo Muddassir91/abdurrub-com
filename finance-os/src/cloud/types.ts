@@ -39,7 +39,25 @@ export interface ImageMeta {
   iv?: string | null;
 }
 
+export type AccessStatus = "trial" | "active" | "blocked";
+
+export interface Profile {
+  userId: string;
+  email: string | null;
+  trialEndsAt: string;
+  accessStatus: AccessStatus;
+  plan: string | null;
+  notes: string | null;
+  createdAt: string;
+  lastSeenAt: string | null;
+}
+
 export interface CloudBackend {
+  /** Records activity and returns the caller's profile (created on first call). Null when access control is not installed. */
+  touchProfile(): Promise<Profile | null>;
+  isAdmin(): Promise<boolean>;
+  listProfiles(): Promise<Profile[]>;
+  updateProfile(userId: string, patch: Partial<Pick<Profile, "trialEndsAt" | "accessStatus" | "plan" | "notes">>): Promise<void>;
   readonly kind: "supabase" | "memory";
   getUser(): Promise<CloudUser | null>;
   onAuthChange(cb: (user: CloudUser | null) => void): () => void;

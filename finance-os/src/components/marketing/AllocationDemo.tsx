@@ -5,6 +5,7 @@ import { clsx } from "clsx";
 import { computeAllocations } from "@/engine/allocation";
 import { BUCKETS, BUCKET_LABELS, type Bucket } from "@/lib/constants";
 import { formatMoney } from "@/lib/money";
+import { CountUp } from "./Reveal";
 
 const PCTS = { opex: "25", owner: "35", tax: "15", profit: "10", reserve: "10", growth: "5" } as const;
 const STEPS = [200000, 400000, 600000, 800000, 1000000, 1500000, 2000000, 3000000, 5000000, 10000000, 20000000, 40000000];
@@ -22,6 +23,7 @@ const WHAT: Record<Bucket, string> = {
 export function AllocationDemo() {
   const [step, setStep] = useState(1); // $4,000
   const [spend, setSpend] = useState(83100);
+  const [touched, setTouched] = useState(false);
   const revenue = STEPS[step];
   const alloc = useMemo(() => computeAllocations(revenue, PCTS), [revenue]);
   const unspent = Math.max(0, alloc.opex - spend);
@@ -33,7 +35,7 @@ export function AllocationDemo() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <div className="text-xs font-medium uppercase tracking-wider text-fg-faint">Try it: money collected this month</div>
-          <div className="tabular mt-1 text-4xl font-semibold tracking-tight text-fg">{usd(revenue)}</div>
+          <div className="tabular mt-1 text-4xl font-semibold tracking-tight text-fg"><CountUp to={revenue} format={usd} /></div>
         </div>
         <div className="text-right text-xs text-fg-muted">
           Every dollar gets a job.
@@ -41,7 +43,14 @@ export function AllocationDemo() {
           Six envelopes, adding up exactly.
         </div>
       </div>
-      <input type="range" min={0} max={STEPS.length - 1} step={1} value={step} onChange={(e) => setStep(Number(e.target.value))} aria-label="Monthly revenue" className="mt-5 h-2 w-full cursor-pointer appearance-none rounded-full bg-surface-2 accent-[var(--accent)]" />
+      <div className="relative mt-5">
+        {!touched && (
+          <div className="pointer-events-none absolute -top-9 left-[9%] flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-fg shadow-md animate-bounce">
+            Drag me <span aria-hidden>→</span>
+          </div>
+        )}
+        <input type="range" min={0} max={STEPS.length - 1} step={1} value={step} onChange={(e) => { setStep(Number(e.target.value)); setTouched(true); }} onPointerDown={() => setTouched(true)} aria-label="Monthly revenue" className={clsx("h-2 w-full cursor-pointer appearance-none rounded-full bg-surface-2 accent-[var(--accent)]", !touched && "[&::-webkit-slider-thumb]:ring-8 [&::-webkit-slider-thumb]:ring-accent/20")} />
+      </div>
       <div className="mt-1 flex justify-between text-[11px] text-fg-faint">
         <span>$2k</span>
         <span>$10k</span>
@@ -58,12 +67,12 @@ export function AllocationDemo() {
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {BUCKETS.map((b) => (
-          <div key={b} className="rounded-2xl border border-border bg-surface-2/50 p-4">
+          <div key={b} className="rounded-2xl border border-border bg-surface-2/50 p-4 transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:bg-surface">
             <div className="flex items-center gap-2 text-xs font-medium text-fg-muted">
               <span className="h-2.5 w-2.5 rounded-full" style={{ background: COLORS[b] }} />
               {BUCKET_LABELS[b]} · {PCTS[b]}%
             </div>
-            <div className="tabular mt-1.5 text-2xl font-semibold text-fg">{usd(alloc[b])}</div>
+            <div className="tabular mt-1.5 text-2xl font-semibold text-fg"><CountUp to={alloc[b]} format={usd} /></div>
             <div className="mt-0.5 text-[11px] text-fg-faint">{WHAT[b]}</div>
           </div>
         ))}

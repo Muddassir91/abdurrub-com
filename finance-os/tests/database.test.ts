@@ -77,3 +77,22 @@ describe("workspace templates", () => {
     expect(snap.revenue.collected).toBe(0);
   });
 });
+
+describe("demo workspace", () => {
+  it("seeds six months of realistic, internally consistent sample data", async () => {
+    const opened = await openDatabase();
+    expect(seedDatabase(opened.db, { template: "demo" })).toBe(true);
+    const data = loadEngineData(opened.db);
+    expect(data.clients.length).toBe(2);
+    expect(data.monthCloses.length).toBe(6);
+    expect(data.transactions.length).toBeGreaterThan(60);
+    const month = data.monthCloses.map((c) => c.month).sort()[5];
+    const snap = buildSnapshot(data, month, `${month}-28`);
+    expect(snap.revenue.collected).toBeGreaterThan(450000);
+    expect(snap.allocations.owner).toBeGreaterThan(0);
+    expect(Object.values(snap.allocations).reduce((a, b) => a + b, 0)).toBe(snap.revenue.allocatable);
+    expect(snap.expenses.overheadActual).toBeGreaterThan(0);
+    expect(snap.owner.drawn).toBe(300000);
+    expect(snap.cash.bankBusinessCash).toBeGreaterThan(0);
+  });
+});
