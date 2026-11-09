@@ -57,7 +57,7 @@ const fps = 24;
 const inputs = [];
 const filters = [];
 SCENES.forEach((sc, i) => {
-  inputs.push("-loop", "1", "-t", String(dur), "-i", join(OUT, sc.file));
+  inputs.push("-i", join(OUT, sc.file));
   const text = sc.caption.replace(/'/g, "\\\\'").replace(/:/g, "\\\\:");
   const zoom = `zoompan=z='min(zoom+0.0008,1.12)':x='iw/2-(iw/zoom/2)':y='ih*0.35-(ih/zoom*0.35)':d=${dur * fps}:s=1280x800:fps=${fps}`;
   const caption = font ? `,drawbox=y=ih-150:h=150:color=black@0.55:t=fill,drawtext=fontfile=${font}:text='${text}':fontcolor=white:fontsize=34:x=(w-text_w)/2:y=h-98` : "";
