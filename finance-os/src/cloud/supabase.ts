@@ -60,8 +60,8 @@ export class SupabaseCloud implements CloudBackend {
     return () => data.subscription.unsubscribe();
   }
 
-  async signUp(email: string, password: string) {
-    const { data, error } = await this.client.auth.signUp({ email, password });
+  async signUp(email: string, password: string, redirectTo: string) {
+    const { data, error } = await this.client.auth.signUp({ email, password, options: { emailRedirectTo: redirectTo } });
     if (error) throw new Error(error.message);
     return { needsEmailConfirmation: !data.session };
   }

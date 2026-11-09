@@ -47,7 +47,7 @@ export function AuthScreen() {
       else if (mode === "signup") {
         if (password.length < 8) throw new Error("Use at least 8 characters for your password.");
         const r = await signUp(email.trim(), password);
-        if (r.needsEmailConfirmation) setNotice(`We sent a confirmation link to ${email.trim()}. Click it, then sign in here.`);
+        if (r.needsEmailConfirmation) setNotice(`We sent a confirmation link to ${email.trim()}. Click it and you will land in your dashboard, signed in.`);
       } else if (mode === "magic") {
         await sendMagicLink(email.trim());
         setNotice(`A sign-in link is on its way to ${email.trim()}.`);

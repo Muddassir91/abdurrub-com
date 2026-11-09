@@ -5,7 +5,20 @@
 <title>Retention Rules</title>
 <meta name="robots" content="noindex">
 <link rel="canonical" href="https://retentionrules.com/">
-<meta http-equiv="refresh" content="0; url=https://retentionrules.com/">
+<script>
+  // Sign-in links for CFoh! (email confirmation, magic link, password reset, Google return)
+  // can land on the site root. Forward those to the app with the tokens intact;
+  // everything else goes to the Retention Rules website.
+  (function () {
+    var auth = /(?:^|[#?&])(access_token|refresh_token|code|token_hash|error|error_code|type)=/;
+    if (auth.test(location.hash) || auth.test(location.search)) {
+      location.replace("/cfoh/app/" + location.search + location.hash);
+    } else {
+      location.replace("https://retentionrules.com/" + location.hash);
+    }
+  })();
+</script>
+<noscript><meta http-equiv="refresh" content="0; url=https://retentionrules.com/"></noscript>
 <meta property="og:site_name" content="Retention Rules">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://retentionrules.com/">
@@ -16,7 +29,6 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://retentionrules.com/images/og.png">
-<script>location.replace("https://retentionrules.com/" + location.hash);</script>
 </head>
 <body><p><a href="https://retentionrules.com/">Continue to Retention Rules</a></p></body>
 </html>

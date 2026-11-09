@@ -61,7 +61,8 @@ export interface CloudBackend {
   readonly kind: "supabase" | "memory";
   getUser(): Promise<CloudUser | null>;
   onAuthChange(cb: (user: CloudUser | null) => void): () => void;
-  signUp(email: string, password: string): Promise<{ needsEmailConfirmation: boolean }>;
+  /** redirectTo is where a confirmation email (if the project still sends one) lands the user: the app, not the site root. */
+  signUp(email: string, password: string, redirectTo: string): Promise<{ needsEmailConfirmation: boolean }>;
   signInWithPassword(email: string, password: string): Promise<void>;
   sendMagicLink(email: string, redirectTo: string): Promise<void>;
   /** Redirects the browser to the provider; the session arrives on return via onAuthChange. */

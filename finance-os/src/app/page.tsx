@@ -7,6 +7,7 @@ import { AllocationDemo } from "@/components/marketing/AllocationDemo";
 import { ProductTour, type TourScene } from "@/components/marketing/ProductTour";
 import { Reveal } from "@/components/marketing/Reveal";
 import { Founder } from "@/components/marketing/Founder";
+import { AuthForwarder } from "@/components/marketing/AuthForwarder";
 
 export const metadata: Metadata = {
   title: "CFoh! · Make better financial decisions",
@@ -48,6 +49,7 @@ const ghost = "inline-flex h-12 items-center gap-2 rounded-xl border border-bord
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-bg text-fg">
+      <AuthForwarder />
       {/* Nav */}
       <header className="sticky top-0 z-30 border-b border-border/70 bg-bg/80 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">

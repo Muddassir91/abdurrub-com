@@ -492,10 +492,13 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
 
   // ------------------------------------------------------------------ auth actions
 
+  /** Where email links (confirmation, magic link, reset) and OAuth return to: the app itself. */
+  const redirectTo = () => `${window.location.origin}${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/app/`;
+
   const signUp = useCallback(async (email: string, password: string) => {
     const cloud = cloudRef.current;
     if (!cloud) throw new Error("Accounts are not available in this build");
-    const r = await cloud.signUp(email, password);
+    const r = await cloud.signUp(email, password, redirectTo());
     if (!r.needsEmailConfirmation) {
       userRef.current = await cloud.getUser();
       setCloudUser(userRef.current);
@@ -514,7 +517,6 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     await enter();
   }, [enter]);
 
-  const redirectTo = () => `${window.location.origin}${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/app/`;
   const sendMagicLink = useCallback(async (email: string) => {
     const cloud = cloudRef.current;
     if (!cloud) throw new Error("Accounts are not available in this build");
