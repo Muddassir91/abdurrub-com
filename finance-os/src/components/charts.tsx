@@ -82,6 +82,49 @@ export function SimpleBars({ data, height = 220, color = "var(--chart-1)", name 
   );
 }
 
+/** Donut of spending by category with the total in the middle. Amounts are already in display units. */
+export function CategoryDonut({ rows, total, currency, height = 220 }: { rows: { name: string; value: number }[]; total: number; currency: string; height?: number }) {
+  const fmt = (v: number) => formatMoney(v, currency as Parameters<typeof formatMoney>[1], { decimals: 0 });
+  if (rows.length === 0 || total <= 0) return <div className="flex items-center justify-center text-xs text-fg-faint" style={{ height }}>Nothing spent yet this month.</div>;
+  return (
+    <div className="relative">
+      <ResponsiveContainer width="100%" height={height}>
+        <PieChart>
+          <Pie data={rows} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={62} outerRadius={92} paddingAngle={2} stroke="var(--surface)" isAnimationActive={false}>
+            {rows.map((r, i) => (
+              <Cell key={r.name} fill={COLORS[i % COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip formatter={(v) => fmt(Number(v))} />
+        </PieChart>
+      </ResponsiveContainer>
+      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+        <div className="text-[11px] font-medium text-fg-muted">Spent</div>
+        <div className="tabular text-lg font-semibold text-fg">{fmt(total)}</div>
+      </div>
+    </div>
+  );
+}
+
+export const CATEGORY_COLORS = COLORS;
+
+/** Compact in/out bars for the last few periods. Values are display units. */
+export function InOutBars({ data, currency, height = 180 }: { data: { label: string; in: number; out: number }[]; currency: string; height?: number }) {
+  const fmt = (v: number) => formatMoney(v, currency as Parameters<typeof formatMoney>[1], { compact: true, decimals: 0 });
+  return (
+    <ResponsiveContainer width="100%" height={height}>
+      <BarChart data={data} margin={{ top: 4, right: 4, left: -8, bottom: 0 }} barGap={3}>
+        <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
+        <XAxis dataKey="label" {...axisProps} interval={0} />
+        <YAxis {...axisProps} tickFormatter={fmt} width={48} />
+        <Tooltip formatter={(v) => formatMoney(Number(v), currency as Parameters<typeof formatMoney>[1])} cursor={{ fill: "var(--surface-2)" }} />
+        <Bar name="In" dataKey="in" fill="var(--chart-6)" radius={[4, 4, 0, 0]} />
+        <Bar name="Out" dataKey="out" fill="var(--chart-3)" radius={[4, 4, 0, 0]} />
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
+
 export function CashProjection({ data, height = 240 }: { data: { label: string; cash: number; inflow: number; outflow: number }[]; height?: number }) {
   return (
     <ResponsiveContainer width="100%" height={height}>

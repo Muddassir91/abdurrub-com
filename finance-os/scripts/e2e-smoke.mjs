@@ -9,6 +9,7 @@ import { createRequire } from "node:module";
 
 // Playwright is resolved via require so a globally installed copy works too.
 const { chromium } = createRequire(import.meta.url)("playwright");
+import { runOnboarding, quickAdd } from "./e2e-helpers.mjs";
 
 const ROOT = resolve(process.cwd(), "..");
 const PORT = 4173;
@@ -68,62 +69,45 @@ try {
     check("Fresh browser shows the sign-in screen", true);
     await deviceOnly.click();
   }
-  await page.getByText("Set up").first().waitFor({ timeout: 20000 });
-  check("Device-only path reaches workspace setup", true);
-  await page.getByRole("button", { name: "Create workspace and open" }).click();
-  await page.getByText("overview").first().waitFor({ timeout: 20000 });
-  check("App boots and seeds the database", await page.getByText("Retention Rules").first().isVisible());
-  check("Dashboard shows the lean policy", await page.getByText("Lean solo operation").first().isVisible());
+  await page.locator("[data-onboarding]").waitFor({ timeout: 20000 });
+  check("Device-only path reaches the setup questions", true);
+  await page.screenshot({ path: "../finance-os/.e2e/onboarding.png", fullPage: false }).catch(() => {});
+  const onb = await runOnboarding(page, { name: "Muddassir", business: "Retention Rules", currency: "USD", home: "PKR", fx: "280", income: "4000" });
+  await page.getByText(/^Hi /).first().waitFor({ timeout: 20000 });
+  check("Setup questions run one at a time and build the dashboard", onb.length >= 20 && onb[0] === "name" && onb[onb.length - 1] === "split", `${onb.length} steps`);
+  check("App boots and seeds the database", await page.locator("aside").getByText("Retention Rules").first().isVisible());
+  const empty = await page.locator("body").innerText();
+  check("Empty dashboard invites the first entry", empty.includes("Nothing recorded") && empty.includes("Add money in"));
   await page.screenshot({ path: "../finance-os/.e2e/dashboard-empty.png", fullPage: true }).catch(() => {});
 
-  // Record a $4,000 client payment via the Transactions page.
-  await page.goto(`http://localhost:${PORT}/cfoh/app/transactions/`, { waitUntil: "networkidle" });
-  await page.getByRole("button", { name: "Record" }).first().click();
-  const dialog = page.getByRole("dialog");
-  await dialog.getByRole("combobox").first().selectOption("client_payment");
-  await dialog.locator('input[inputmode="decimal"]').first().fill("4000");
-  await dialog.getByPlaceholder(/e\.g\. ListKit monthly/).fill("November commission");
-  await dialog.getByRole("button", { name: "Record" }).click();
-  await page.getByText("Transaction recorded").last().waitFor();
+  // Quick add: $4,000 in, $831 business out, 50,000 PKR household out (at 280 -> $178.57).
+  await quickAdd(page, { tab: "in", amount: 4000, what: "November commission" });
   await page.locator("aside").getByText(/Saved /).waitFor();
-  check("Client payment recorded", await page.getByText("November commission").first().isVisible());
-
-  // Record an $831 overhead expense.
-  await page.getByRole("button", { name: "Record" }).first().click();
-  await dialog.getByRole("combobox").first().selectOption("expense");
-  await dialog.locator('input[inputmode="decimal"]').first().fill("831");
-  await dialog.getByPlaceholder(/e\.g\. ListKit monthly/).fill("Tool stack");
-  await dialog.getByRole("button", { name: "Record" }).click();
-  await page.getByText("Transaction recorded").last().waitFor();
+  await quickAdd(page, { tab: "out", side: "Business", amount: 831, what: "Tool stack", category: "Software and AI" });
   await page.locator("aside").getByText(/Saved /).waitFor();
-
-  // Record a PKR household expense (50,000 PKR at default 280 -> $178.57).
-  await page.getByRole("button", { name: "Record" }).first().click();
-  await dialog.getByRole("combobox").first().selectOption("household_expense");
-  const currencySelect = dialog.getByRole("combobox").nth(1);
-  await currencySelect.selectOption("PKR");
-  await dialog.locator('input[inputmode="decimal"]').first().fill("50000");
-  await dialog.getByPlaceholder(/e\.g\. ListKit monthly/).fill("Groceries");
-  await dialog.getByRole("button", { name: "Record" }).click();
-  await page.getByText("Transaction recorded").last().waitFor();
+  await quickAdd(page, { tab: "out", side: "Personal", currency: "PKR", amount: 50000, what: "Groceries", category: "Food", household: true });
   await page.locator("aside").getByText(/Saved /).waitFor();
-  check("PKR expense converted at the transaction rate", await page.getByText("$178.57").first().isVisible());
+  let body = await page.locator("body").innerText();
+  check("Quick add records money in and out", body.includes("November commission") && body.includes("Tool stack") && body.includes("Groceries"));
+  check("PKR expense converted at the transaction rate", body.includes("$178.57"));
 
-  // Dashboard figures: Scenario A allocations and expense health.
-  await page.goto(`http://localhost:${PORT}/cfoh/app/`, { waitUntil: "networkidle" });
-  const body = await page.locator("body").innerText();
-  check("Owner compensation = $1,400.00", body.includes("$1,400.00"));
-  check("Tax reserve = $600.00", body.includes("$600.00"));
-  check("Operating ceiling $1,000.00 with $831.00 spent", body.includes("$1,000.00") && body.includes("$831.00"));
-  check("Remaining allowance $169.00", body.includes("$169.00"));
-  check("Opex ratio 20.8%", body.includes("20.8%"));
+  // Dashboard figures from the setup split (10/20/15/22/22/11 on $4,000).
+  check("Hero shows money in $4,000, out $1,010 and kept $3,169", body.includes("$4,000") && body.includes("$1,010") && body.includes("$3,169"), body.split("\n").slice(0, 12).join(" | "));
+  check("Split shows your pay $800 and tax $600", body.includes("$800") && body.includes("$600"));
+  check("Running costs over the $400 ceiling by $431", body.includes("$431 over"));
+  check("Home essentials show the PKR spend", body.includes("Home essentials"));
+  check("Activity list and category donut present", body.includes("Recent activity") && body.includes("Where it went") && body.includes("Software and AI"));
   await page.screenshot({ path: "../finance-os/.e2e/dashboard.png", fullPage: true }).catch(() => {});
 
+  // Transactions page still records through the full form.
+  await page.goto(`http://localhost:${PORT}/cfoh/app/transactions/`, { waitUntil: "networkidle" });
+  check("Activity page lists the quick-add rows", (await page.locator("body").innerText()).includes("November commission"));
+
   // Persistence across reload.
-  await page.reload({ waitUntil: "networkidle" });
-  await page.getByText("overview").first().waitFor();
+  await page.goto(`http://localhost:${PORT}/cfoh/app/`, { waitUntil: "networkidle" });
+  await page.getByText(/^Hi /).first().waitFor();
   const body2 = await page.locator("body").innerText();
-  check("Data persists after reload (IndexedDB)", body2.includes("$1,400.00") && body2.includes("$831.00"));
+  check("Data persists after reload (IndexedDB)", body2.includes("$4,000") && body2.includes("$431 over"));
 
   // Dark mode toggle.
   await page.getByRole("button", { name: "Toggle theme" }).click();
@@ -131,11 +115,11 @@ try {
   await page.screenshot({ path: "../finance-os/.e2e/dashboard-dark.png", fullPage: true }).catch(() => {});
   await page.getByRole("button", { name: "Toggle theme" }).click();
 
-  // Scenarios page preset check ($10,000 -> owner $3,500).
+  // Scenarios page preset check ($10,000 -> pay 20% = $2,000, tax 15% = $1,500).
   await page.goto(`http://localhost:${PORT}/cfoh/app/scenarios/`, { waitUntil: "networkidle" });
   await page.getByRole("button", { name: "$10k", exact: true }).click();
   const sBody = await page.locator("body").innerText();
-  check("Scenario B owner compensation $3,500.00", sBody.includes("$3,500.00") && sBody.includes("$2,500.00"));
+  check("Scenario B owner pay $2,000.00 and tax $1,500.00", sBody.includes("$2,000.00") && sBody.includes("$1,500.00"));
   await page.screenshot({ path: "../finance-os/.e2e/scenarios.png", fullPage: true }).catch(() => {});
 
   // Whop sale with fee lines.
@@ -181,17 +165,20 @@ try {
   await wsd.locator("input").nth(1).fill("Second Agency Ltd");
   await wsd.locator("input").nth(2).fill("Someone Else");
   await wsd.getByRole("button", { name: "Create workspace" }).click();
-  await page.locator("aside").getByText("Second Agency Ltd").first().waitFor({ timeout: 20000 });
+  await page.locator("[data-onboarding]").waitFor({ timeout: 20000 });
+  check("A new workspace goes through the setup questions", true);
+  await runOnboarding(page, { name: "Someone", business: "Second Agency Ltd", currency: "USD", home: "USD", income: "2000" });
   await page.locator("aside").getByText(/Saved /).waitFor();
   await page.goto(`http://localhost:${PORT}/cfoh/app/`, { waitUntil: "networkidle" });
+  await page.getByText(/^Hi /).first().waitFor({ timeout: 20000 });
   const ws2 = await page.locator("body").innerText();
-  check("Second workspace starts empty (no $4,000 collected)", !ws2.includes("$4,000.00") && ws2.includes("Second Agency"), `has4000=${ws2.includes("$4,000.00")} hasName=${ws2.includes("Second Agency")} aside=${(await page.locator("aside").innerText()).split("\n").slice(0,3).join("/")}`);
+  check("Second workspace starts empty (no $4,000 collected)", !ws2.includes("$4,000") && ws2.includes("Second Agency") && ws2.includes("Hi Someone"), `has4000=${ws2.includes("$4,000")} hasName=${ws2.includes("Second Agency")}`);
   await page.locator("aside").getByTitle("Switch workspace").click();
   await page.getByRole("option", { name: "Retention Rules" }).click();
   let restored = true;
   try {
     await page.locator("aside").getByText("Retention Rules").first().waitFor({ timeout: 20000 });
-    await page.getByText("$5,000.00").first().waitFor({ timeout: 20000 }); // $4,000 commission + $1,000 Whop sale
+    await page.getByText("$4,943").first().waitFor({ timeout: 20000 }); // $4,000 commission + $1,000 Whop sale − $57.30 fees
   } catch {
     restored = false;
   }
@@ -224,10 +211,10 @@ try {
   await p2.getByPlaceholder("you@yourbusiness.com").fill("owner@example.com");
   await p2.locator('input[type="password"]').fill("correct-horse-battery");
   await p2.getByRole("button", { name: "Create account", exact: true }).click();
-  await p2.getByText("Set up").first().waitFor({ timeout: 20000 });
-  check("Cloud: sign-up leads to workspace setup", true);
-  await p2.getByRole("button", { name: "Create workspace and open" }).click();
-  await p2.getByText("overview").first().waitFor({ timeout: 20000 });
+  await p2.locator("[data-onboarding]").waitFor({ timeout: 20000 });
+  check("Cloud: sign-up leads straight to the setup questions", true);
+  await runOnboarding(p2, { name: "Owner", business: "Owner Co", home: "USD" });
+  await p2.getByText("Hi Owner").first().waitFor({ timeout: 20000 });
   await p2.locator("aside").getByText(/Synced/).first().waitFor({ timeout: 20000 });
   check("Cloud: workspace synced to account", true);
   await p2.goto(`http://localhost:${PORT}/cfoh/app/settings/?tab=account`, { waitUntil: "networkidle" });
@@ -242,17 +229,17 @@ try {
   await p3.goto(`http://localhost:${PORT}/cfoh/app/`, { waitUntil: "networkidle" });
   await p3.screenshot({ path: "../finance-os/.e2e/auth.png", fullPage: false }).catch(() => {});
   await p3.getByRole("button", { name: "Continue with Google" }).click();
-  await p3.getByText("Set up").first().waitFor({ timeout: 20000 });
-  check("Cloud: Google sign-in path reaches workspace setup", true);
+  await p3.locator("[data-onboarding]").waitFor({ timeout: 20000 });
+  check("Cloud: Google sign-in path reaches the setup questions", true);
   await ctx3.close();
 
   // Live demo link seeds the sample workspace without an account.
   const ctxD = await browser.newContext({ viewport: { width: 1400, height: 900 } });
   const pd = await ctxD.newPage();
   await pd.goto(`http://localhost:${PORT}/cfoh/app/?demo=1`, { waitUntil: "networkidle" });
-  await pd.getByText("overview").first().waitFor({ timeout: 30000 });
+  await pd.getByText("Hi Sam").first().waitFor({ timeout: 30000 });
   const demoBody = await pd.locator("body").innerText();
-  check("Live demo opens the Northstar sample workspace with data", demoBody.includes("Northstar Studio") && demoBody.includes("Harbor") === false && /\$[1-9]/.test(demoBody));
+  check("Live demo opens the Northstar sample workspace with data, no questions asked", demoBody.includes("Northstar Studio") && /\$[1-9]/.test(demoBody) && demoBody.includes("Where it went"));
   await pd.screenshot({ path: "../finance-os/.e2e/demo-dashboard.png", fullPage: false }).catch(() => {});
   await ctxD.close();
 
@@ -265,9 +252,7 @@ try {
   await pa2.getByPlaceholder("you@yourbusiness.com").fill("admin@example.com");
   await pa2.locator('input[type="password"]').fill("correct-horse-battery");
   await pa2.getByRole("button", { name: "Create account", exact: true }).click();
-  await pa2.getByText("Set up").first().waitFor({ timeout: 20000 });
-  await pa2.getByRole("button", { name: "Create workspace and open" }).click();
-  await pa2.getByText("overview").first().waitFor({ timeout: 20000 });
+  await runOnboarding(pa2, { name: "Admin", business: "Admin Co", home: "USD" });
   check("Admin sees the Accounts & trials nav item", await pa2.locator("aside").getByText("Accounts & trials").isVisible());
   await pa2.goto(`http://localhost:${PORT}/cfoh/app/admin/`, { waitUntil: "networkidle" });
   const adminBody = await pa2.locator("body").innerText();
@@ -281,12 +266,30 @@ try {
   const homeOverflow = await pm.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   await pm.screenshot({ path: "../finance-os/.e2e/mobile-home.png", fullPage: false }).catch(() => {});
   await pm.goto(`http://localhost:${PORT}/cfoh/app/?demo=1`, { waitUntil: "networkidle" });
-  await pm.getByText("overview").first().waitFor({ timeout: 30000 });
+  await pm.getByText("Hi Sam").first().waitFor({ timeout: 30000 });
   const appOverflow = await pm.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   await pm.screenshot({ path: "../finance-os/.e2e/mobile-app.png", fullPage: false }).catch(() => {});
+  const tabs = pm.getByRole("navigation", { name: "Main" });
+  check("Mobile: bottom tabs with the add button", (await tabs.getByText("Home").isVisible()) && (await tabs.getByRole("button", { name: "Add money in or out" }).isVisible()));
+  await tabs.getByRole("button", { name: "Add money in or out" }).click();
+  check("Mobile: quick add opens as a sheet", await pm.locator("[data-quickadd]").isVisible());
+  await pm.keyboard.press("Escape");
   await pm.getByRole("button", { name: "Open navigation" }).click();
-  check("Mobile: homepage and dashboard have no horizontal overflow and the menu opens", homeOverflow <= 1 && appOverflow <= 1 && (await pm.getByText("Trends & progress").last().isVisible()), `home=${homeOverflow} app=${appOverflow}`);
+  check("Mobile: homepage and dashboard have no horizontal overflow and the menu opens", homeOverflow <= 1 && appOverflow <= 1 && (await pm.getByText("More tools").last().isVisible()), `home=${homeOverflow} app=${appOverflow}`);
+  await pm.screenshot({ path: "../finance-os/.e2e/mobile-menu.png", fullPage: false }).catch(() => {});
   await ctxM.close();
+
+  // Mobile: the setup questions fit a phone.
+  const ctxO = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+  const po = await ctxO.newPage();
+  await po.goto(`http://localhost:${PORT}/cfoh/app/`, { waitUntil: "networkidle" });
+  const dOnly = po.getByRole("button", { name: /Continue without an account/ });
+  if (await dOnly.waitFor({ state: "visible", timeout: 15000 }).then(() => true).catch(() => false)) await dOnly.click();
+  await po.locator("[data-onboarding]").waitFor({ timeout: 20000 });
+  const onbOverflow = await po.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  await po.screenshot({ path: "../finance-os/.e2e/mobile-onboarding.png", fullPage: false }).catch(() => {});
+  check("Mobile: setup questions have no horizontal overflow", onbOverflow <= 1, `overflow=${onbOverflow}`);
+  await ctxO.close();
 
   // Visit every page for runtime errors.
   for (const p of ["expenses", "clients", "personal", "accounts", "tax", "growth", "forecast", "alerts"]) {

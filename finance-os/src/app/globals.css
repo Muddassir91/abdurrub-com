@@ -101,6 +101,65 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+@keyframes cfoh-step-in {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes cfoh-step-back {
+  from {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes cfoh-pop {
+  0% {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.02);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes cfoh-fill {
+  from {
+    width: 0;
+  }
+}
+.step-in {
+  animation: cfoh-step-in 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.step-back {
+  animation: cfoh-step-back 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.pop-in {
+  animation: cfoh-pop 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.bar-fill {
+  animation: cfoh-fill 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .step-in,
+  .step-back,
+  .pop-in,
+  .bar-fill {
+    animation: none;
+  }
+}
+
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;

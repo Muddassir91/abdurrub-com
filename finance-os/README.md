@@ -40,11 +40,15 @@ git commit -m "Update Finance OS" && git push
 
 Merging to `main` publishes it at `https://abdurrub.com/cfoh/`.
 
-### Workspaces (sign-up)
+### Setup questions (onboarding)
 
-On first open the app shows a sign-up screen that creates a **workspace**. A workspace is one business or one person: its own SQLite database, its own policy, accounts, clients, settings and optional passphrase. Two templates exist: *Retention Rules* (pre-filled with the agency profile) and *Another business or person* (clean scaffolding). Add more from the switcher at the top of the sidebar or under *Settings → Workspaces*, and switch between them there. Workspaces never share data; move one to another device with its backup file.
+After signing in, a new account answers the setup questions: one per screen with a progress bar, about twenty of them in four parts (about you, money coming in, money going out, your goals). The answers create and configure the **workspace**: name and currencies, a typical month's income, opening balances, tools and subscriptions, other regular costs, the household budget in the home currency, how often you pay yourself, your goals, a tax share and a cushion target. The last screen shows the suggested split of every unit of income (running costs, your pay, tax, profit, cushion, growth) built from those answers, adjustable with +/- until it adds up to 100%. `src/onboarding/model.ts` holds the questions' data model and the split suggestion; `src/onboarding/apply.ts` writes the answers into the database and stores them as JSON in `settings.onboarding_json`. A workspace with no stored answers (older accounts, or one added from "Add business or person") is sent through the questions first; *Settings → Business & targets → Redo the setup questions* clears the answers to run them again without touching transactions. The demo and the owner's own template skip the questions.
 
-There is no server, so there are no online accounts: "sign up" creates a local workspace in this browser. If you later want the same workspace shared across devices or people, the next step would be a hosted database with authentication; the engine and UI are built to make that an addition, not a rewrite.
+A workspace is one business or one person: its own SQLite database, its own split, accounts, clients, settings and optional passphrase. Add more from the switcher at the top of the sidebar or under *Settings → Workspaces*, and switch between them there. Workspaces never share data; move one to another device with its backup file.
+
+### Home screen and quick add
+
+The home screen is one visual page: money in, money out and what was kept this month; collected income against a usual month; the split as a bar with six amounts; three budgets as progress bars (running costs against the ceiling, home essentials against the home budget, your pay against your share); a category donut; eight weeks of in and out; tax, cushion and profit set aside; recent activity and upcoming renewals. The "+" button (sidebar on desktop, centre of the bottom tab bar on phones) opens the quick-add sheet: money out (business or personal, category chips, repeats monthly or household essential) or money in (optional client), amount, what it was, today/yesterday/another day. Primary navigation is Home, Activity, Trends and Settings; every other page sits under "More tools" in the sidebar.
 
 ### Accounts and sync (Supabase)
 
@@ -54,7 +58,7 @@ One-time setup, about ten minutes:
 
 1. Create a free project at supabase.com. Pick a region close to you.
 2. Dashboard → SQL editor → New query. Paste `supabase/schema.sql` and run it. It creates the `workspaces` table, the private `workspaces` storage bucket and the security policies.
-3. Dashboard → Authentication → URL configuration. Set the Site URL to `https://abdurrub.com/cfoh/` and add it to Redirect URLs. Under Providers, keep Email enabled with "Confirm email" on.
+3. Dashboard → Authentication → URL configuration. Set the Site URL to `https://abdurrub.com/cfoh/app/` and add `https://abdurrub.com/cfoh/**` to Redirect URLs. Under Providers, keep Email enabled with "Confirm email" **off** so creating an account signs the person straight in. Then run `supabase/access.sql` for trials and the admin page.
 4. Dashboard → Settings → API. Copy the Project URL and the anon (publishable) key into `finance-os/cloud.config.json`, then rebuild and publish:
 
 ```bash
@@ -216,7 +220,7 @@ npm test
 - `tests/snapshot.test.ts` — pending payments not allocated and flagged overdue; refunds, chargebacks and every fee subtracted once; payouts and transfers are neither revenue nor expense; processor reserves excluded until released and projected in the forecast; zero-revenue month with spending; PKR household spend at per-transaction rates with no double counting of draws; ceiling / remaining / ratio / margins; approved ceiling override; over-ceiling alert; commission math; concentration at 60% and 75%; Whop fee and payout math; subscription evaluation; hire rejected without reserves/revenue and accepted with them; simulator never scales personal spending; reserve coverage/target/date; month report variances; scale-stage policy switch.
 - `tests/database.test.ts` — real SQLite: migrations run, seed matches the profile ($831 known subscriptions, PKR 195,000 household, 20% client), insert, export, reopen, engine produces Scenario A from the stored data.
 
-The browser smoke test (`scripts/e2e-smoke.mjs`) boots the exported site in Chromium, records USD and PKR transactions, verifies dashboard numbers, persistence across reload, dark mode, scenarios, a Whop sale with fee lines, a month close, envelope booking and backup download, and checks every route for runtime errors.
+The browser smoke test (`scripts/e2e-smoke.mjs`) boots the exported site in Chromium, walks through the setup questions, adds USD and PKR entries through quick add, verifies the home screen numbers, persistence across reload, dark mode, scenarios, a Whop sale with fee lines, a month close, envelope booking, backup download, a second workspace, the cloud flows with the in-memory backend, the phone layout (bottom tabs, quick-add sheet, setup questions) and checks every route for runtime errors. `tests/onboarding.test.ts` covers the split suggestion and writing the answers into a workspace.
 
 ---
 

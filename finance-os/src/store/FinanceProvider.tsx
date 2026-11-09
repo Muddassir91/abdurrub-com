@@ -53,6 +53,8 @@ export interface CreateWorkspaceInput {
   passphrase?: string;
   baseCurrency?: string;
   householdCurrency?: string;
+  /** Runs once against the freshly seeded database, before it is loaded (used by the setup questionnaire). */
+  afterSeed?: (db: Db) => void;
 }
 
 export interface FinanceContextValue {
@@ -266,13 +268,14 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
 
   /** Open a workspace's database (creating + seeding when it has no image yet). */
   const boot = useCallback(
-    async (workspaceId: string, image: Uint8Array | undefined, seed?: SeedOptions) => {
+    async (workspaceId: string, image: Uint8Array | undefined, seed?: SeedOptions, afterSeed?: (db: Db) => void) => {
       closeCurrent();
       wsRef.current = workspaceId;
       const opened = await openDatabase(image);
       sqlRef.current = opened.sql;
       dbRef.current = opened.db;
       const seeded = seedDatabase(opened.db, seed);
+      if (seeded && afterSeed) afterSeed(opened.db);
       setData(loadEngineData(opened.db));
       setMonth(currentMonthKey());
       setStatus("ready");
@@ -618,7 +621,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
       passRef.current = input.passphrase || null;
       if (input.passphrase) sessionStorage.setItem(passKey(ws.id), input.passphrase);
       setStatus("loading");
-      await boot(ws.id, undefined, { template: ws.template, businessName: ws.businessName, ownerName: ws.ownerName, baseCurrency: input.baseCurrency, householdCurrency: input.householdCurrency });
+      await boot(ws.id, undefined, { template: ws.template, businessName: ws.businessName, ownerName: ws.ownerName, baseCurrency: input.baseCurrency, householdCurrency: input.householdCurrency }, input.afterSeed);
       if (user) await uploadWorkspace(ws.id);
     },
     [updateRegistry, boot, uploadWorkspace],

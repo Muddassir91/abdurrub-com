@@ -7,6 +7,7 @@ import { createReadStream, existsSync, statSync } from "node:fs";
 import { join, extname, resolve } from "node:path";
 import { createRequire } from "node:module";
 const { chromium } = createRequire(import.meta.url)("playwright");
+import { runOnboarding } from "./e2e-helpers.mjs";
 
 const ROOT = resolve(process.cwd(), "..");
 const PORT = 4177;
@@ -40,10 +41,9 @@ try {
   await pa.getByPlaceholder("you@yourbusiness.com").fill(email);
   await pa.locator('input[type="password"]').fill(password);
   await pa.getByRole("button", { name: "Create account", exact: true }).click();
-  await pa.getByText("Set up").first().waitFor({ timeout: 30000 });
-  check("Live: account created and reached workspace setup", true);
-  await pa.getByRole("button", { name: "Create workspace and open" }).click();
-  await pa.getByText("overview").first().waitFor({ timeout: 30000 });
+  await pa.locator("[data-onboarding]").waitFor({ timeout: 30000 });
+  check("Live: account created and reached the setup questions", true);
+  await runOnboarding(pa);
   await pa.locator("aside").getByText(/Synced/).first().waitFor({ timeout: 30000 });
   check("Live: workspace uploaded to the account", true);
   await pa.goto(U + "transactions/", { waitUntil: "networkidle" });
@@ -68,7 +68,7 @@ try {
   await pb.getByPlaceholder("you@yourbusiness.com").fill(email);
   await pb.locator('input[type="password"]').fill(password);
   await pb.getByRole("button", { name: "Sign in", exact: true }).click();
-  await pb.getByText("overview").first().waitFor({ timeout: 30000 });
+  await pb.getByText(/^Hi /).first().waitFor({ timeout: 30000 });
   const body = await pb.locator("body").innerText();
   check("Live: second device downloads the workspace with its data ($1,234.00)", body.includes("$1,234.00") && body.includes("Retention Rules"), errsB.slice(0, 2).join(" | "));
   await pb.screenshot({ path: ".e2e/cloud-live.png", fullPage: false }).catch(() => {});

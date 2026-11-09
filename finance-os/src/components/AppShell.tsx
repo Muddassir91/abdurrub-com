@@ -4,30 +4,41 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
-import { LayoutDashboard, LineChart, ArrowLeftRight, ShieldCheck, Receipt, Users, CreditCard, Wallet, Landmark, PiggyBank, Scale, Rocket, SlidersHorizontal, Bell, CalendarCheck, Settings, Lock, Sun, Moon, Menu, X, ChevronLeft, ChevronRight, TrendingUp, Save, ChevronsUpDown, Plus, Check } from "lucide-react";
+import { Home, LineChart, ArrowLeftRight, ShieldCheck, Receipt, Users, CreditCard, Wallet, Landmark, PiggyBank, Scale, Rocket, SlidersHorizontal, Bell, CalendarCheck, Settings, Lock, Sun, Moon, Menu, X, ChevronLeft, ChevronRight, TrendingUp, Save, ChevronsUpDown, Plus, Check, ChevronDown, type LucideIcon } from "lucide-react";
 import { useFinance } from "@/store/FinanceProvider";
 import { addMonths, monthLabel, currentMonthKey } from "@/lib/dates";
 import { Modal } from "./ui/Modal";
 import { WorkspaceForm } from "./WorkspaceForm";
 import { Wordmark } from "./Logo";
+import { QuickAddProvider, QuickAddButton } from "./QuickAdd";
 
-const NAV = [
-  { href: "/app/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/app/trends/", label: "Trends & progress", icon: LineChart },
-  { href: "/app/transactions/", label: "Transactions", icon: ArrowLeftRight },
-  { href: "/app/expenses/", label: "Business expenses", icon: Receipt },
-  { href: "/app/clients/", label: "Clients & revenue", icon: Users },
-  { href: "/app/whop/", label: "Payment processor", icon: CreditCard },
-  { href: "/app/personal/", label: "Owner & personal", icon: Wallet },
-  { href: "/app/accounts/", label: "Accounts & cash", icon: Landmark },
-  { href: "/app/reserves/", label: "Profit & reserves", icon: PiggyBank },
-  { href: "/app/tax/", label: "Tax & compliance", icon: Scale },
-  { href: "/app/growth/", label: "Growth & hiring", icon: Rocket },
-  { href: "/app/scenarios/", label: "Scenarios", icon: SlidersHorizontal },
-  { href: "/app/forecast/", label: "Cash-flow forecast", icon: TrendingUp },
-  { href: "/app/alerts/", label: "Alerts", icon: Bell },
-  { href: "/app/month-end/", label: "Month-end & reports", icon: CalendarCheck },
+interface NavItem {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+}
+
+/** The four things people use every day. Everything else lives under "More tools". */
+const PRIMARY: NavItem[] = [
+  { href: "/app/", label: "Home", icon: Home },
+  { href: "/app/transactions/", label: "Activity", icon: ArrowLeftRight },
+  { href: "/app/trends/", label: "Trends", icon: LineChart },
   { href: "/app/settings/", label: "Settings", icon: Settings },
+];
+
+const MORE: NavItem[] = [
+  { href: "/app/expenses/", label: "Tools & overhead", icon: Receipt },
+  { href: "/app/personal/", label: "Your pay & home", icon: Wallet },
+  { href: "/app/reserves/", label: "Profit & cushion", icon: PiggyBank },
+  { href: "/app/tax/", label: "Tax", icon: Scale },
+  { href: "/app/clients/", label: "Clients", icon: Users },
+  { href: "/app/whop/", label: "Payment processor", icon: CreditCard },
+  { href: "/app/accounts/", label: "Accounts", icon: Landmark },
+  { href: "/app/alerts/", label: "Alerts", icon: Bell },
+  { href: "/app/month-end/", label: "Month-end", icon: CalendarCheck },
+  { href: "/app/forecast/", label: "Forecast", icon: TrendingUp },
+  { href: "/app/scenarios/", label: "Scenarios", icon: SlidersHorizontal },
+  { href: "/app/growth/", label: "Growth & hiring", icon: Rocket },
 ];
 
 export type ThemePref = "system" | "light" | "dark";
@@ -170,112 +181,159 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { resolved, toggle } = useTheme();
   const [open, setOpen] = useState(false);
   const [creating, setCreating] = useState(false);
-  const critical = alerts.filter((a) => a.level === "critical").length;
-  const caution = alerts.filter((a) => a.level === "caution").length;
+  const isActive = (href: string) => (href === "/app/" ? path === "/app/" || path === "/app" : path.startsWith(href));
+  const [moreOpen, setMoreOpen] = useState(false);
+  useEffect(() => {
+    if (MORE.some((m) => isActive(m.href))) setMoreOpen(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [path]);
+  const attention = alerts.filter((a) => a.level !== "info").length;
   const isClosed = data?.monthCloses.some((c) => c.month === month && c.status === "closed");
   const processorName = data?.processors[0]?.name ?? "Payment processor";
+  const baseCur = data?.settings.baseCurrency ?? "USD";
+  const homeCur = data?.settings.householdCurrency ?? "PKR";
 
-  const navItems = access?.isAdmin ? [...NAV, { href: "/app/admin/", label: "Accounts & trials", icon: ShieldCheck }] : NAV;
+  const primary = access?.isAdmin ? [...PRIMARY, { href: "/app/admin/", label: "Accounts & trials", icon: ShieldCheck }] : PRIMARY;
   const trialDays = access?.profile?.accessStatus === "trial" ? access.daysLeft : null;
+
+  const link = (item: NavItem, small = false) => {
+    const active = isActive(item.href);
+    const Icon = item.icon;
+    return (
+      <Link key={item.href} href={item.href} onClick={() => setOpen(false)} className={clsx("flex items-center gap-2.5 rounded-lg px-2.5 font-medium transition-colors", small ? "py-1.5 text-xs" : "py-2 text-[13px]", active ? "bg-accent-soft text-accent" : "text-fg-muted hover:bg-surface-2 hover:text-fg")}>
+        <Icon size={small ? 14 : 16} className="shrink-0" />
+        <span className="flex-1 truncate">{item.href === "/app/whop/" ? processorName : item.label}</span>
+        {item.href === "/app/alerts/" && attention > 0 && <span className="rounded-full bg-caution px-1.5 text-[10px] font-semibold text-white">{attention}</span>}
+      </Link>
+    );
+  };
+
   const nav = (
     <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-2">
-      {navItems.map((item) => {
-        const active = item.href === "/app/" ? path === "/app/" || path === "/app" : path.startsWith(item.href);
-        const Icon = item.icon;
-        return (
-          <Link key={item.href} href={item.href} onClick={() => setOpen(false)} className={clsx("flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-colors", active ? "bg-accent-soft text-accent" : "text-fg-muted hover:bg-surface-2 hover:text-fg")}>
-            <Icon size={16} className="shrink-0" />
-            <span className="flex-1 truncate">{item.href === "/app/whop/" ? processorName : item.label}</span>
-            {item.href === "/app/alerts/" && (critical > 0 || caution > 0) && <span className={clsx("rounded-full px-1.5 text-[10px] font-semibold", critical > 0 ? "bg-critical text-white" : "bg-caution text-white")}>{critical + caution}</span>}
-          </Link>
-        );
-      })}
+      {primary.map((item) => link(item))}
+      <button type="button" onClick={() => setMoreOpen((v) => !v)} className="mt-2 flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-fg-faint hover:text-fg" aria-expanded={moreOpen}>
+        <ChevronDown size={12} className={clsx("transition-transform", moreOpen ? "" : "-rotate-90")} /> More tools
+        {attention > 0 && !moreOpen && <span className="ml-auto rounded-full bg-caution px-1.5 text-[10px] font-semibold text-white">{attention}</span>}
+      </button>
+      {moreOpen && <div className="space-y-0.5 pl-1">{MORE.map((item) => link(item, true))}</div>}
     </nav>
   );
 
   return (
-    <div className="flex min-h-screen bg-bg">
-      <aside className="hidden w-60 shrink-0 flex-col border-r border-border bg-surface lg:flex">
-        <WorkspaceSwitcher onCreate={() => setCreating(true)} />
-        {nav}
-        <div className="border-t border-border px-4 py-3 text-[11px] text-fg-faint">
-          <div className="mb-1.5"><Wordmark size="sm" className="text-fg-muted" /></div>
-          <div className="flex items-center gap-1.5">
-            <Save size={12} className={saving ? "animate-pulse text-accent" : ""} />
-            {saving ? "Saving…" : lastSavedAt ? `Saved ${new Date(lastSavedAt).toLocaleTimeString()}` : "Not saved yet"}
+    <QuickAddProvider>
+      <div className="flex min-h-screen bg-bg">
+        <aside className="hidden w-60 shrink-0 flex-col border-r border-border bg-surface lg:sticky lg:top-0 lg:flex lg:h-screen lg:overflow-y-auto">
+          <WorkspaceSwitcher onCreate={() => setCreating(true)} />
+          <div className="px-3 pt-2">
+            <QuickAddButton className="h-11 w-full" label="Add money in or out" />
           </div>
-          <div className="mt-1">{cloudUser ? (cloudStatus === "syncing" ? "Syncing to your account…" : cloudStatus === "error" ? "Cloud sync failed; data is safe on this device." : "Synced to your account.") : "Data lives in this browser only."}</div>
-        </div>
-      </aside>
+          {nav}
+          <div className="border-t border-border px-4 py-3 text-[11px] text-fg-faint">
+            <div className="mb-1.5"><Wordmark size="sm" className="text-fg-muted" /></div>
+            <div className="flex items-center gap-1.5">
+              <Save size={12} className={saving ? "animate-pulse text-accent" : ""} />
+              {saving ? "Saving…" : lastSavedAt ? `Saved ${new Date(lastSavedAt).toLocaleTimeString()}` : "Not saved yet"}
+            </div>
+            <div className="mt-1">{cloudUser ? (cloudStatus === "syncing" ? "Syncing to your account…" : cloudStatus === "error" ? "Cloud sync failed; data is safe on this device." : "Synced to your account.") : "Data lives in this browser only."}</div>
+          </div>
+        </aside>
 
-      {open && (
-        <div className="fixed inset-0 z-40 flex lg:hidden">
-          <div className="flex w-64 flex-col border-r border-border bg-surface">
-            <div className="flex items-center justify-between px-4 pt-3">
-              <Wordmark size="sm" />
-              <button onClick={() => setOpen(false)} className="rounded-md p-1 text-fg-muted hover:bg-surface-2" aria-label="Close navigation">
-                <X size={16} />
+        {open && (
+          <div className="fixed inset-0 z-40 flex lg:hidden">
+            <div className="flex w-64 flex-col border-r border-border bg-surface">
+              <div className="flex items-center justify-between px-4 pt-3">
+                <Wordmark size="sm" />
+                <button onClick={() => setOpen(false)} className="rounded-md p-1 text-fg-muted hover:bg-surface-2" aria-label="Close navigation">
+                  <X size={16} />
+                </button>
+              </div>
+              <WorkspaceSwitcher onCreate={() => { setOpen(false); setCreating(true); }} />
+              {nav}
+            </div>
+            <div className="flex-1 bg-black/40" onClick={() => setOpen(false)} />
+          </div>
+        )}
+
+        <div className="flex min-w-0 flex-1 flex-col">
+          <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-border bg-surface/90 px-4 backdrop-blur sm:px-6">
+            <button onClick={() => setOpen(true)} className="rounded-md p-1.5 text-fg-muted hover:bg-surface-2 lg:hidden" aria-label="Open navigation">
+              <Menu size={18} />
+            </button>
+            <div className="flex items-center gap-1 rounded-lg border border-border bg-surface-2 p-0.5">
+              <button onClick={() => setMonth(addMonths(month, -1))} className="rounded-md p-1 text-fg-muted hover:bg-surface hover:text-fg" aria-label="Previous month">
+                <ChevronLeft size={16} />
+              </button>
+              <button onClick={() => setMonth(currentMonthKey())} className="min-w-[96px] px-2 text-sm font-medium text-fg" title="Jump to current month">
+                {monthLabel(month)}
+              </button>
+              <button onClick={() => setMonth(addMonths(month, 1))} className="rounded-md p-1 text-fg-muted hover:bg-surface hover:text-fg" aria-label="Next month">
+                <ChevronRight size={16} />
               </button>
             </div>
-            <WorkspaceSwitcher onCreate={() => { setOpen(false); setCreating(true); }} />
-            {nav}
-          </div>
-          <div className="flex-1 bg-black/40" onClick={() => setOpen(false)} />
-        </div>
-      )}
-
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-border bg-surface/90 px-4 backdrop-blur sm:px-6">
-          <button onClick={() => setOpen(true)} className="rounded-md p-1.5 text-fg-muted hover:bg-surface-2 lg:hidden" aria-label="Open navigation">
-            <Menu size={18} />
-          </button>
-          <div className="flex items-center gap-1 rounded-lg border border-border bg-surface-2 p-0.5">
-            <button onClick={() => setMonth(addMonths(month, -1))} className="rounded-md p-1 text-fg-muted hover:bg-surface hover:text-fg" aria-label="Previous month">
-              <ChevronLeft size={16} />
+            {isClosed && <span className="hidden rounded-md bg-surface-2 px-2 py-0.5 text-[11px] font-medium text-fg-muted sm:inline">Closed</span>}
+            <div className="flex-1" />
+            {trialDays !== null && !access?.isAdmin && (
+              <Link href="/app/settings/?tab=account" className={clsx("hidden rounded-md px-2 py-1 text-[11px] font-medium sm:inline", trialDays <= 7 ? "bg-caution-soft text-caution" : "bg-accent-soft text-accent")} title="Your free month">
+                {trialDays} day{trialDays === 1 ? "" : "s"} left in your free month
+              </Link>
+            )}
+            {baseCur !== homeCur && (
+              <div className="flex items-center gap-1 rounded-lg border border-border bg-surface-2 p-0.5 text-xs" title="Show amounts in">
+                {([["USD", baseCur], ["PKR", homeCur]] as const).map(([key, label]) => (
+                  <button key={key} onClick={() => setDisplayCurrency(key)} className={clsx("rounded-md px-2 py-1 font-medium", displayCurrency === key ? "bg-surface text-fg shadow-sm" : "text-fg-muted hover:text-fg")}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+            )}
+            <button onClick={toggle} className="rounded-md p-1.5 text-fg-muted hover:bg-surface-2 hover:text-fg" aria-label="Toggle theme" title={`Theme: ${resolved}. Settings → Appearance for "follow system".`}>
+              {resolved === "dark" ? <Sun size={16} /> : <Moon size={16} />}
             </button>
-            <button onClick={() => setMonth(currentMonthKey())} className="min-w-[96px] px-2 text-sm font-medium text-fg" title="Jump to current month">
-              {monthLabel(month)}
-            </button>
-            <button onClick={() => setMonth(addMonths(month, 1))} className="rounded-md p-1 text-fg-muted hover:bg-surface hover:text-fg" aria-label="Next month">
-              <ChevronRight size={16} />
-            </button>
-          </div>
-          {isClosed && <span className="hidden rounded-md bg-surface-2 px-2 py-0.5 text-[11px] font-medium text-fg-muted sm:inline">Closed</span>}
-          <div className="flex-1" />
-          {trialDays !== null && !access?.isAdmin && (
-            <Link href="/app/settings/?tab=account" className={clsx("hidden rounded-md px-2 py-1 text-[11px] font-medium sm:inline", trialDays <= 7 ? "bg-caution-soft text-caution" : "bg-accent-soft text-accent")} title="Your free month">
-              {trialDays} day{trialDays === 1 ? "" : "s"} left in your free month
-            </Link>
-          )}
-          <div className="flex items-center gap-1 rounded-lg border border-border bg-surface-2 p-0.5 text-xs">
-            {(["USD", "PKR"] as const).map((c) => (
-              <button key={c} onClick={() => setDisplayCurrency(c)} className={clsx("rounded-md px-2 py-1 font-medium", displayCurrency === c ? "bg-surface text-fg shadow-sm" : "text-fg-muted hover:text-fg")}>
-                {c}
+            {isEncrypted && (
+              <button onClick={lock} className="rounded-md p-1.5 text-fg-muted hover:bg-surface-2 hover:text-fg" aria-label="Lock" title="Lock now">
+                <Lock size={16} />
               </button>
+            )}
+          </header>
+          <main className="mx-auto w-full min-w-0 max-w-[1400px] flex-1 overflow-x-hidden px-4 py-6 pb-28 sm:px-6 lg:pb-8">{children}</main>
+        </div>
+
+        {/* Mobile: bottom tabs with the add button in the middle. */}
+        <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden" aria-label="Main">
+          <div className="mx-auto grid max-w-lg grid-cols-5 items-end px-2">
+            {[PRIMARY[0], PRIMARY[1]].map((item) => (
+              <TabLink key={item.href} item={item} active={isActive(item.href)} />
+            ))}
+            <div className="flex justify-center pb-2">
+              <QuickAddButton className="-mt-5 h-14 w-14" label="" />
+            </div>
+            {[PRIMARY[2], PRIMARY[3]].map((item) => (
+              <TabLink key={item.href} item={item} active={isActive(item.href)} />
             ))}
           </div>
-          <button onClick={toggle} className="rounded-md p-1.5 text-fg-muted hover:bg-surface-2 hover:text-fg" aria-label="Toggle theme" title={`Theme: ${resolved}. Settings → Appearance for "follow system".`}>
-            {resolved === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-          </button>
-          {isEncrypted && (
-            <button onClick={lock} className="rounded-md p-1.5 text-fg-muted hover:bg-surface-2 hover:text-fg" aria-label="Lock" title="Lock now">
-              <Lock size={16} />
-            </button>
-          )}
-        </header>
-        <main className="mx-auto w-full min-w-0 max-w-[1400px] flex-1 overflow-x-hidden px-4 py-6 sm:px-6">{children}</main>
-      </div>
+        </nav>
 
-      <Modal open={creating} onClose={() => setCreating(false)} title="Add a business or person" description="Creates a separate workspace with its own database, settings and optional passphrase. Switch between workspaces from the sidebar." size="lg">
-        <WorkspaceForm
-          allowRetentionRulesTemplate={false}
-          onCancel={() => setCreating(false)}
-          onSubmit={async (input) => {
-            await createWorkspace(input);
-            setCreating(false);
-          }}
-        />
-      </Modal>
-    </div>
+        <Modal open={creating} onClose={() => setCreating(false)} title="Add a business or person" description="Creates a separate workspace with its own numbers and settings. You will answer the setup questions for it next." size="lg">
+          <WorkspaceForm
+            allowRetentionRulesTemplate={false}
+            onCancel={() => setCreating(false)}
+            onSubmit={async (input) => {
+              await createWorkspace(input);
+              setCreating(false);
+            }}
+          />
+        </Modal>
+      </div>
+    </QuickAddProvider>
+  );
+}
+
+function TabLink({ item, active }: { item: NavItem; active: boolean }) {
+  const Icon = item.icon;
+  return (
+    <Link href={item.href} className={clsx("flex flex-col items-center gap-0.5 py-2 text-[10px] font-medium", active ? "text-accent" : "text-fg-muted")} aria-current={active ? "page" : undefined}>
+      <Icon size={20} />
+      {item.label}
+    </Link>
   );
 }

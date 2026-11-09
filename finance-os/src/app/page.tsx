@@ -16,8 +16,9 @@ export const metadata: Metadata = {
 };
 
 const TOUR: TourScene[] = [
-  { src: "/screens/dashboard.png", title: "The problem", caption: "One balance makes every dollar look spendable. CFoh! splits what you collect into six envelopes the moment it lands.", focus: "35% 25%" },
-  { src: "/screens/dashboard-alloc.png", title: "Allocation", caption: "Operating, owner pay, tax, profit, reserve, growth. Targets, actuals and what is left, to the cent.", focus: "30% 55%" },
+  { src: "/screens/onboarding.png", title: "Setup", caption: "A few questions, one at a time. Your income, your costs, what you need at home. Your dashboard is built from the answers.", focus: "50% 20%" },
+  { src: "/screens/dashboard.png", title: "Your home screen", caption: "Money in, money out, what you kept. Every dollar collected gets a job the moment it lands.", focus: "35% 25%" },
+  { src: "/screens/dashboard-alloc.png", title: "Budgets", caption: "Running costs, home essentials, your pay: progress bars, not spreadsheets. Add a purchase in two taps.", focus: "30% 55%" },
   { src: "/screens/expenses.png", title: "Spending", caption: "A ceiling on tools and overhead. Unspent allowance stays in the business, it is not an invitation to buy more.", focus: "50% 30%" },
   { src: "/screens/personal.png", title: "Paying yourself", caption: "Household first, then discretionary. You see the number before you spend it, not after.", focus: "40% 30%" },
   { src: "/screens/trends.png", title: "Progress", caption: "Daily, weekly, monthly and yearly. Watch the result line climb as the habits stick.", focus: "50% 35%" },

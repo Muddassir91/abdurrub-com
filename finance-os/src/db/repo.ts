@@ -173,7 +173,8 @@ export function validateTransactionInput(t: TransactionInput, accounts: s.Accoun
 }
 
 function toRow(t: TransactionInput, settings: s.Settings, fxRates: s.FxRate[]): s.NewTransaction {
-  const rate = t.currency === "USD" ? "1" : (t.fxRatePerUsd ?? rateFor(t.currency, t.date, fxRates, settings));
+  // The ledger's unit is the workspace's base currency (historically USD); anything in that currency needs no conversion.
+  const rate = t.currency === "USD" || t.currency === settings.baseCurrency ? "1" : (t.fxRatePerUsd ?? rateFor(t.currency, t.date, fxRates, settings));
   const now = nowIso();
   return {
     id: t.id ?? uid(),

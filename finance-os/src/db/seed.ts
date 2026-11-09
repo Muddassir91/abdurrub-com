@@ -4,6 +4,7 @@ import * as s from "./schema";
 import { BUSINESS_CATEGORY_NAMES, PERSONAL_CATEGORY_NAMES } from "@/lib/constants";
 import { addMonths, currentMonthKey, todayKey, monthRange } from "@/lib/dates";
 import { uid, nowIso } from "@/lib/ids";
+import { TEMPLATE_MARKER } from "@/onboarding/model";
 
 /** Well-known ids so the UI and engine can address system rows without lookups. */
 export const IDS = {
@@ -69,6 +70,7 @@ export function seedDatabase(db: Db, opts: SeedOptions = {}): boolean {
       concentrationWarnPct: "50",
       concentrationCriticalPct: "75",
       renewalReminderDays: 7,
+      onboardingJson: TEMPLATE_MARKER,
       createdAt: now,
       updatedAt: now,
     })
@@ -352,7 +354,7 @@ function seedDemo(db: Db): boolean {
   seedBlank(db, { businessName: "Northstar Studio (demo)", ownerName: "Sam Rivera", baseCurrency: "USD", householdCurrency: "USD" });
   const now = nowIso();
   const month = currentMonthKey();
-  db.update(s.settings).set({ householdBudgetUsdCents: 250000, discretionaryGoalUsdCents: 300000, defaultFxRatePkrPerUsd: "1" }).run();
+  db.update(s.settings).set({ householdBudgetUsdCents: 250000, discretionaryGoalUsdCents: 300000, defaultFxRatePkrPerUsd: "1", onboardingJson: TEMPLATE_MARKER }).run();
   db.update(s.processors).set({ name: "Stripe", pricingSource: "Demo defaults: 2.9% + $0.30 per card payment." , domesticCardPct: "2.9", platformFeePct: "0", platformFeeAppliesByDefault: false }).run();
 
   const clientA = "demo-client-a";

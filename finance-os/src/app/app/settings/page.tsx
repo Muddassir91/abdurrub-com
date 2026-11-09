@@ -260,7 +260,12 @@ function BusinessTab() {
           <Field label="Business name"><Input value={f.businessName} onChange={(e) => setF({ ...f, businessName: e.target.value })} /></Field>
           <Field label="Owner name"><Input value={f.ownerName} onChange={(e) => setF({ ...f, ownerName: e.target.value })} /></Field>
         </FormRow>
-        <DefinitionList className="mt-3" items={[{ label: "Base currency", value: s.baseCurrency }, { label: "Household currency", value: s.householdCurrency }, { label: "Location", value: "Pakistan" }, { label: "Entities", value: data.entities.map((e) => e.name).join(" · ") }]} />
+        <DefinitionList className="mt-3" items={[{ label: "Base currency", value: s.baseCurrency }, { label: "Household currency", value: s.householdCurrency }, { label: "Location", value: data.taxProfiles[0]?.jurisdiction ?? "—" }, { label: "Entities", value: data.entities.map((e) => e.name).join(" · ") }]} />
+        <div className="mt-4 rounded-xl border border-border bg-surface-2/60 p-3">
+          <div className="text-sm font-medium text-fg">Setup questions</div>
+          <p className="mt-1 text-xs text-fg-muted">Income, costs, home budget and your split were set when you first opened CFoh!. Run the questions again to refresh them; your transactions are untouched.</p>
+          <Button className="mt-2" onClick={() => { mutate((db) => updateSettings(db, { onboardingJson: null })); }}>Redo the setup questions</Button>
+        </div>
       </Card>
       <Card title="Targets & thresholds" subtitle="Drive margins, reserves, concentration alerts and reminders">
         <FormError errors={errors} />

@@ -46,10 +46,12 @@ export function sumUsd(rows: Transaction[]): Minor {
 }
 
 /** Amount of a transaction expressed in the given account's currency. */
+const isBase = (currency: string, settings: Settings) => currency === "USD" || currency === settings.baseCurrency;
+
 export function amountInAccountCurrency(t: Transaction, account: Account, settings: Settings): Minor {
   if (t.currency === account.currency) return t.amountMinor;
-  if (account.currency === "USD") return t.amountUsdCents;
-  const rate = t.currency === "USD" ? settings.defaultFxRatePkrPerUsd : t.fxRatePerUsd;
+  if (isBase(account.currency, settings)) return t.amountUsdCents;
+  const rate = isBase(t.currency, settings) ? settings.defaultFxRatePkrPerUsd : t.fxRatePerUsd;
   return convertFromUsdCents(t.amountUsdCents, account.currency as CurrencyCode, rate);
 }
 
@@ -84,7 +86,7 @@ export function accountBalance(account: Account, transactions: Transaction[], se
 /** Account balance converted to USD cents. */
 export function accountBalanceUsd(account: Account, transactions: Transaction[], settings: Settings, upToDate?: string): Minor {
   const bal = accountBalance(account, transactions, settings, upToDate);
-  if (account.currency === "USD") return bal;
+  if (isBase(account.currency, settings)) return bal;
   const rate = Number(settings.defaultFxRatePkrPerUsd) || 1;
   return Math.round(bal / rate);
 }

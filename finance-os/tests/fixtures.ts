@@ -33,6 +33,7 @@ export function baseSettings(overrides: Partial<s.Settings> = {}): s.Settings {
     pinnedPolicyId: null,
     theme: "system",
     secondaryCurrencyDisplay: true,
+    onboardingJson: null,
     createdAt: now,
     updatedAt: now,
     ...overrides,

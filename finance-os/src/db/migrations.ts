@@ -27,5 +27,11 @@ export const MIGRATIONS: BundledMigration[] = [
       "CREATE TABLE `transactions` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`date` text NOT NULL,\n\t`month` text NOT NULL,\n\t`type` text NOT NULL,\n\t`amount_minor` integer NOT NULL,\n\t`currency` text DEFAULT 'USD' NOT NULL,\n\t`fx_rate_per_usd` text DEFAULT '1' NOT NULL,\n\t`amount_usd_cents` integer NOT NULL,\n\t`description` text NOT NULL,\n\t`category_id` text,\n\t`account_id` text,\n\t`to_account_id` text,\n\t`client_id` text,\n\t`invoice_id` text,\n\t`processor_id` text,\n\t`vendor_id` text,\n\t`recurring_expense_id` text,\n\t`group_id` text,\n\t`cost_type` text,\n\t`bucket` text,\n\t`is_essential` integer DEFAULT false NOT NULL,\n\t`is_recurring` integer DEFAULT false NOT NULL,\n\t`notes` text,\n\t`created_at` text NOT NULL,\n\t`updated_at` text NOT NULL\n);",
       "CREATE TABLE `vendors` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`name` text NOT NULL,\n\t`website` text,\n\t`notes` text,\n\t`created_at` text NOT NULL\n);"
     ]
+  },
+  {
+    "tag": "0001_onboarding",
+    "statements": [
+      "ALTER TABLE `settings` ADD `onboarding_json` text;"
+    ]
   }
 ];

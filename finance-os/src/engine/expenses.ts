@@ -10,7 +10,7 @@ const fmt = (d: Decimal | null) => (d ? d.toDecimalPlaces(2).toString() : null);
 
 /** Normalise a recurring expense to a monthly USD figure. */
 export function monthlyCostUsd(r: RecurringExpense, settings: Settings): Minor {
-  const usd = convertToUsdCents(r.amountMinor, r.currency as CurrencyCode, r.currency === "USD" ? "1" : settings.defaultFxRatePkrPerUsd);
+  const usd = convertToUsdCents(r.amountMinor, r.currency as CurrencyCode, r.currency === "USD" || r.currency === settings.baseCurrency ? "1" : settings.defaultFxRatePkrPerUsd);
   const months = FREQUENCY_MONTHS[r.frequency as Frequency] ?? 1;
   return toMinor(new Decimal(usd).div(months));
 }

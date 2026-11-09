@@ -42,8 +42,8 @@ const SHOTS = [
 const CARD = (title, sub) => ({ card: { title, sub } });
 const SCENES = [
   { id: "hook", mood: "curious", shots: [CARD("You made good money this month.", ""), CARD("So why is the account empty again?", ""), CARD("It is not a discipline problem.", "You just can\u2019t see where it goes.")] },
-  { id: "dashboard", mood: "curious", caption: "Every dollar gets a job the moment it lands.", shots: [{ img: "dashboard.png" }, { img: "dashboard.png", crop: [0.17, 0.06, 0.62, 0.62] }] },
-  { id: "dashboard-alloc", mood: "exciting", caption: "Six envelopes. Adds up to the cent.", shots: [{ img: "dashboard.png", crop: [0.17, 0.3, 0.58, 0.58] }, { img: "dashboard.png", crop: [0.58, 0.28, 0.42, 0.42] }] },
+  { id: "dashboard", mood: "curious", caption: "Every dollar gets a job the moment it lands.", shots: [{ img: "onboarding.png", crop: [0.2, 0.0, 0.6, 0.6] }, { img: "dashboard.png" }, { img: "dashboard.png", crop: [0.2, 0.2, 0.62, 0.62] }] },
+  { id: "dashboard-alloc", mood: "exciting", caption: "Six envelopes. Adds up to the cent.", shots: [{ img: "dashboard.png", crop: [0.21, 0.36, 0.52, 0.52] }, { img: "dashboard.png", crop: [0.2, 0.5, 0.5, 0.5] }] },
   { id: "expenses", mood: "exciting", caption: "A ceiling on tools. Warned the day you cross it.", shots: [{ img: "expenses.png" }, { img: "expenses.png", crop: [0.17, 0.04, 0.7, 0.7] }, { img: "alerts.png", crop: [0.17, 0.04, 0.75, 0.75] }] },
   { id: "personal", mood: "exciting", caption: "Pay yourself on purpose. Household first.", shots: [{ img: "personal.png" }, { img: "personal.png", crop: [0.17, 0.04, 0.7, 0.7] }] },
   { id: "trends", mood: "calm", caption: "Watch the result line climb.", shots: [{ img: "trends.png", crop: [0.17, 0.2, 0.72, 0.72] }] },
@@ -57,7 +57,7 @@ const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, d
 await ctx.addInitScript(() => localStorage.setItem("finance-os:theme", "light"));
 const page = await ctx.newPage();
 await page.goto(`http://localhost:${PORT}/cfoh/app/?demo=1`, { waitUntil: "networkidle" });
-await page.getByText("overview").first().waitFor({ timeout: 30000 });
+await page.getByText("Hi Sam").first().waitFor({ timeout: 30000 });
 for (const sc of SHOTS) {
   await page.goto(`http://localhost:${PORT}/cfoh/app/${sc.path}`, { waitUntil: "networkidle" });
   await page.waitForTimeout(600);
@@ -68,6 +68,20 @@ for (const sc of SHOTS) {
   await page.screenshot({ path: join(OUT, sc.file), fullPage: false });
   console.log("captured", sc.file);
 }
+// The setup questions, in a fresh browser (no workspace yet).
+const fresh = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2, colorScheme: "light" });
+await fresh.addInitScript(() => localStorage.setItem("finance-os:theme", "light"));
+const fp = await fresh.newPage();
+await fp.goto(`http://localhost:${PORT}/cfoh/app/`, { waitUntil: "networkidle" });
+const deviceOnly = fp.getByRole("button", { name: /Continue without an account/ });
+if (await deviceOnly.waitFor({ state: "visible", timeout: 15000 }).then(() => true).catch(() => false)) await deviceOnly.click();
+await fp.locator("[data-onboarding]").waitFor({ timeout: 30000 });
+await fp.getByPlaceholder("Your name").fill("Sam");
+await fp.getByRole("button", { name: "Continue" }).click();
+await fp.waitForTimeout(700);
+await fp.screenshot({ path: join(OUT, "onboarding.png"), fullPage: false });
+console.log("captured onboarding.png");
+await fresh.close();
 await browser.close();
 server.close();
 

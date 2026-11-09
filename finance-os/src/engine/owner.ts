@@ -3,7 +3,7 @@ import { convertToUsdCents, type CurrencyCode, type Minor } from "@/lib/money";
 import type { OwnerMetrics } from "./types";
 
 export function householdLinesUsd(lines: HouseholdBudgetLine[], settings: Settings): Minor {
-  return lines.filter((l) => l.isActive).reduce((a, l) => a + convertToUsdCents(l.amountMinor, l.currency as CurrencyCode, l.currency === "USD" ? "1" : settings.defaultFxRatePkrPerUsd), 0);
+  return lines.filter((l) => l.isActive).reduce((a, l) => a + convertToUsdCents(l.amountMinor, l.currency as CurrencyCode, l.currency === "USD" || l.currency === settings.baseCurrency ? "1" : settings.defaultFxRatePkrPerUsd), 0);
 }
 
 export function householdLinesMinor(lines: HouseholdBudgetLine[]): Minor {
@@ -25,7 +25,7 @@ export function computeOwner(month: string, transactions: Transaction[], lines: 
   const personal = rows.filter((t) => t.type === "personal_expense");
   const householdActual = household.reduce((a, t) => a + t.amountUsdCents, 0);
   const householdActualPkr = household.reduce((a, t) => {
-    if (t.currency === "PKR") return a + t.amountMinor;
+    if (t.currency === settings.householdCurrency) return a + t.amountMinor;
     return a + Math.round(t.amountUsdCents * Number(settings.defaultFxRatePkrPerUsd));
   }, 0);
   const discretionaryActual = personal.reduce((a, t) => a + t.amountUsdCents, 0);

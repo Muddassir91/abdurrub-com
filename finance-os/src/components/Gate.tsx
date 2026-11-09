@@ -6,16 +6,16 @@ import { useFinance } from "@/store/FinanceProvider";
 import { AppShell } from "./AppShell";
 import { Button } from "./ui/primitives";
 import { Input } from "./ui/forms";
-import { WorkspaceForm } from "./WorkspaceForm";
 import { LogoMark, Wordmark } from "./Logo";
 import { AuthScreen } from "./AuthScreen";
+import { Onboarding } from "./onboarding/Onboarding";
 
 function Centered({ children }: { children: React.ReactNode }) {
   return <div className="flex min-h-screen items-center justify-center bg-bg p-4 sm:p-6">{children}</div>;
 }
 
 export function Gate({ children }: { children: React.ReactNode }) {
-  const { status, error, unlock, createWorkspace, workspaces, currentWorkspace, switchWorkspace, access, cloudUser, signOut } = useFinance();
+  const { status, error, unlock, workspaces, currentWorkspace, switchWorkspace, access, cloudUser, signOut, data } = useFinance();
   const [pass, setPass] = useState("");
   const [bad, setBad] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -59,25 +59,8 @@ export function Gate({ children }: { children: React.ReactNode }) {
       </Centered>
     );
   }
-  if (status === "setup") {
-    return (
-      <Centered>
-        <div className="w-full max-w-2xl rounded-2xl border border-border bg-surface p-6 shadow-card sm:p-8">
-          <div className="flex items-center gap-3">
-            <LogoMark size={40} />
-            <div>
-              <h1 className="text-lg font-semibold text-fg">Set up <Wordmark size="md" /></h1>
-              <p className="text-sm text-fg-muted">Create your first workspace. One workspace per business or person; you can add more later from the sidebar.</p>
-            </div>
-          </div>
-          <div className="mt-6">
-            <WorkspaceForm onSubmit={createWorkspace} submitLabel="Create workspace and open" />
-          </div>
-          <p className="mt-5 text-[11px] text-fg-faint">No server, no account online. Everything you enter stays in this browser; use backups to move it elsewhere.</p>
-        </div>
-      </Centered>
-    );
-  }
+  // No workspace yet: the setup questionnaire creates one from the answers.
+  if (status === "setup") return <Onboarding mode="create" />;
   if (status === "locked") {
     return (
       <Centered>
@@ -127,5 +110,7 @@ export function Gate({ children }: { children: React.ReactNode }) {
       </Centered>
     );
   }
+  // A workspace that was created but never set up (older accounts, or "Add business or person") goes through the questionnaire first.
+  if (status === "ready" && data && !data.settings.onboardingJson) return <Onboarding mode="configure" key={currentWorkspace?.id ?? "ws"} />;
   return <AppShell>{children}</AppShell>;
 }
