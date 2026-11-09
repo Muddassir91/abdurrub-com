@@ -5,9 +5,9 @@
     {
       "id": "01",
       "scene": "hook",
-      "text": "You made good money this month. So why is the account empty again?",
+      "text": "You made good money this month. So why is the account empty again? It is not a discipline problem. You just can't see where it goes.",
       "file": "vo/01.wav",
-      "seconds": 4.275
+      "seconds": 8.2
     },
     {
       "id": "02",
@@ -54,9 +54,9 @@
     {
       "id": "08",
       "scene": "cta",
-      "text": "Start your free month today. CFoh, by Retention Rules.",
+      "text": "Start your free month today, at abdurrub dot com slash CFoh.",
       "file": "vo/08.wav",
-      "seconds": 4.05
+      "seconds": 4.45
     }
   ]
 }

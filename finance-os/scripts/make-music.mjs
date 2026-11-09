@@ -1,75 +1,103 @@
-// Generates a calm, royalty-free background track (we synthesise it, so no
-// licence applies) and mixes it under public/cfoh-demo.mp4.
-// Soft pad chords + a gentle arpeggio + a muted pulse, 90 BPM, 30 seconds.
+// Composes a royalty-free music bed in three moods (curious -> exciting -> calm)
+// using ffmpeg's synthesiser, so no licence applies. Each section has its own
+// key, tempo and density; sections are crossfaded and loudness-normalised.
+//
+//   MUSIC_SECTIONS='[{"mood":"curious","seconds":15},{"mood":"exciting","seconds":18},{"mood":"calm","seconds":14}]' node scripts/make-music.mjs
+//   (defaults to 10s of each). MUSIC_NO_MUX=1 skips muxing into public/cfoh-demo.mp4.
 import { execFileSync } from "node:child_process";
-import { existsSync, renameSync, statSync } from "node:fs";
-import { resolve } from "node:path";
+import { existsSync, mkdtempSync, renameSync, rmSync, statSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
 
-const DURATION = Number(process.env.MUSIC_SECONDS ?? 30);
-const BPM = 90;
-const beat = 60 / BPM; // 0.667s
-const bar = beat * 4;
-const note = (n) => 440 * Math.pow(2, (n - 69) / 12); // MIDI -> Hz
+const note = (n) => 440 * Math.pow(2, (n - 69) / 12);
 
-// Chord progression (MIDI numbers): Fmaj7 · Am7 · Dm9 · Gsus2/G  (warm, resolves gently)
-const CHORDS = [
-  [53, 57, 60, 64], // F3 A3 C4 E4
-  [57, 60, 64, 67], // A3 C4 E4 G4
-  [50, 53, 57, 60, 64], // D3 F3 A3 C4 E4
-  [55, 57, 62, 67], // G3 A3 D4 G4
-];
-const chordLen = bar * 2; // 2 bars per chord (5.33s)
+const MOODS = {
+  // Minor, sparse, slightly tense: the "why".
+  curious: { bpm: 84, chords: [[57, 60, 64, 67, 71], [53, 57, 60, 64], [52, 55, 59, 62], [50, 53, 57, 60]], barsPerChord: 2, arpStep: 1, arpOctave: 12, arpVol: 0.03, padVol: 0.045, pulseEvery: 2, pulseVol: 0.08, hats: false, lowpass: 1800, echo: "0.7:0.5:260|420:0.3|0.2" },
+  // Major, driving, brighter: the "what".
+  exciting: { bpm: 116, chords: [[60, 64, 67, 71], [55, 59, 62, 67], [57, 60, 64, 67], [53, 57, 60, 64]], barsPerChord: 1, arpStep: 0.5, arpOctave: 12, arpVol: 0.045, padVol: 0.04, pulseEvery: 1, pulseVol: 0.11, hats: true, lowpass: 5200, echo: "0.6:0.3:120:0.18" },
+  // Warm, slow, resolved: the "how".
+  calm: { bpm: 76, chords: [[53, 57, 60, 64], [52, 55, 60, 64], [50, 53, 57, 60], [55, 59, 62, 65]], barsPerChord: 2, arpStep: 2, arpOctave: 12, arpVol: 0.028, padVol: 0.05, pulseEvery: 0, pulseVol: 0, hats: false, lowpass: 2300, echo: "0.7:0.4:200|360:0.28|0.16" },
+};
 
-const inputs = [];
-const labels = [];
-let idx = 0;
-
-// --- Pads: each chord tone as a detuned pair of soft sines, with slow attack/release.
-for (let t = 0; t < DURATION; t += chordLen) {
-  const chord = CHORDS[Math.floor(t / chordLen) % CHORDS.length];
-  const len = Math.min(chordLen, DURATION - t);
-  for (const n of chord) {
-    for (const detune of [-0.15, 0.15]) {
-      const f = note(n) * Math.pow(2, detune / 12 / 10);
-      inputs.push("-f", "lavfi", "-i", `sine=frequency=${f.toFixed(3)}:duration=${len.toFixed(3)}`);
-      labels.push(`[${idx}:a]afade=t=in:st=0:d=1.2,afade=t=out:st=${Math.max(0, len - 1.4).toFixed(3)}:d=1.4,volume=0.05,adelay=${Math.round(t * 1000)}|${Math.round(t * 1000)}[p${idx}]`);
-      idx++;
+function renderSection(mood, seconds, out) {
+  const m = MOODS[mood];
+  const beat = 60 / m.bpm;
+  const bar = beat * 4;
+  const chordLen = bar * m.barsPerChord;
+  const inputs = [];
+  const labels = [];
+  let idx = 0;
+  const push = (src, filter) => {
+    inputs.push("-f", "lavfi", "-i", src);
+    labels.push(`[${idx}:a]${filter}[s${idx}]`);
+    idx++;
+  };
+  for (let t = 0; t < seconds; t += chordLen) {
+    const chord = m.chords[Math.floor(t / chordLen) % m.chords.length];
+    const len = Math.min(chordLen, seconds - t);
+    const d = Math.round(t * 1000);
+    for (const n of chord) {
+      for (const det of [-0.12, 0.12]) {
+        const f = note(n) * Math.pow(2, det / 120);
+        push(`sine=frequency=${f.toFixed(3)}:duration=${len.toFixed(3)}`, `afade=t=in:st=0:d=${Math.min(1.1, len / 2).toFixed(2)},afade=t=out:st=${Math.max(0, len - 1.2).toFixed(3)}:d=1.2,volume=${m.padVol},adelay=${d}|${d}`);
+      }
     }
   }
+  for (let t = 0, k = 0; t < seconds - 0.4; t += beat * m.arpStep, k++) {
+    const chord = m.chords[Math.floor(t / chordLen) % m.chords.length];
+    if (m.arpStep <= 0.5 && k % 8 === 7) continue; // breathe once a bar when busy
+    const tone = chord[k % chord.length] + m.arpOctave;
+    const d = Math.round(t * 1000);
+    const decay = mood === "exciting" ? 0.35 : 0.8;
+    push(`sine=frequency=${note(tone).toFixed(3)}:duration=${decay}`, `afade=t=in:st=0:d=0.008,afade=t=out:st=0.04:d=${(decay - 0.05).toFixed(2)},volume=${m.arpVol},adelay=${d}|${d}`);
+  }
+  if (m.pulseEvery > 0) {
+    for (let t = 0; t < seconds - 0.4; t += beat * m.pulseEvery) {
+      const d = Math.round(t * 1000);
+      push(`sine=frequency=55:duration=0.3`, `afade=t=in:st=0:d=0.004,afade=t=out:st=0.03:d=0.27,volume=${m.pulseVol},adelay=${d}|${d}`);
+    }
+  }
+  if (m.hats) {
+    for (let t = beat / 2; t < seconds - 0.2; t += beat) {
+      const d = Math.round(t * 1000);
+      push(`anoisesrc=d=0.06:c=white:a=0.3:r=44100`, `highpass=f=6000,afade=t=in:st=0:d=0.003,afade=t=out:st=0.01:d=0.05,volume=0.045,adelay=${d}|${d}`);
+    }
+  }
+  const mix = labels.map((_, i) => `[s${i}]`).join("");
+  const graph = `${labels.join(";")};${mix}amix=inputs=${labels.length}:normalize=0,lowpass=f=${m.lowpass},aecho=${m.echo},highpass=f=55,aformat=sample_rates=44100:channel_layouts=stereo[out]`;
+  execFileSync("ffmpeg", ["-y", "-loglevel", "error", ...inputs, "-filter_complex", graph, "-map", "[out]", "-t", String(seconds), "-c:a", "pcm_s16le", out], { stdio: "inherit" });
 }
 
-// --- Arpeggio: eighth-note plucks cycling through chord tones an octave up, with fast decay.
-const arps = [];
-for (let t = 0, k = 0; t < DURATION - 0.3; t += beat / 2, k++) {
-  const chord = CHORDS[Math.floor(t / chordLen) % CHORDS.length];
-  const tone = chord[k % chord.length] + 12;
-  if (k % 8 === 7) continue; // leave a rest each bar so it breathes
-  const f = note(tone);
-  inputs.push("-f", "lavfi", "-i", `sine=frequency=${f.toFixed(3)}:duration=0.6`);
-  arps.push(`[${idx}:a]afade=t=in:st=0:d=0.01,afade=t=out:st=0.05:d=0.55,volume=0.035,adelay=${Math.round(t * 1000)}|${Math.round(t * 1000)}[a${idx}]`);
-  labels.push(arps[arps.length - 1]);
-  idx++;
-}
-
-// --- Pulse: a muted low thump on beats 1 and 3.
-for (let t = 0; t < DURATION - 0.3; t += beat * 2) {
-  inputs.push("-f", "lavfi", "-i", `sine=frequency=55:duration=0.35`);
-  labels.push(`[${idx}:a]afade=t=in:st=0:d=0.005,afade=t=out:st=0.03:d=0.32,volume=0.09,adelay=${Math.round(t * 1000)}|${Math.round(t * 1000)}[k${idx}]`);
-  idx++;
-}
-
-const mixInputs = labels.map((l) => l.match(/\[(\w+)\]$/)[1]).map((l) => `[${l}]`).join("");
-const graph = `${labels.join(";")};${mixInputs}amix=inputs=${labels.length}:normalize=0,lowpass=f=2400,aecho=0.7:0.4:180|320:0.25|0.15,highpass=f=60,loudnorm=I=-18:TP=-1.5:LRA=9,afade=t=in:st=0:d=0.8,afade=t=out:st=${(DURATION - 2.5).toFixed(2)}:d=2.5,aformat=sample_rates=44100:channel_layouts=stereo[out]`;
-
+const sections = process.env.MUSIC_SECTIONS ? JSON.parse(process.env.MUSIC_SECTIONS) : [{ mood: "curious", seconds: 10 }, { mood: "exciting", seconds: 10 }, { mood: "calm", seconds: 10 }];
+const tmp = mkdtempSync(join(tmpdir(), "cfoh-music-"));
+const XF = 1.2; // crossfade seconds
+const parts = sections.map((s, i) => {
+  const out = join(tmp, `part${i}.wav`);
+  renderSection(s.mood, s.seconds + (i < sections.length - 1 ? XF : 0), out);
+  console.log(`section ${i + 1}: ${s.mood} ${s.seconds}s`);
+  return out;
+});
+const total = sections.reduce((a, s) => a + s.seconds, 0);
 const music = resolve(process.cwd(), "public", "cfoh-music.mp3");
-execFileSync("ffmpeg", ["-y", "-loglevel", "error", ...inputs, "-filter_complex", graph, "-map", "[out]", "-t", String(DURATION), "-c:a", "libmp3lame", "-q:a", "4", music], { stdio: "inherit" });
-console.log(`music written: ${music} (${(statSync(music).size / 1024).toFixed(0)} KB)`);
+const inputs = parts.flatMap((p) => ["-i", p]);
+let graph = "";
+let last = "[0:a]";
+for (let i = 1; i < parts.length; i++) {
+  const outLabel = i === parts.length - 1 ? "[xf]" : `[x${i}]`;
+  graph += `${last}[${i}:a]acrossfade=d=${XF}:c1=tri:c2=tri${outLabel};`;
+  last = outLabel;
+}
+if (parts.length === 1) graph = "[0:a]anull[xf];";
+graph += `[xf]loudnorm=I=-18:TP=-1.5:LRA=9,afade=t=in:st=0:d=0.6,afade=t=out:st=${Math.max(0, total - 2.5).toFixed(2)}:d=2.5[out]`;
+execFileSync("ffmpeg", ["-y", "-loglevel", "error", ...inputs, "-filter_complex", graph, "-map", "[out]", "-t", String(total), "-c:a", "libmp3lame", "-q:a", "4", music], { stdio: "inherit" });
+rmSync(tmp, { recursive: true, force: true });
+console.log(`music written: ${music} (${(statSync(music).size / 1024).toFixed(0)} KB, ${total}s)`);
 
-// --- Mux under the demo video, if present.
 const video = resolve(process.cwd(), "public", "cfoh-demo.mp4");
 if (existsSync(video) && !process.env.MUSIC_NO_MUX) {
-  const tmp = resolve(process.cwd(), "public", "cfoh-demo.tmp.mp4");
-  execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-i", video, "-i", music, "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy", "-c:a", "aac", "-b:a", "128k", "-shortest", "-movflags", "+faststart", tmp], { stdio: "inherit" });
-  renameSync(tmp, video);
-  console.log(`video remuxed with music: ${video} (${(statSync(video).size / 1048576).toFixed(1)} MB)`);
+  const tmpV = resolve(process.cwd(), "public", "cfoh-demo.tmp.mp4");
+  execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-i", video, "-i", music, "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy", "-c:a", "aac", "-b:a", "128k", "-shortest", "-movflags", "+faststart", tmpV], { stdio: "inherit" });
+  renameSync(tmpV, video);
+  console.log(`video remuxed with music: ${video}`);
 }

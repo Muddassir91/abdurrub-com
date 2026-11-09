@@ -12,14 +12,14 @@ if (process.env.HTTPS_PROXY) {
 const { KokoroTTS } = await import("kokoro-js");
 
 export const LINES = [
-  { id: "01", scene: "hook", text: "You made good money this month. So why is the account empty again?" },
+  { id: "01", scene: "hook", text: "You made good money this month. So why is the account empty again? It is not a discipline problem. You just can't see where it goes." },
   { id: "02", scene: "dashboard", text: "One balance makes every dollar look spendable. CFoh gives every dollar a job the moment it lands." },
   { id: "03", scene: "dashboard-alloc", text: "Six envelopes: operating, your pay, tax, profit, reserve and growth. Set once, applied to the cent." },
   { id: "04", scene: "expenses", text: "A ceiling on tools and overhead. It warns you the day you cross it, not at month end." },
   { id: "05", scene: "personal", text: "Pay yourself on purpose. Household first, then the rest." },
   { id: "06", scene: "trends", text: "Watch the result line climb, week by week." },
   { id: "07", scene: "month-end", text: "Close the month in ten steps. The report writes itself." },
-  { id: "08", scene: "cta", text: "Start your free month today. CFoh, by Retention Rules." },
+  { id: "08", scene: "cta", text: "Start your free month today, at abdurrub dot com slash CFoh." },
 ];
 
 const OUT = resolve(process.cwd(), "public", "vo");
