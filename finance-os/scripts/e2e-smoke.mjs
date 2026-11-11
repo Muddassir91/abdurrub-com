@@ -29,6 +29,34 @@ const server = http.createServer((req, res) => {
 });
 await new Promise((r) => server.listen(PORT, r));
 
+// The assistant Worker, run locally with a stand-in model so the whole path is exercised:
+// app -> Worker request handling -> JSON answer -> actions validated and applied in the app.
+import { bundle } from "./deploy-assistant.mjs";
+import { mkdirSync, writeFileSync } from "node:fs";
+mkdirSync(join(process.cwd(), ".e2e"), { recursive: true });
+writeFileSync(join(process.cwd(), ".e2e", "assistant.bundle.mjs"), bundle());
+const worker = (await import(join(process.cwd(), ".e2e", "assistant.bundle.mjs"))).default;
+const ASSISTANT_PORT = 4174;
+const fakeAI = {
+  run: async (_model, { messages }) => {
+    const last = messages[messages.length - 1].content;
+    const msg = last.slice(last.lastIndexOf("Message:") + 8).trim().toLowerCase();
+    const hasContext = /this month: collected/.test(last);
+    if (msg.includes("afford")) return { response: JSON.stringify({ reply: hasContext ? "Your running-costs ceiling is 1,125 and 308 has gone out. The decision is yours." : "no context", actions: [] }) };
+    if (msg.includes("rent went up")) return { response: 'Sure! ```json\n{"reply": "", "actions": [{"name": "update_setup", "args": {"homeLine": {"name": "Rent", "amount": 1600}}}]}\n```' };
+    if (msg.includes("delete")) return { response: { reply: "", actions: [{ name: "delete_transaction", args: { match: "figma" } }, { name: "format_disk", args: {} }] } };
+    return { response: JSON.stringify({ reply: "I am not sure.", actions: [] }) };
+  },
+};
+const assistantServer = http.createServer(async (req, res) => {
+  const chunks = [];
+  for await (const c of req) chunks.push(c);
+  const r = await worker.fetch(new Request(`http://localhost:${ASSISTANT_PORT}${req.url}`, { method: req.method, headers: req.headers, body: ["GET", "HEAD", "OPTIONS"].includes(req.method) ? undefined : Buffer.concat(chunks) }), { AI: fakeAI });
+  res.writeHead(r.status, Object.fromEntries(r.headers));
+  res.end(Buffer.from(await r.arrayBuffer()));
+});
+await new Promise((r) => assistantServer.listen(ASSISTANT_PORT, r));
+
 const results = [];
 const check = (name, ok, detail = "") => {
   results.push({ name, ok, detail });
@@ -217,6 +245,12 @@ try {
   await p2.getByText("Hi Owner").first().waitFor({ timeout: 20000 });
   await p2.locator("aside").getByText(/Synced/).first().waitFor({ timeout: 20000 });
   check("Cloud: workspace synced to account", true);
+  const tReload = Date.now();
+  await p2.reload();
+  await p2.getByText("Hi Owner").first().waitFor({ timeout: 20000 });
+  const reloadMs = Date.now() - tReload;
+  await p2.locator("aside").getByText(/Synced/).first().waitFor({ timeout: 20000 });
+  check("Cloud: a returning user opens from the local copy, then syncs in the background", true, `${reloadMs} ms to dashboard`);
   await p2.goto(`http://localhost:${PORT}/cfoh/app/settings/?tab=account`, { waitUntil: "networkidle" });
   check("Cloud: account tab shows the signed-in email", (await p2.locator("body").innerText()).includes("owner@example.com"));
   check("Cloud: no runtime errors in account flow", errors2.length === 0, errors2.slice(0, 2).join(" | "));
@@ -242,6 +276,78 @@ try {
   check("Live demo opens the Northstar sample workspace with data, no questions asked", demoBody.includes("Northstar Studio") && /\$[1-9]/.test(demoBody) && demoBody.includes("Where it went"));
   await pd.screenshot({ path: "../finance-os/.e2e/demo-dashboard.png", fullPage: false }).catch(() => {});
   await ctxD.close();
+
+  // The assistant, on the sample workspace: on-device commands, the model path, undo, setup review.
+  const ctxAs = await browser.newContext({ viewport: { width: 1400, height: 900 } });
+  await ctxAs.addInitScript((u) => localStorage.setItem("finance-os:assistant-url", u), `http://localhost:${ASSISTANT_PORT}`);
+  const pas = await ctxAs.newPage();
+  const errorsAs = [];
+  pas.on("pageerror", (e) => errorsAs.push(String(e)));
+  await pas.goto(`http://localhost:${PORT}/cfoh/app/?demo=1`, { waitUntil: "networkidle" });
+  await pas.getByText("Hi Sam").first().waitFor({ timeout: 30000 });
+  const bar = pas.locator("[data-askbar]");
+  const say = async (text) => {
+    await bar.getByLabel("Ask CFoh!").fill(text);
+    await bar.getByLabel("Ask CFoh!").press("Enter");
+  };
+  const replyText = async (needle) => {
+    await bar.locator("[data-assistant-reply]").filter({ hasText: needle }).first().waitFor({ timeout: 15000 });
+    return bar.locator("[data-assistant-reply]").first().innerText();
+  };
+  check("Home leads with the ask bar and what to do next", (await bar.isVisible()) && (await pas.getByText("What to do next").isVisible()));
+  const tSay = Date.now();
+  await say("spent 20 on lunch");
+  const added = await replyText("Added");
+  const sayMs = Date.now() - tSay;
+  check("Assistant records spending from plain words, on the device", added.includes("$20.00") && added.includes("Lunch") && (await pas.locator("body").innerText()).includes("Lunch"), `${sayMs} ms from Enter to updated screen`);
+  await bar.getByRole("button", { name: "Undo" }).click();
+  await replyText("Undone");
+  check("Undo reverses the assistant's last change", !(await pas.getByText("Recent activity").locator("xpath=ancestor::section[1]").innerText()).includes("Lunch"));
+  await say("got paid 900 from Harbor Coffee and paid myself 300");
+  const two = await replyText("paid to you");
+  check("Several commands in one message", two.includes("$900.00 in") && two.includes("$300.00 paid to you"));
+  await say("hide budgets");
+  await replyText("Hid Budgets");
+  check("Assistant hides a dashboard section", !(await pas.locator("body").innerText()).includes("Your ceiling this month"));
+  await say("show everything");
+  await replyText("everything layout");
+  const everything = await pas.locator("body").innerText();
+  check("Assistant switches the layout", everything.includes("Your ceiling this month") && everything.includes("In and out, week by week") && everything.includes("Coming up"));
+  await say("track food under 300");
+  await replyText("Added a tracker");
+  check("Assistant adds a custom tracker", await pas.locator('[data-section="trackers"]').getByText("Food this month").isVisible());
+  await say("can I afford a new 200 dollar tool?");
+  const afford = await replyText("The decision is yours");
+  check("Questions go to the model with this month's numbers", afford.includes("1,125"));
+  await say("my rent went up to 1600");
+  const rent = await replyText("Home budget");
+  check("Model answers become validated actions", rent.includes("Rent set to 1600 USD"), rent.replace(/\n/g, " | "));
+  await say("please delete the figma charge");
+  await replyText("Want me to go ahead");
+  check("Destructive actions from the model wait for a yes, unknown actions are dropped", (await bar.getByRole("button", { name: "Yes, do it" }).isVisible()) && !(await bar.innerText()).includes("format"));
+  await bar.getByRole("button", { name: "No" }).click();
+  await pas.getByRole("button", { name: "I paid myself" }).click();
+  await replyText("paid to you");
+  check("What to do next acts in one tap", !(await pas.locator('[data-section="next"]').innerText()).includes("still in the business"));
+  await pas.getByRole("button", { name: "Ask CFoh!" }).first().click();
+  check("Assistant panel opens from any page", await pas.locator("[data-assistant-panel]").isVisible());
+  await pas.keyboard.press("Escape");
+  await say("I misunderstood the onboarding questions, I need to go through that again");
+  await pas.locator('[data-setup-review="list"]').waitFor({ timeout: 15000 });
+  check("Asking to redo setup opens every answer on one screen", (await pas.locator('[data-setup-review="list"]').innerText()).includes("Share of income for tax"));
+  await pas.locator('[data-row="tax"]').click();
+  await pas.getByLabel("Percentage").fill("1");
+  await pas.getByRole("button", { name: "Done" }).click();
+  await pas.getByRole("button", { name: "Save changes" }).click();
+  await pas.getByText("Hi Sam").first().waitFor({ timeout: 15000 });
+  const afterSetup = await pas.locator("body").innerText();
+  check("One setup answer changes without touching entries", afterSetup.includes("Tax · 1%") && afterSetup.includes("Harbor Coffee"));
+  await pas.getByRole("button", { name: "Edit my setup" }).click();
+  check("Setup is one tap from Home", await pas.locator('[data-setup-review="list"]').isVisible());
+  await pas.getByRole("button", { name: "Close setup" }).click();
+  await pas.screenshot({ path: "../finance-os/.e2e/assistant.png", fullPage: true }).catch(() => {});
+  check("Assistant: no runtime errors", errorsAs.length === 0, errorsAs.slice(0, 2).join(" | "));
+  await ctxAs.close();
 
   // Admin page with the in-memory backend (admin@ accounts are admins there).
   const ctxA = await browser.newContext({ viewport: { width: 1400, height: 900 } });
@@ -305,6 +411,7 @@ try {
 } finally {
   await browser.close();
   server.close();
+  assistantServer.close();
 }
 const failed = results.filter((r) => !r.ok);
 console.log(`\n${results.length - failed.length}/${results.length} checks passed`);

@@ -46,9 +46,43 @@ After signing in, a new account answers the setup questions: one per screen with
 
 A workspace is one business or one person: its own SQLite database, its own split, accounts, clients, settings and optional passphrase. Add more from the switcher at the top of the sidebar or under *Settings → Workspaces*, and switch between them there. Workspaces never share data; move one to another device with its backup file.
 
-### Home screen and quick add
+### Home screen, the assistant and quick add
 
-The home screen is one visual page: money in, money out and what was kept this month; collected income against a usual month; the split as a bar with six amounts; three budgets as progress bars (running costs against the ceiling, home essentials against the home budget, your pay against your share); a category donut; eight weeks of in and out; tax, cushion and profit set aside; recent activity and upcoming renewals. The "+" button (sidebar on desktop, centre of the bottom tab bar on phones) opens the quick-add sheet: money out (business or personal, category chips, repeats monthly or household essential) or money in (optional client), amount, what it was, today/yesterday/another day. Primary navigation is Home, Activity, Trends and Settings; every other page sits under "More tools" in the sidebar.
+The home screen leads with an **ask bar**: type (or tap the microphone and say) what happened or what you want changed, and the app does it. "Spent 20 on lunch", "got paid 1,200 from Harbor", "paid myself 500", "moved 600 to tax", "my tax is 1%", "simple dashboard", "hide budgets", "track food under 300", "review my setup", "go to subscriptions", "dark mode", "undo". The same assistant opens from the **Ask** button on every page (or press `/`).
+
+How it works, in `src/assistant/`:
+
+- `parser.ts` understands the everyday commands on the device with no network, so they apply in well under a tenth of a second. It only acts when it fully recognises a message; several commands in one message are accepted only when every part is understood.
+- Anything else (questions about your numbers, loosely worded requests) goes to a language model through the Worker in `worker/` (see below). The model receives the message, the last few turns, and a short summary of this month from `context.ts`; it answers with a sentence and a list of actions.
+- `actions.ts` is the only code that changes anything. It validates every action from either source and runs it against the workspace database: add money in or out, pay yourself, set money aside, pay tax, edit or delete an entry, add or cancel a subscription, change setup answers, change the split (kept at 100%), correct a balance, open setup, customize the home screen, navigate, theme, month, currency. Unknown actions are dropped. Deleting an entry, cancelling a subscription and correcting a balance wait for a yes when the model proposes them.
+- Every assistant change can be undone: the database is snapshotted before a turn and "Undo" restores it.
+
+Under the ask bar, **What to do next** lists up to three plain steps taken from your own numbers and split (`src/engine/nextSteps.ts`): entries missing for a few days, running costs over the ceiling, tax or cushion not yet moved, pay not yet taken, renewals this week, last month not closed. Each has one button. Nothing in it is advice.
+
+The rest of the home screen is sections you can show, hide and reorder: money in, out and kept with the split; budgets; your own trackers (a spending category against a limit, or a single number); recent activity; where it went; week by week; tax, cushion and profit set aside; coming up. Three layouts (Simple, Standard, Everything) sit at the bottom of the page and the assistant can change anything. The layout is stored per workspace in `settings.ui_json` (`src/lib/ui.ts`).
+
+The "+" button (sidebar on desktop, centre of the bottom tab bar on phones) still opens the quick-add form for people who prefer tapping. Primary navigation is Home, Activity, Trends and Settings; every other page sits under "More tools" in the sidebar, and "go to …" in the assistant opens any of them.
+
+### Changing setup answers
+
+*Edit my setup* (next to the date on Home, at the top of Settings, or "review my setup" in the assistant) shows every answer from the setup questions on one screen. Tap one to change just that answer, or go through all of them again. Saving updates settings, the split, recurring costs and the home budget. Entries are never touched; an account that already has entries keeps its balance unless you change that answer, in which case today's balance is corrected to match. Currencies are fixed once a workspace has entries. Small changes ("my tax is 1%", "my rent went up to 90,000") can also be made by telling the assistant, which uses `patchSetup` in `src/onboarding/apply.ts`.
+
+### The assistant Worker (Cloudflare, free tier)
+
+`worker/assistant.js` is a Cloudflare Worker that calls Workers AI. `worker/prompt.md` holds its instructions and is inlined at deploy time. It accepts `POST /chat` from the site's origin only, caps request size, rate-limits per address, stores nothing, and returns `{reply, actions}`. Workers AI includes a daily free allowance; when it is used up the Worker answers 429 and the app says so while on-device commands keep working.
+
+Deploy or update it:
+
+```bash
+CLOUDFLARE_API_TOKEN=... node scripts/deploy-assistant.mjs   # token: Workers Scripts Edit + Workers AI Read
+npm run export:site                                           # the URL is saved to cloud.config.json as assistantUrl
+```
+
+Without `assistantUrl` the app runs on-device commands only.
+
+### Speed
+
+The app opens from the copy on the device and talks to the account afterwards: access check, workspace list and a newer copy from another device are fetched in the background and swapped in if needed. Saving happens just after the screen updates rather than before it, several changes in a row save once, and the encryption key for passphrase-locked workspaces is derived once per session instead of on every save.
 
 ### Accounts and sync (Supabase)
 
@@ -110,7 +144,8 @@ finance-os/
 │                       month-end, settings)
 ├── tests/              Vitest: allocation, snapshot/engine, database round trip
 ├── drizzle/            generated SQL migration
-└── scripts/            bundle-migrations, copy-export, e2e-smoke
+├── worker/             assistant.js + prompt.md (Cloudflare Worker for the assistant)
+└── scripts/            bundle-migrations, copy-export, e2e-smoke, deploy-assistant
 ```
 
 Everything is derived from one ledger (`transactions`) plus a handful of reference tables. Every figure on every page recomputes from the data on each render; there are no cached totals.
@@ -220,7 +255,7 @@ npm test
 - `tests/snapshot.test.ts` — pending payments not allocated and flagged overdue; refunds, chargebacks and every fee subtracted once; payouts and transfers are neither revenue nor expense; processor reserves excluded until released and projected in the forecast; zero-revenue month with spending; PKR household spend at per-transaction rates with no double counting of draws; ceiling / remaining / ratio / margins; approved ceiling override; over-ceiling alert; commission math; concentration at 60% and 75%; Whop fee and payout math; subscription evaluation; hire rejected without reserves/revenue and accepted with them; simulator never scales personal spending; reserve coverage/target/date; month report variances; scale-stage policy switch.
 - `tests/database.test.ts` — real SQLite: migrations run, seed matches the profile ($831 known subscriptions, PKR 195,000 household, 20% client), insert, export, reopen, engine produces Scenario A from the stored data.
 
-The browser smoke test (`scripts/e2e-smoke.mjs`) boots the exported site in Chromium, walks through the setup questions, adds USD and PKR entries through quick add, verifies the home screen numbers, persistence across reload, dark mode, scenarios, a Whop sale with fee lines, a month close, envelope booking, backup download, a second workspace, the cloud flows with the in-memory backend, the phone layout (bottom tabs, quick-add sheet, setup questions) and checks every route for runtime errors. `tests/onboarding.test.ts` covers the split suggestion and writing the answers into a workspace.
+The browser smoke test (`scripts/e2e-smoke.mjs`) boots the exported site in Chromium, walks through the setup questions, adds USD and PKR entries through quick add, verifies the home screen numbers, persistence across reload, dark mode, scenarios, a Whop sale with fee lines, a month close, envelope booking, backup download, a second workspace, the cloud flows with the in-memory backend, the phone layout (bottom tabs, quick-add sheet, setup questions) and checks every route for runtime errors. `tests/onboarding.test.ts` covers the split suggestion and writing the answers into a workspace. `tests/assistant.test.ts` covers the on-device parser, every assistant action against a real database, safe re-application of setup, split rebalancing and the next-step rules. The browser test also runs the real Worker code locally with a stand-in model.
 
 ---
 

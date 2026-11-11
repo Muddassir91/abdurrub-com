@@ -33,5 +33,11 @@ export const MIGRATIONS: BundledMigration[] = [
     "statements": [
       "ALTER TABLE `settings` ADD `onboarding_json` text;"
     ]
+  },
+  {
+    "tag": "0002_ui",
+    "statements": [
+      "ALTER TABLE `settings` ADD `ui_json` text;"
+    ]
   }
 ];

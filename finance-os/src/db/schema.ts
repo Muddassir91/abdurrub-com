@@ -38,6 +38,8 @@ export const settings = sqliteTable("settings", {
   secondaryCurrencyDisplay: integer("secondary_currency_display", { mode: "boolean" }).notNull().default(true),
   /** Answers from the setup questionnaire (JSON). Null until the questionnaire has been completed. */
   onboardingJson: text("onboarding_json"),
+  /** Per-workspace interface preferences (JSON): dashboard sections, order and custom trackers. */
+  uiJson: text("ui_json"),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),
 });

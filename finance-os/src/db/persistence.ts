@@ -145,7 +145,27 @@ const b64 = {
   dec: (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0)),
 };
 
-async function deriveKey(passphrase: string, salt: Uint8Array): Promise<CryptoKey> {
+/**
+ * Key derivation is deliberately slow (310k PBKDF2 rounds). Doing it on every
+ * save made each change wait on it, so the derived key is kept for the session
+ * and the salt is reused; every save still gets a fresh IV, which is what
+ * AES-GCM needs.
+ */
+const keyCache = new Map<string, Promise<CryptoKey>>();
+const sessionSalt = new Map<string, Uint8Array>();
+function deriveKey(passphrase: string, salt: Uint8Array): Promise<CryptoKey> {
+  const id = `${passphrase}\u0000${b64.enc(salt)}`;
+  let k = keyCache.get(id);
+  if (!k) {
+    k = deriveKeyUncached(passphrase, salt);
+    keyCache.set(id, k);
+    k.catch(() => keyCache.delete(id));
+  }
+  sessionSalt.set(passphrase, salt);
+  return k;
+}
+
+async function deriveKeyUncached(passphrase: string, salt: Uint8Array): Promise<CryptoKey> {
   const material = await crypto.subtle.importKey("raw", new TextEncoder().encode(passphrase), "PBKDF2", false, ["deriveKey"]);
   return crypto.subtle.deriveKey(
     { name: "PBKDF2", salt: salt as BufferSource, iterations: 310_000, hash: "SHA-256" },
@@ -210,7 +230,7 @@ export async function saveImage(workspaceId: string, bytes: Uint8Array, passphra
 /** Produce the stored payload (plain or AES-GCM) and metadata without touching storage. Used for cloud uploads too. */
 export async function encryptImage(bytes: Uint8Array, passphrase: string | undefined, base: { version: number; lastSyncedVersion: number; savedAt: string }): Promise<{ payload: Uint8Array; meta: StoredMeta }> {
   if (passphrase) {
-    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const salt = sessionSalt.get(passphrase) ?? crypto.getRandomValues(new Uint8Array(16));
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const key = await deriveKey(passphrase, salt);
     const cipher = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv as BufferSource }, key, bytes as BufferSource);

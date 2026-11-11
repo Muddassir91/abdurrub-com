@@ -226,6 +226,38 @@ export function normaliseSplit(s: SplitPct): SplitPct {
 
 export const splitTotal = (s: SplitPct) => Object.values(s).reduce((a, b) => a + b, 0);
 
+/**
+ * Change some shares of the split and keep the total at 100. Shares that were
+ * not named absorb the difference, in this order: profit, cushion, growth,
+ * your pay, running costs, tax. Throws when it cannot be done.
+ */
+export function rebalanceSplit(current: SplitPct, patch: Partial<SplitPct>): SplitPct {
+  const keys = ["opex", "owner", "tax", "profit", "reserve", "growth"] as const;
+  const out = { ...current } as SplitPct;
+  const named = keys.filter((k) => patch[k] !== undefined && patch[k] !== null && Number.isFinite(Number(patch[k])));
+  for (const k of named) {
+    const v = Math.round(Number(patch[k]));
+    if (v < 0 || v > 100) throw new Error("Each share must be between 0 and 100%");
+    out[k] = v;
+  }
+  for (const k of keys) out[k] = Math.round(out[k]);
+  let delta = 100 - splitTotal(out);
+  if (delta === 0) return out;
+  const absorbers = (["profit", "reserve", "growth", "owner", "opex", "tax"] as const).filter((k) => !named.includes(k));
+  if (absorbers.length === 0) throw new Error(`Those shares add up to ${splitTotal(out)}%. They need to add up to 100%.`);
+  if (delta > 0) {
+    out[absorbers[0]] += delta;
+    return out;
+  }
+  for (const k of absorbers) {
+    const take = Math.min(out[k], -delta);
+    out[k] -= take;
+    delta += take;
+    if (delta === 0) return out;
+  }
+  throw new Error("Those shares add up to more than 100%.");
+}
+
 export function parseAnswers(json: string | null | undefined): OnboardingAnswers | null {
   if (!json) return null;
   try {

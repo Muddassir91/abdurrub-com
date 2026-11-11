@@ -30,6 +30,7 @@ export default function SettingsPage() {
   return (
     <>
       <PageHeader title="Settings" description="Allocation rules, business parameters, exchange rates, categories, backups, privacy, appearance and workspaces. Nothing here changes silently; every percentage must add up to 100%." />
+      <SetupCard />
       <Tabs className="mb-4" value={tab} onChange={setTab} tabs={[{ value: "allocation", label: "Allocation policies" }, { value: "business", label: "Business & targets" }, { value: "fx", label: "Exchange rates" }, { value: "categories", label: "Categories" }, { value: "backup", label: "Backup & restore" }, { value: "privacy", label: "Privacy lock" }, { value: "appearance", label: "Appearance" }, { value: "workspaces", label: "Workspaces" }, { value: "account", label: "Account & sync" }]} />
       {tab === "allocation" && <PoliciesTab />}
       {tab === "business" && <BusinessTab />}
@@ -41,6 +42,19 @@ export default function SettingsPage() {
       {tab === "workspaces" && <WorkspacesTab />}
       {tab === "account" && <AccountTab />}
     </>
+  );
+}
+
+function SetupCard() {
+  const { openSetup } = useFinance();
+  return (
+    <div className="mb-4 flex flex-wrap items-center gap-3 rounded-2xl border border-accent/25 bg-accent-soft/40 px-4 py-3">
+      <div className="min-w-0 flex-1">
+        <div className="text-sm font-semibold text-fg">Your setup answers</div>
+        <p className="text-xs text-fg-muted">Income, costs, home budget, tax share, goals and your split, all on one screen. Change one answer or go through them all again. Entries and balances are untouched.</p>
+      </div>
+      <Button variant="primary" onClick={() => openSetup()}>Review or change my answers</Button>
+    </div>
   );
 }
 
@@ -261,11 +275,6 @@ function BusinessTab() {
           <Field label="Owner name"><Input value={f.ownerName} onChange={(e) => setF({ ...f, ownerName: e.target.value })} /></Field>
         </FormRow>
         <DefinitionList className="mt-3" items={[{ label: "Base currency", value: s.baseCurrency }, { label: "Household currency", value: s.householdCurrency }, { label: "Location", value: data.taxProfiles[0]?.jurisdiction ?? "—" }, { label: "Entities", value: data.entities.map((e) => e.name).join(" · ") }]} />
-        <div className="mt-4 rounded-xl border border-border bg-surface-2/60 p-3">
-          <div className="text-sm font-medium text-fg">Setup questions</div>
-          <p className="mt-1 text-xs text-fg-muted">Income, costs, home budget and your split were set when you first opened CFoh!. Run the questions again to refresh them; your transactions are untouched.</p>
-          <Button className="mt-2" onClick={() => { mutate((db) => updateSettings(db, { onboardingJson: null })); }}>Redo the setup questions</Button>
-        </div>
       </Card>
       <Card title="Targets & thresholds" subtitle="Drive margins, reserves, concentration alerts and reminders">
         <FormError errors={errors} />

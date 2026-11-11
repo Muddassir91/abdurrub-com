@@ -9,13 +9,14 @@ import { Input } from "./ui/forms";
 import { LogoMark, Wordmark } from "./Logo";
 import { AuthScreen } from "./AuthScreen";
 import { Onboarding } from "./onboarding/Onboarding";
+import { SetupReview } from "./onboarding/SetupReview";
 
 function Centered({ children }: { children: React.ReactNode }) {
   return <div className="flex min-h-screen items-center justify-center bg-bg p-4 sm:p-6">{children}</div>;
 }
 
 export function Gate({ children }: { children: React.ReactNode }) {
-  const { status, error, unlock, workspaces, currentWorkspace, switchWorkspace, access, cloudUser, signOut, data } = useFinance();
+  const { status, error, unlock, workspaces, currentWorkspace, switchWorkspace, access, cloudUser, signOut, data, setup } = useFinance();
   const [pass, setPass] = useState("");
   const [bad, setBad] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -112,5 +113,7 @@ export function Gate({ children }: { children: React.ReactNode }) {
   }
   // A workspace that was created but never set up (older accounts, or "Add business or person") goes through the questionnaire first.
   if (status === "ready" && data && !data.settings.onboardingJson) return <Onboarding mode="configure" key={currentWorkspace?.id ?? "ws"} />;
+  // "Edit my setup": every answer on one screen, opened from Home, Settings or the assistant.
+  if (status === "ready" && data && setup) return <SetupReview startStep={setup.step} key={`${currentWorkspace?.id ?? "ws"}:${setup.step ?? ""}`} />;
   return <AppShell>{children}</AppShell>;
 }

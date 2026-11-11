@@ -34,6 +34,7 @@ export function baseSettings(overrides: Partial<s.Settings> = {}): s.Settings {
     theme: "system",
     secondaryCurrencyDisplay: true,
     onboardingJson: null,
+    uiJson: null,
     createdAt: now,
     updatedAt: now,
     ...overrides,

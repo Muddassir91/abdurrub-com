@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 const TOUR: TourScene[] = [
   { src: "/screens/onboarding.png", title: "Setup", caption: "A few questions, one at a time. Your income, your costs, what you need at home. Your dashboard is built from the answers.", focus: "50% 20%" },
-  { src: "/screens/dashboard.png", title: "Your home screen", caption: "Money in, money out, what you kept. Every dollar collected gets a job the moment it lands.", focus: "35% 25%" },
+  { src: "/screens/dashboard.png", title: "Just tell it", caption: "\u201cSpent 20 on lunch.\u201d \u201cGot paid 1,200.\u201d Type or say what happened and your numbers update. Then it tells you what to do next.", focus: "50% 15%" },
   { src: "/screens/dashboard-alloc.png", title: "Budgets", caption: "Running costs, home essentials, your pay: progress bars, not spreadsheets. Add a purchase in two taps.", focus: "30% 55%" },
   { src: "/screens/expenses.png", title: "Spending", caption: "A ceiling on tools and overhead. Unspent allowance stays in the business, it is not an invitation to buy more.", focus: "50% 30%" },
   { src: "/screens/personal.png", title: "Paying yourself", caption: "Household first, then discretionary. You see the number before you spend it, not after.", focus: "40% 30%" },
@@ -35,7 +35,7 @@ const OLD_WAY = [
   "No idea whether you can afford that hire or that tool.",
 ];
 
-const NEW_WAY = ["Every dollar collected gets a job the moment it lands.", "See what you can spend, pay yourself and save, today.", "One ledger, one dashboard, every device."];
+const NEW_WAY = ["Say what happened in plain words. It is recorded and every number updates.", "Every dollar collected gets a job the moment it lands.", "See what you can spend, pay yourself and save, today."];
 
 const WHO = [
   { title: "Freelancers", body: "Irregular income, one account, and a tax bill you would rather see coming." },

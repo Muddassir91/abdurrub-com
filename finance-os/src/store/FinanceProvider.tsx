@@ -106,6 +106,29 @@ export interface FinanceContextValue {
   adminUpdateProfile: (userId: string, patch: Partial<Pick<Profile, "trialEndsAt" | "accessStatus" | "plan" | "notes">>) => Promise<void>;
   /** Opens (creating if needed) the sample-data workspace without an account. */
   openDemo: () => Promise<void>;
+  /** Swap in a database image without leaving the app (assistant undo, background sync). */
+  replaceDatabase: (bytes: Uint8Array) => Promise<void>;
+  /** Setup questions: non-null while the review/edit screen is open, optionally on one question. */
+  setup: { step?: string | null } | null;
+  openSetup: (step?: string | null) => void;
+  closeSetup: () => void;
+}
+
+const ACCESS_CACHE = (userId: string) => `finance-os:access:${userId}`;
+function readAccessCache(userId: string): { profile: Profile | null; isAdmin: boolean } | null {
+  try {
+    const raw = localStorage.getItem(ACCESS_CACHE(userId));
+    return raw ? (JSON.parse(raw) as { profile: Profile | null; isAdmin: boolean }) : null;
+  } catch {
+    return null;
+  }
+}
+function writeAccessCache(userId: string, profile: Profile | null, isAdmin: boolean) {
+  try {
+    localStorage.setItem(ACCESS_CACHE(userId), JSON.stringify({ profile, isAdmin }));
+  } catch {
+    /* ignore */
+  }
 }
 
 const Ctx = createContext<FinanceContextValue | null>(null);
@@ -136,6 +159,8 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   const userRef = useRef<CloudUser | null>(null);
   const registryRef = useRef<WorkspaceRegistry>({ list: [], currentId: null });
   const uploadTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const persistTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [setup, setSetup] = useState<{ step?: string | null } | null>(null);
   const today = todayKey();
 
   useEffect(() => {
@@ -220,6 +245,10 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   // ------------------------------------------------------------------ local persistence
 
   const persistNow = useCallback(async () => {
+    if (persistTimer.current) {
+      clearTimeout(persistTimer.current);
+      persistTimer.current = null;
+    }
     if (!sqlRef.current || !wsRef.current) return;
     const id = wsRef.current;
     setSaving(true);
@@ -236,6 +265,15 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
       setSaving(false);
     }
   }, [scheduleUpload]);
+
+  /** Save shortly after a change, off the render path, so the screen updates first. Several changes in a row save once. */
+  const schedulePersist = useCallback(() => {
+    if (persistTimer.current) return;
+    persistTimer.current = setTimeout(() => {
+      persistTimer.current = null;
+      void persistNow();
+    }, 30);
+  }, [persistNow]);
 
   useEffect(() => {
     const flush = () => {
@@ -367,6 +405,72 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     }
   }, [updateRegistry, uploadWorkspace]);
 
+  /** Swap the open database for another image of the same workspace without showing a loading screen. */
+  const swapDatabase = useCallback(
+    async (bytes: Uint8Array, persist: boolean) => {
+      const opened = await openDatabase(bytes);
+      const fresh = loadEngineData(opened.db);
+      try {
+        sqlRef.current?.close();
+      } catch {
+        /* already closed */
+      }
+      sqlRef.current = opened.sql;
+      dbRef.current = opened.db;
+      setData(fresh);
+      if (persist) await persistNow();
+    },
+    [persistNow],
+  );
+  const replaceDatabase = useCallback((bytes: Uint8Array) => swapDatabase(bytes, true), [swapDatabase]);
+
+  /**
+   * After the app has opened from the local copy: confirm access, merge the
+   * account's workspace list, and bring down a newer copy if another device
+   * saved one. Nothing here blocks the screen.
+   */
+  const syncInBackground = useCallback(
+    async (wsId: string) => {
+      const cloud = cloudRef.current;
+      const user = userRef.current;
+      if (!cloud || !user) return;
+      try {
+        const [profile, isAdmin] = await Promise.all([cloud.touchProfile(), cloud.isAdmin()]);
+        writeAccessCache(user.id, profile, isAdmin);
+        const a = evaluateAccess(profile, isAdmin);
+        setAccess(a);
+        if (!a.allowed) {
+          closeCurrent();
+          setStatus("blocked");
+          return;
+        }
+      } catch (e) {
+        console.error("Access check failed", e);
+      }
+      const remote = await reconcileWithCloud();
+      const r = remote.find((x) => x.id === wsId);
+      const ws = registryRef.current.list.find((w) => w.id === wsId);
+      if (!r || !ws) return;
+      const before = await loadMeta(wsId);
+      await pullWorkspace(ws, r);
+      const after = await loadMeta(wsId);
+      const downloaded = !!after && !!before && after.version !== before.version && after.lastSyncedVersion === after.version;
+      if (downloaded && wsRef.current === wsId && sqlRef.current) {
+        try {
+          const image = await loadImage(wsId, passRef.current ?? undefined);
+          if (image) {
+            await swapDatabase(image, false);
+            setMeta(after ?? null);
+            if (after?.savedAt) setLastSavedAt(after.savedAt);
+          }
+        } catch (e) {
+          console.error("Could not open the newer copy from the account", e);
+        }
+      }
+    },
+    [closeCurrent, reconcileWithCloud, pullWorkspace, swapDatabase],
+  );
+
   /** Load a workspace, handling the locked state. */
   const open = useCallback(
     async (ws: WorkspaceInfo, remote?: RemoteWorkspace, seed?: SeedOptions) => {
@@ -406,8 +510,23 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   const enter = useCallback(async () => {
     let remote: RemoteWorkspace[] = [];
     if (cloudRef.current && userRef.current) {
+      // Fast path: this device already has the workspace and a recent access check. Open it now, sync afterwards.
+      const user = userRef.current;
+      const reg0 = registryRef.current;
+      const vis0 = visibleWorkspaces(reg0, user);
+      const cur0 = vis0.find((w) => w.id === reg0.currentId) ?? vis0[0];
+      const cached = readAccessCache(user.id);
+      const cachedAccess = cached ? evaluateAccess(cached.profile, cached.isAdmin) : null;
+      if (cur0 && cur0.userId === user.id && cachedAccess?.allowed && (await loadMeta(cur0.id))) {
+        setAccess(cachedAccess);
+        if (reg0.currentId !== cur0.id) await updateRegistry({ ...reg0, currentId: cur0.id });
+        await open(cur0);
+        void syncInBackground(cur0.id);
+        return;
+      }
       try {
         const [profile, isAdmin] = await Promise.all([cloudRef.current.touchProfile(), cloudRef.current.isAdmin()]);
+        writeAccessCache(user.id, profile, isAdmin);
         const a = evaluateAccess(profile, isAdmin);
         setAccess(a);
         if (!a.allowed) {
@@ -434,7 +553,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
       current,
       remote.find((r) => r.id === current.id),
     );
-  }, [reconcileWithCloud, visibleWorkspaces, closeCurrent, updateRegistry, open]);
+  }, [reconcileWithCloud, visibleWorkspaces, closeCurrent, updateRegistry, open, syncInBackground]);
 
   // ------------------------------------------------------------------ startup
 
@@ -743,10 +862,10 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
       if (!db || !data) throw new Error("Database is not ready");
       const result = fn(db, data);
       setData(loadEngineData(db));
-      void persistNow();
+      schedulePersist();
       return result;
     },
-    [data, persistNow],
+    [data, schedulePersist],
   );
 
   const exportDatabase = useCallback(() => {
@@ -839,6 +958,10 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     adminListProfiles,
     adminUpdateProfile,
     openDemo,
+    replaceDatabase,
+    setup,
+    openSetup: (step) => setSetup({ step: step ?? null }),
+    closeSetup: () => setSetup(null),
   };
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

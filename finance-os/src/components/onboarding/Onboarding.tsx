@@ -18,21 +18,21 @@ import { AmountList, BigMoney, BigText, ChipMulti, ChoiceGrid, CurrencyPicker, H
  *  mode "configure" the current workspace has not been set up yet
  */
 
-type Chapter = { id: string; label: string };
-const CHAPTERS: Chapter[] = [
+export type Chapter = { id: string; label: string };
+export const CHAPTERS: Chapter[] = [
   { id: "you", label: "About you" },
   { id: "in", label: "Money coming in" },
   { id: "out", label: "Money going out" },
   { id: "goals", label: "Your goals" },
 ];
 
-interface StepCtx {
+export interface StepCtx {
   a: OnboardingAnswers;
   set: (patch: Partial<OnboardingAnswers>) => void;
   next: () => void;
 }
 
-interface Step {
+export interface Step {
   id: string;
   chapter: string;
   title: (a: OnboardingAnswers) => string;
@@ -49,7 +49,7 @@ interface Step {
 const money = (v: number, c: CurrencyCode) => formatMoney(v, c, { decimals: 0 });
 const first = (name: string) => name.trim().split(/\s+/)[0] || "there";
 
-const STEPS: Step[] = [
+export const STEPS: Step[] = [
   {
     id: "name",
     chapter: "you",

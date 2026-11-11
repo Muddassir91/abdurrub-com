@@ -13,6 +13,8 @@ const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "/cfoh";
 interface CloudConfig {
   supabaseUrl?: string;
   supabaseAnonKey?: string;
+  /** URL of the assistant Worker on Cloudflare (see worker/). Empty = on-device commands only. */
+  assistantUrl?: string;
 }
 let cloud: CloudConfig = {};
 const cfgPath = join(process.cwd(), "cloud.config.json");
@@ -36,6 +38,7 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_SUPABASE_URL: supabaseUrl,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: supabaseAnonKey,
     NEXT_PUBLIC_CLOUD: process.env.NEXT_PUBLIC_CLOUD ?? "",
+    NEXT_PUBLIC_ASSISTANT_URL: process.env.NEXT_PUBLIC_ASSISTANT_URL ?? cloud.assistantUrl ?? "",
   },
   turbopack: {
     rules: {

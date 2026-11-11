@@ -3,12 +3,17 @@
 import React, { useMemo } from "react";
 import Link from "next/link";
 import { clsx } from "clsx";
-import { ArrowDownLeft, ArrowUpRight, ArrowRight, AlertTriangle, ShieldAlert, Repeat, Star, CalendarClock } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, ArrowRight, Repeat, Star, CalendarClock, CheckCircle2, X, SlidersHorizontal } from "lucide-react";
 import { useReady } from "@/store/FinanceProvider";
 import { Money, toDisplay, useDisplayCurrency } from "@/components/Money";
 import { Card, Progress, spendTone } from "@/components/ui/primitives";
 import { CategoryDonut, CATEGORY_COLORS, InOutBars, BUCKET_COLORS } from "@/components/charts";
 import { useQuickAdd } from "@/components/QuickAdd";
+import { AskBar, useAssistant } from "@/components/assistant/Assistant";
+import { runAction } from "@/assistant/actions";
+import { nextSteps, type NextStep } from "@/engine/nextSteps";
+import { accountBalanceUsd } from "@/engine/ledger";
+import { parseUi, activePreset, PRESETS, METRIC_LABELS, type SectionId, type Tracker } from "@/lib/ui";
 import { buildTrend } from "@/engine/trends";
 import { upcomingRenewals } from "@/engine/expenses";
 import { isBusinessSpend, isPersonalSpend, isRevenue, isTwoSided } from "@/engine/ledger";
@@ -21,7 +26,8 @@ import type { Transaction } from "@/db/schema";
 const SPLIT_LABEL: Record<Bucket, string> = { opex: "Running costs", owner: "Your pay", tax: "Tax", profit: "Profit", reserve: "Cushion", growth: "Growth" };
 
 export default function HomePage() {
-  const { data, snapshot: snap, alerts, month, today } = useReady();
+  const { data, snapshot: snap, month, today, mutate, openSetup } = useReady();
+  const assistant = useAssistant();
   const { open } = useQuickAdd();
   const d = useDisplayCurrency();
   const answers = useMemo(() => parseAnswers(data.settings.onboardingJson), [data.settings.onboardingJson]);
@@ -58,64 +64,110 @@ export default function HomePage() {
   const weeks = useMemo(() => buildTrend(data.transactions, "week", today, 8).map((p) => ({ label: p.label.replace("w/c ", ""), in: toDisplay(p.net, d), out: toDisplay(p.businessSpend + p.personalSpend, d) })), [data.transactions, today, d]);
   const recent = useMemo(() => data.transactions.slice(0, 6), [data.transactions]);
   const renewals = useMemo(() => upcomingRenewals(data.recurringExpenses, today, 14).slice(0, 4), [data.recurringExpenses, today]);
-  const topAlerts = alerts.filter((a) => a.level !== "info").slice(0, 2);
+  const ui = useMemo(() => parseUi(data.settings.uiJson), [data.settings.uiJson]);
+  const steps = useMemo(() => nextSteps(data, snap, today, month), [data, snap, today, month]);
   const householdBudget = own.householdBudget > 0 ? own.householdBudget : own.householdLinesBudget;
   const goals = answers?.goals ?? [];
   const taxShouldHave = snap.tax.envelopeBalance + snap.tax.target;
 
-  return (
-    <div className="mx-auto max-w-5xl">
-      {/* Greeting + actions */}
-      <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-fg">Hi {firstName}</h1>
-          <p className="mt-0.5 text-sm text-fg-muted">
-            {monthLabel(month, "long")}
-            {isCurrent ? ` · ${daysLeft} day${daysLeft === 1 ? "" : "s"} left` : snap.isClosed ? " · closed" : ""}
+  const hidden = new Set<SectionId>(ui.dashboard.hidden);
+  const visible = ui.dashboard.order.filter((id) => !hidden.has(id) && (id !== "trackers" || ui.dashboard.trackers.length > 0) && (id !== "setaside" || !personal));
+  const has = (id: SectionId) => visible.includes(id);
+  const span: Record<SectionId, string> = {
+    next: "lg:col-span-6",
+    summary: "lg:col-span-6",
+    budgets: "lg:col-span-6",
+    trackers: "lg:col-span-6",
+    setaside: "lg:col-span-6",
+    categories: has("weeks") ? "lg:col-span-3" : "lg:col-span-6",
+    weeks: has("categories") ? "lg:col-span-3" : "lg:col-span-6",
+    activity: has("upcoming") ? "lg:col-span-4" : "lg:col-span-6",
+    upcoming: has("activity") ? "lg:col-span-2" : "lg:col-span-6",
+  };
+  const setLayout = (preset: string) => mutate((db) => runAction({ db, today, month }, { name: "customize_dashboard", args: { preset } }));
+  const removeTracker = (label: string) => mutate((db) => runAction({ db, today, month }, { name: "customize_dashboard", args: { remove_tracker: label } }));
+  const act = (st: NextStep) => {
+    if (st.say) void assistant.ask(st.say);
+    else if (st.quickAdd) open(st.quickAdd);
+    else if (st.setupStep) openSetup(st.setupStep);
+  };
+
+  /** Value of one custom tracker, in ledger units (or a plain number for runway). */
+  const trackerValue = (t: Tracker): { cents?: number; text?: string } => {
+    if (t.kind === "category") {
+      const name = (t.category ?? "").toLowerCase();
+      return { cents: [...ex.byCategory, ...own.byCategory].filter((c) => c.name.toLowerCase() === name).reduce((a, c) => a + c.amount, 0) };
+    }
+    switch (t.metric) {
+      case "money_in":
+        return { cents: moneyIn };
+      case "money_out":
+        return { cents: moneyOut };
+      case "kept":
+        return { cents: kept };
+      case "business_cash":
+        return { cents: snap.cash.bankBusinessCash };
+      case "personal_cash":
+        return { cents: snap.cash.personalCash };
+      case "tax_set_aside":
+        return { cents: snap.tax.fundedBalance };
+      case "cushion":
+        return { cents: snap.reserve.fundedBalance };
+      case "subscriptions_monthly":
+        return { cents: ex.committedSubscriptionsMonthly };
+      case "pay_taken":
+        return { cents: own.drawn };
+      case "runway_months":
+        return { text: snap.cash.runwayMonths ? `${snap.cash.runwayMonths} months` : "—" };
+      default:
+        return { text: "—" };
+    }
+  };
+  void accountBalanceUsd;
+  void METRIC_LABELS;
+
+  const sections: Record<SectionId, () => React.ReactNode> = {
+    next: () => (
+      <section className="rounded-3xl border border-accent/25 bg-accent-soft/40 p-4 sm:p-5" data-section="next">
+        <h2 className="text-sm font-semibold text-fg">What to do next</h2>
+        {steps.length === 0 ? (
+          <p className="mt-2 flex items-center gap-2 text-sm text-fg-muted">
+            <CheckCircle2 size={16} className="text-positive" /> You are up to date. Add entries as they happen and this list tells you what needs a look.
           </p>
-        </div>
-        <div className="hidden gap-2 sm:flex">
-          <button type="button" onClick={() => open("in")} className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-border bg-surface px-3.5 text-sm font-semibold text-fg hover:bg-surface-2">
-            <ArrowDownLeft size={16} className="text-positive" /> Money in
-          </button>
-          <button type="button" onClick={() => open("out")} className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-accent px-3.5 text-sm font-semibold text-accent-fg shadow-sm hover:brightness-110">
-            <ArrowUpRight size={16} /> Money out
-          </button>
-        </div>
-      </div>
-
-      {topAlerts.length > 0 && (
-        <div className="mb-4 space-y-2">
-          {topAlerts.map((a) => (
-            <Link key={a.key} href={a.href ?? "/app/alerts/"} className={clsx("flex items-start gap-2.5 rounded-xl border px-3.5 py-2.5 text-sm", a.level === "critical" ? "border-critical/30 bg-critical-soft" : "border-caution/30 bg-caution-soft")}>
-              {a.level === "critical" ? <ShieldAlert size={16} className="mt-0.5 shrink-0 text-critical" /> : <AlertTriangle size={16} className="mt-0.5 shrink-0 text-caution" />}
-              <span className="min-w-0 flex-1">
-                <span className="font-medium text-fg">{a.title}</span>
-                <span className="ml-1.5 text-fg-muted">{a.what}</span>
-              </span>
-              <ArrowRight size={14} className="mt-0.5 shrink-0 text-fg-faint" />
-            </Link>
-          ))}
-        </div>
-      )}
-
-      {/* Hero: in, out, kept, and the split */}
-      <section className="rounded-3xl border border-border bg-surface p-5 shadow-card sm:p-6">
+        ) : (
+          <ul className="mt-3 space-y-2">
+            {steps.map((st, i) => (
+              <li key={st.id} className="flex items-center gap-3 rounded-2xl border border-border bg-surface px-3.5 py-3">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-bold text-accent-fg">{i + 1}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-semibold text-fg">{st.title}</span>
+                  <span className="block text-xs text-fg-muted">{st.detail}</span>
+                </span>
+                {st.href ? (
+                  <Link href={st.href} className="inline-flex h-9 shrink-0 items-center gap-1 rounded-xl border border-border bg-surface px-3 text-xs font-semibold text-fg hover:bg-surface-2">
+                    {st.cta} <ArrowRight size={13} />
+                  </Link>
+                ) : (
+                  <button type="button" onClick={() => act(st)} className="inline-flex h-9 shrink-0 items-center rounded-xl bg-accent px-3 text-xs font-semibold text-accent-fg hover:brightness-110">
+                    {st.cta}
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    ),
+    summary: () => (
+      <section className="h-full rounded-3xl border border-border bg-surface p-5 shadow-card sm:p-6">
         {empty ? (
-          <div className="flex flex-col items-center py-6 text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-accent-soft text-accent">
-              <Star size={24} />
-            </div>
-            <h2 className="mt-4 text-lg font-semibold text-fg">Nothing recorded for {monthLabel(month)} yet</h2>
-            <p className="mt-1 max-w-sm text-sm text-fg-muted">Add the first payment that came in, or the last thing you paid for. The split, the budgets and the charts fill in from there.</p>
-            <div className="mt-5 flex flex-wrap justify-center gap-2">
-              <button type="button" onClick={() => open("in")} className="inline-flex h-11 items-center gap-1.5 rounded-xl bg-accent px-4 text-sm font-semibold text-accent-fg shadow-sm hover:brightness-110">
-                <ArrowDownLeft size={16} /> Add money in
-              </button>
-              <button type="button" onClick={() => open("out")} className="inline-flex h-11 items-center gap-1.5 rounded-xl border border-border bg-surface px-4 text-sm font-semibold text-fg hover:bg-surface-2">
-                <ArrowUpRight size={16} /> Add money out
-              </button>
-            </div>
+          <div className="flex items-center gap-3 py-1 text-sm text-fg-muted">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-accent">
+              <Star size={18} />
+            </span>
+            <span>
+              <span className="font-medium text-fg">Nothing recorded for {monthLabel(month)} yet.</span> Your split, budgets and charts appear after the first entry.
+            </span>
           </div>
         ) : (
           <>
@@ -138,9 +190,9 @@ export default function HomePage() {
             <div className="mt-6">
               <div className="mb-2 flex items-center justify-between">
                 <h2 className="text-sm font-semibold text-fg">Where this month&rsquo;s money goes</h2>
-                <Link href="/app/settings/" className="text-xs font-medium text-accent hover:underline">
+                <button type="button" onClick={() => openSetup("split")} className="text-xs font-medium text-accent hover:underline">
                   Change split
-                </Link>
+                </button>
               </div>
               <div className="flex h-4 w-full overflow-hidden rounded-full bg-surface-2">
                 {BUCKETS.map((b) => (
@@ -166,15 +218,42 @@ export default function HomePage() {
           </>
         )}
       </section>
-
-      {/* Budgets */}
-      <section className="mt-4 grid gap-3 sm:grid-cols-3">
+    ),
+    budgets: () => (
+      <section className="grid gap-3 sm:grid-cols-3">
         <BudgetCard title={personal ? "Bills & subscriptions" : "Running costs"} spent={ex.overheadActual} budget={ex.ceiling} hint="Your ceiling this month" href="/app/expenses/" />
         <BudgetCard title="Home essentials" spent={own.householdActual} budget={householdBudget} hint="Your home budget" href="/app/personal/" />
         <BudgetCard title={personal ? "Everyday spending" : "Your pay"} spent={personal ? own.discretionaryActual : own.drawn} budget={personal ? Math.max(0, own.target - own.householdActual) : own.target} hint={personal ? "What is left for you" : "Your share this month"} href="/app/personal/" invert={!personal} />
       </section>
-
-      <section className="mt-4 grid gap-4 lg:grid-cols-2">
+    ),
+    trackers: () => (
+      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" data-section="trackers">
+        {ui.dashboard.trackers.map((t) => {
+          const v = trackerValue(t);
+          const limit = t.limitMinor ?? 0;
+          return (
+            <div key={t.id} className="rounded-2xl border border-border bg-surface p-4 shadow-card">
+              <div className="flex items-start justify-between gap-2">
+                <div className="text-sm font-semibold text-fg">{t.label}</div>
+                <button type="button" onClick={() => removeTracker(t.label)} className="rounded-md p-0.5 text-fg-faint hover:bg-surface-2 hover:text-fg" aria-label={`Remove ${t.label}`}>
+                  <X size={14} />
+                </button>
+              </div>
+              <div className="mt-2 tabular text-xl font-semibold text-fg">{v.text ?? <Money cents={v.cents ?? 0} decimals={0} />}</div>
+              {limit > 0 && v.cents !== undefined && (
+                <>
+                  <Progress className="mt-2" value={v.cents} max={limit} tone={spendTone(v.cents, limit)} />
+                  <div className={clsx("mt-1.5 text-[11px]", v.cents > limit ? "text-critical" : "text-fg-muted")}>
+                    {v.cents > limit ? <><Money cents={v.cents - limit} decimals={0} /> over your <Money cents={limit} decimals={0} /> limit</> : <><Money cents={limit - v.cents} decimals={0} /> left of <Money cents={limit} decimals={0} /></>}
+                  </div>
+                </>
+              )}
+            </div>
+          );
+        })}
+      </section>
+    ),
+    categories: () => (
         <Card title="Where it went" subtitle={`Spending by category, ${monthLabel(month)}`}>
           <div className="grid gap-4 sm:grid-cols-2 sm:items-center">
             <CategoryDonut rows={byCategory} total={byCategory.reduce((a, r) => a + r.value, 0)} currency={d.primary} />
@@ -194,6 +273,8 @@ export default function HomePage() {
             </ul>
           </div>
         </Card>
+    ),
+    weeks: () => (
         <Card title="In and out, week by week" subtitle="Last eight weeks" actions={<Link href="/app/trends/" className="text-xs font-medium text-accent hover:underline">All trends</Link>}>
           <InOutBars data={weeks} currency={d.primary} />
           <div className="mt-2 flex items-center gap-4 text-[11px] text-fg-muted">
@@ -201,19 +282,16 @@ export default function HomePage() {
             <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[var(--chart-3)]" /> Out (bills and personal)</span>
           </div>
         </Card>
-      </section>
-
-      {/* Set aside */}
-      {!personal && (
-        <section className="mt-4 grid gap-3 sm:grid-cols-3">
+    ),
+    setaside: () => (
+        <section className="grid gap-3 sm:grid-cols-3">
           <SetAside title="Tax set aside" star={goals.includes("tax_ready")} have={snap.tax.fundedBalance} want={taxShouldHave} line={<>Should be <Money cents={taxShouldHave} decimals={0} /> by month end</>} href="/app/tax/" />
           <SetAside title="Cash cushion" star={goals.includes("cushion")} have={snap.reserve.fundedBalance} want={snap.reserve.target} line={snap.reserve.coverageMonths ? <>{snap.reserve.coverageMonths} months of costs covered · target {snap.reserve.targetMonths}</> : <>Target <Money cents={snap.reserve.target} decimals={0} /></>} href="/app/reserves/" />
           <SetAside title="Profit kept" star={goals.includes("profit")} have={Math.max(0, snap.profit.cumulativeRetained)} want={Math.max(snap.profit.cumulativeRetained, snap.profit.target)} line={<>This month adds <Money cents={snap.profit.target} decimals={0} /></>} href="/app/reserves/" />
         </section>
-      )}
-
-      <section className="mt-4 grid gap-4 lg:grid-cols-3">
-        <Card title="Recent activity" className="lg:col-span-2" padded={false} actions={<Link href="/app/transactions/" className="text-xs font-medium text-accent hover:underline">See all</Link>}>
+    ),
+    activity: () => (
+        <Card title="Recent activity" padded={false} actions={<Link href="/app/transactions/" className="text-xs font-medium text-accent hover:underline">See all</Link>}>
           {recent.length === 0 ? (
             <div className="p-5 text-xs text-fg-faint">Your latest payments and spending show up here.</div>
           ) : (
@@ -224,6 +302,8 @@ export default function HomePage() {
             </ul>
           )}
         </Card>
+    ),
+    upcoming: () => (
         <Card title="Coming up" subtitle="Next 14 days">
           {renewals.length === 0 ? (
             <div className="flex items-center gap-2 text-xs text-fg-faint">
@@ -246,9 +326,56 @@ export default function HomePage() {
             </ul>
           )}
         </Card>
-      </section>
+    ),
+  };
+  const preset = activePreset(ui);
 
-      <p className="mt-6 text-center text-[11px] text-fg-faint">CFoh! shows your own numbers so decisions are easier to see. It does not give financial, investment or tax advice.</p>
+  return (
+    <div className="mx-auto max-w-5xl">
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-fg">Hi {firstName}</h1>
+          <p className="mt-0.5 text-sm text-fg-muted">
+            {monthLabel(month, "long")}
+            {isCurrent ? ` · ${daysLeft} day${daysLeft === 1 ? "" : "s"} left` : snap.isClosed ? " · closed" : ""}
+            <span className="mx-1.5 text-fg-faint">·</span>
+            <button type="button" onClick={() => openSetup()} className="font-medium text-accent hover:underline">
+              Edit my setup
+            </button>
+          </p>
+        </div>
+        <div className="hidden gap-2 sm:flex">
+          <button type="button" onClick={() => open("in")} className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-border bg-surface px-3.5 text-sm font-semibold text-fg hover:bg-surface-2">
+            <ArrowDownLeft size={16} className="text-positive" /> Money in
+          </button>
+          <button type="button" onClick={() => open("out")} className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-border bg-surface px-3.5 text-sm font-semibold text-fg hover:bg-surface-2">
+            <ArrowUpRight size={16} className="text-critical" /> Money out
+          </button>
+        </div>
+      </div>
+
+      <AskBar />
+
+      <div className="mt-4 grid grid-flow-row-dense gap-4 lg:grid-cols-6">
+        {visible.map((id) => (
+          <div key={id} className={clsx("min-w-0", span[id])}>
+            {sections[id]()}
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs text-fg-muted" data-layout-switch>
+        <SlidersHorizontal size={13} />
+        <span>Home shows:</span>
+        {(["simple", "standard", "everything"] as const).map((k) => (
+          <button key={k} type="button" onClick={() => setLayout(k)} aria-pressed={preset === k} className={clsx("rounded-full border px-3 py-1 font-medium", preset === k ? "border-accent bg-accent-soft text-accent" : "border-border hover:border-border-strong hover:text-fg")}>
+            {PRESETS[k].label}
+          </button>
+        ))}
+        <span className="text-fg-faint">or ask for any change, like &ldquo;hide budgets&rdquo; or &ldquo;track food under 300&rdquo;</span>
+      </div>
+
+      <p className="mt-4 text-center text-[11px] text-fg-faint">CFoh! shows your own numbers so decisions are easier to see. It does not give financial, investment or tax advice.</p>
     </div>
   );
 }

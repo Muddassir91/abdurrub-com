@@ -4,13 +4,14 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
-import { Home, LineChart, ArrowLeftRight, ShieldCheck, Receipt, Users, CreditCard, Wallet, Landmark, PiggyBank, Scale, Rocket, SlidersHorizontal, Bell, CalendarCheck, Settings, Lock, Sun, Moon, Menu, X, ChevronLeft, ChevronRight, TrendingUp, Save, ChevronsUpDown, Plus, Check, ChevronDown, type LucideIcon } from "lucide-react";
+import { Sparkles, Home, LineChart, ArrowLeftRight, ShieldCheck, Receipt, Users, CreditCard, Wallet, Landmark, PiggyBank, Scale, Rocket, SlidersHorizontal, Bell, CalendarCheck, Settings, Lock, Sun, Moon, Menu, X, ChevronLeft, ChevronRight, TrendingUp, Save, ChevronsUpDown, Plus, Check, ChevronDown, type LucideIcon } from "lucide-react";
 import { useFinance } from "@/store/FinanceProvider";
 import { addMonths, monthLabel, currentMonthKey } from "@/lib/dates";
 import { Modal } from "./ui/Modal";
 import { WorkspaceForm } from "./WorkspaceForm";
 import { Wordmark } from "./Logo";
 import { QuickAddProvider, QuickAddButton } from "./QuickAdd";
+import { AssistantProvider, useAssistant } from "./assistant/Assistant";
 
 interface NavItem {
   href: string;
@@ -221,6 +222,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <QuickAddProvider>
+      <AssistantProvider>
       <div className="flex min-h-screen bg-bg">
         <aside className="hidden w-60 shrink-0 flex-col border-r border-border bg-surface lg:sticky lg:top-0 lg:flex lg:h-screen lg:overflow-y-auto">
           <WorkspaceSwitcher onCreate={() => setCreating(true)} />
@@ -272,6 +274,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
             {isClosed && <span className="hidden rounded-md bg-surface-2 px-2 py-0.5 text-[11px] font-medium text-fg-muted sm:inline">Closed</span>}
             <div className="flex-1" />
+            <AskButton />
             {trialDays !== null && !access?.isAdmin && (
               <Link href="/app/settings/?tab=account" className={clsx("hidden rounded-md px-2 py-1 text-[11px] font-medium sm:inline", trialDays <= 7 ? "bg-caution-soft text-caution" : "bg-accent-soft text-accent")} title="Your free month">
                 {trialDays} day{trialDays === 1 ? "" : "s"} left in your free month
@@ -324,7 +327,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           />
         </Modal>
       </div>
+      </AssistantProvider>
     </QuickAddProvider>
+  );
+}
+
+/** Opens the assistant from any page. */
+function AskButton() {
+  const { setOpen } = useAssistant();
+  return (
+    <button type="button" onClick={() => setOpen(true)} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-accent-soft px-3 text-sm font-semibold text-accent hover:brightness-95" aria-label="Ask CFoh!" title="Ask CFoh! (press /)">
+      <Sparkles size={15} /> Ask
+    </button>
   );
 }
 

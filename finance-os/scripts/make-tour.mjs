@@ -27,7 +27,7 @@ mkdirSync(OUT, { recursive: true });
 
 // Screens to capture (1440x900 viewport at 2x = 2880x1800).
 const SHOTS = [
-  { file: "dashboard.png", path: "" },
+  { file: "dashboard.png", path: "", say: "spent 20 on lunch" },
   { file: "dashboard-alloc.png", path: "", scroll: 560 },
   { file: "expenses.png", path: "expenses/" },
   { file: "personal.png", path: "personal/" },
@@ -42,8 +42,8 @@ const SHOTS = [
 const CARD = (title, sub) => ({ card: { title, sub } });
 const SCENES = [
   { id: "hook", mood: "curious", shots: [CARD("You made good money this month.", ""), CARD("So why is the account empty again?", ""), CARD("It is not a discipline problem.", "You just can\u2019t see where it goes.")] },
-  { id: "dashboard", mood: "curious", caption: "Every dollar gets a job the moment it lands.", shots: [{ img: "onboarding.png", crop: [0.2, 0.0, 0.6, 0.6] }, { img: "dashboard.png" }, { img: "dashboard.png", crop: [0.2, 0.2, 0.62, 0.62] }] },
-  { id: "dashboard-alloc", mood: "exciting", caption: "Six envelopes. Adds up to the cent.", shots: [{ img: "dashboard.png", crop: [0.21, 0.36, 0.52, 0.52] }, { img: "dashboard.png", crop: [0.2, 0.5, 0.5, 0.5] }] },
+  { id: "dashboard", mood: "curious", caption: "Every dollar gets a job the moment it lands.", shots: [{ img: "onboarding.png", crop: [0.2, 0.0, 0.6, 0.6] }, { img: "dashboard.png" }, { img: "dashboard.png", crop: [0.2, 0.08, 0.62, 0.62] }] },
+  { id: "dashboard-alloc", mood: "exciting", caption: "Six envelopes. Adds up to the cent.", shots: [{ img: "dashboard.png", crop: [0.22, 0.48, 0.5, 0.5] }, { img: "dashboard-alloc.png", crop: [0.2, 0.08, 0.6, 0.6] }] },
   { id: "expenses", mood: "exciting", caption: "A ceiling on tools. Warned the day you cross it.", shots: [{ img: "expenses.png" }, { img: "expenses.png", crop: [0.17, 0.04, 0.7, 0.7] }, { img: "alerts.png", crop: [0.17, 0.04, 0.75, 0.75] }] },
   { id: "personal", mood: "exciting", caption: "Pay yourself on purpose. Household first.", shots: [{ img: "personal.png" }, { img: "personal.png", crop: [0.17, 0.04, 0.7, 0.7] }] },
   { id: "trends", mood: "calm", caption: "Watch the result line climb.", shots: [{ img: "trends.png", crop: [0.17, 0.2, 0.72, 0.72] }] },
@@ -61,6 +61,14 @@ await page.getByText("Hi Sam").first().waitFor({ timeout: 30000 });
 for (const sc of SHOTS) {
   await page.goto(`http://localhost:${PORT}/cfoh/app/${sc.path}`, { waitUntil: "networkidle" });
   await page.waitForTimeout(600);
+  if (sc.say) {
+    // Show the assistant in use: type a command and wait for its confirmation.
+    const bar = page.locator("[data-askbar]");
+    await bar.getByLabel("Ask CFoh!").fill(sc.say);
+    await bar.getByLabel("Ask CFoh!").press("Enter");
+    await bar.locator("[data-assistant-reply]").first().waitFor({ timeout: 15000 });
+    await page.waitForTimeout(1200);
+  }
   if (sc.scroll) {
     await page.evaluate((y) => window.scrollTo({ top: y }), sc.scroll);
     await page.waitForTimeout(300);
