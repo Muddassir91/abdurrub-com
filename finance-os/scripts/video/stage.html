@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CFoh! demo stage</title>
+<style>
+  /* The stage for the product video. The real app runs in the iframe; the
+     "camera" is a CSS transform on #world, so zoomed text is re-rendered sharp
+     by the browser instead of being an enlarged picture. The recorder script
+     (scripts/make-demo.mjs) drives everything through window.stage. */
+  :root { --cream: #f4f1ea; --ink: #1b1a19; --muted: #6b6860; --accent: #4f46e5; }
+  html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: var(--cream); }
+  body { font-family: Geist, Inter, ui-sans-serif, system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+  #stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: radial-gradient(1200px 700px at 50% 20%, #fbf9f4 0%, var(--cream) 70%); }
+  #world { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+  #window { position: absolute; left: 240px; top: 68px; width: 1440px; height: 944px; border-radius: 16px; overflow: hidden; background: #fff; box-shadow: 0 50px 120px -40px rgba(27, 26, 25, 0.45), 0 0 0 1px rgba(27, 26, 25, 0.08); transition: opacity 0.7s ease, transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  #window.away { opacity: 0; transform: translateY(60px) scale(0.97); }
+  #chrome { height: 44px; display: flex; align-items: center; gap: 8px; padding: 0 16px; background: #ecebe7; border-bottom: 1px solid rgba(27, 26, 25, 0.08); box-sizing: border-box; }
+  #chrome i { width: 12px; height: 12px; border-radius: 50%; display: block; }
+  #chrome .url { margin-left: 18px; flex: 0 0 420px; height: 26px; line-height: 26px; border-radius: 8px; background: #fff; color: #7a776f; font-size: 13px; padding: 0 12px; }
+  iframe { display: block; width: 1440px; height: 900px; border: 0; background: #f6f7f9; }
+  #cursor { position: absolute; left: 720px; top: 520px; width: 26px; height: 26px; z-index: 5; pointer-events: none; transform-origin: 3px 3px; transition-property: left, top; transition-timing-function: cubic-bezier(0.45, 0, 0.2, 1); filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35)); }
+  #cursor.down { transform: scale(0.86); }
+  #cursor.hidden { opacity: 0; }
+  .ripple { position: absolute; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; border: 3px solid var(--accent); z-index: 4; pointer-events: none; animation: ripple 0.55s ease-out forwards; }
+  @keyframes ripple { from { transform: scale(0.4); opacity: 0.9; } to { transform: scale(3.4); opacity: 0; } }
+
+  /* Full-screen text cards */
+  #card { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: var(--cream); z-index: 20; opacity: 0; pointer-events: none; transition: opacity 0.45s ease; padding: 0 180px; box-sizing: border-box; }
+  #card.on { opacity: 1; }
+  #card.dark { background: #17162e; color: #fff; }
+  #card .label { font-size: 26px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 30px; display: flex; align-items: center; gap: 16px; }
+  #card.dark .label { color: #b9b4ff; }
+  #card .label b { display: inline-flex; width: 52px; height: 52px; border-radius: 50%; align-items: center; justify-content: center; background: var(--accent); color: #fff; font-size: 26px; letter-spacing: 0; }
+  #card .line { font-size: 84px; line-height: 1.12; font-weight: 600; letter-spacing: -0.035em; opacity: 0; transform: translateY(22px); transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  #card .line.small { font-size: 64px; }
+  #card .line.muted { color: var(--muted); }
+  #card.dark .line.muted { color: #b7b4d6; }
+  #card .line.show { opacity: 1; transform: none; }
+  #card .logo { font-size: 150px; font-weight: 800; letter-spacing: 0.04em; line-height: 1; opacity: 0; transform: scale(0.92); transition: opacity 0.5s ease, transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  #card .logo.show { opacity: 1; transform: none; }
+  #card .logo em { display: inline-block; font-style: italic; transform: skewX(-16deg); color: var(--accent); }
+  #card.dark .logo em { color: #a5a0ff; }
+  #card .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 22px; margin-top: 44px; max-width: 1400px; }
+  #card .chip { font-size: 44px; font-weight: 600; padding: 20px 38px; border-radius: 999px; background: #fff; box-shadow: 0 0 0 2px rgba(27, 26, 25, 0.08), 0 14px 30px -18px rgba(27, 26, 25, 0.4); opacity: 0; transform: translateY(18px) scale(0.96); transition: opacity 0.45s ease, transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  #card .chip.show { opacity: 1; transform: none; }
+  #card .url { margin-top: 46px; font-size: 54px; font-weight: 700; padding: 24px 54px; border-radius: 22px; background: var(--accent); color: #fff; opacity: 0; transform: translateY(18px); transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 30px 60px -24px var(--accent); }
+  #card .url.show { opacity: 1; transform: none; }
+  #card .fine { margin-top: 34px; font-size: 24px; color: #a7a4c9; opacity: 0; transition: opacity 0.6s ease; }
+  #card .fine.show { opacity: 1; }
+
+  /* Small caption while the app is on screen */
+  #caption { position: absolute; left: 50%; bottom: 54px; transform: translate(-50%, 20px); z-index: 15; padding: 18px 34px; border-radius: 999px; background: rgba(23, 22, 46, 0.92); color: #fff; font-size: 34px; font-weight: 600; letter-spacing: -0.01em; opacity: 0; transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1); white-space: nowrap; box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.6); }
+  #caption.on { opacity: 1; transform: translate(-50%, 0); }
+  #caption b { color: #b9b4ff; margin-right: 14px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <div id="window" class="away">
+      <div id="chrome"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="url">abdurrub.com/cfoh</span></div>
+      <iframe id="app" title="app"></iframe>
+      <svg id="cursor" class="hidden" viewBox="0 0 26 26"><path d="M3 2.5v19l5.2-4.6 3.3 7.2 3.4-1.5-3.3-7.1 6.9-.4z" fill="#111" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+  <div id="card"></div>
+  <div id="caption"></div>
+</div>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const WIN = { x: 240, y: 68, chrome: 44 };
+  const world = $("world");
+  const cursor = $("cursor");
+  let cur = { x: 720, y: 520 };
+  const ease = "cubic-bezier(0.65, 0, 0.35, 1)";
+  window.stage = {
+    load(src) {
+      return new Promise((resolve) => {
+        const f = $("app");
+        f.onload = () => resolve(true);
+        f.src = src;
+      });
+    },
+    /** Point the camera at a point of the app (app coordinates) at a zoom level. */
+    camera(cx, cy, zoom, ms = 1100) {
+      const wx = WIN.x + cx;
+      const wy = WIN.y + WIN.chrome + cy;
+      let tx = 960 - wx * zoom;
+      let ty = 540 - wy * zoom;
+      // Keep the window covering the frame when zoomed in, so no empty edges slide into view.
+      const minX = 1920 - (WIN.x + 1440) * zoom - 60, maxX = 60 - WIN.x * zoom;
+      const minY = 1080 - (WIN.y + 944) * zoom - 40, maxY = 40 - WIN.y * zoom;
+      if (zoom > 1.25) { tx = Math.min(maxX, Math.max(minX, tx)); ty = Math.min(maxY, Math.max(minY, ty)); }
+      world.style.transition = `transform ${ms}ms ${ease}`;
+      world.style.transform = `translate(${tx}px, ${ty}px) scale(${zoom})`;
+    },
+    wide(ms = 1100) {
+      world.style.transition = `transform ${ms}ms ${ease}`;
+      world.style.transform = "translate(0px, 0px) scale(1)";
+    },
+    showWindow(on) { $("window").classList.toggle("away", !on); },
+    /** Move the pointer to app coordinates. Returns the time the move takes. */
+    cursorTo(x, y, ms) {
+      const d = Math.hypot(x - cur.x, y - cur.y);
+      const t = ms ?? Math.round(Math.min(900, Math.max(320, d * 1.1)));
+      cursor.classList.remove("hidden");
+      cursor.style.transitionDuration = `${t}ms`;
+      cursor.style.left = `${x}px`;
+      cursor.style.top = `${y + WIN.chrome}px`;
+      cur = { x, y };
+      return t;
+    },
+    cursorHide() { cursor.classList.add("hidden"); },
+    press() {
+      cursor.classList.add("down");
+      const r = document.createElement("div");
+      r.className = "ripple";
+      r.style.left = `${cur.x + 3}px`;
+      r.style.top = `${cur.y + WIN.chrome + 3}px`;
+      $("window").appendChild(r);
+      setTimeout(() => cursor.classList.remove("down"), 140);
+      setTimeout(() => r.remove(), 700);
+    },
+    /** Full-screen card. html is the inner markup; pass null to hide. */
+    card(html, dark = false) {
+      const c = $("card");
+      if (html === null) return c.classList.remove("on");
+      c.classList.toggle("dark", !!dark);
+      c.innerHTML = html;
+      c.classList.add("on");
+    },
+    /** Reveal the nth element with class "r" inside the card. */
+    reveal(n) {
+      const el = $("card").querySelectorAll(".r")[n];
+      if (el) el.classList.add("show");
+    },
+    caption(html) {
+      const c = $("caption");
+      if (html === null) return c.classList.remove("on");
+      c.innerHTML = html;
+      c.classList.add("on");
+    },
+  };
+})();
+</script>
+</body>
+</html>

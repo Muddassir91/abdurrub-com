@@ -75,14 +75,14 @@ try {
   await page.goto(`http://localhost:${PORT}/cfoh/`, { waitUntil: "networkidle" });
   const home = await page.locator("body").innerText();
   const homeLc = home.toLowerCase();
-  check("Homepage renders header, subheader, demo, comparison and use cases", homeLc.includes("make better financial decisions") && homeLc.includes("without hiring a cfo") && homeLc.includes("the old way") && homeLc.includes("freelancers"));
-  await page.locator("#demo").scrollIntoViewIfNeeded();
-  await page.waitForTimeout(1400);
-  const demoBefore = await page.locator("#demo").innerText();
-  await page.locator('input[aria-label="Monthly revenue"]').fill("4");
-  await page.waitForTimeout(1400);
-  const demoAfter = await page.locator("#demo").innerText();
-  check("Homepage demo recalculates when the slider moves", demoBefore.includes("$4,000") && demoAfter.includes("$10,000") && demoAfter.includes("$3,500"));
+  check("Homepage renders header, subheader, video, comparison and use cases", homeLc.includes("make better financial decisions") && homeLc.includes("without hiring a cfo") && homeLc.includes("watch the demo") && homeLc.includes("the old way") && homeLc.includes("freelancers") && !homeLc.includes("live demo"));
+  // One product video; nothing is downloaded until play is pressed.
+  check("Homepage shows the demo video behind a play button", (await page.locator("#demo video").count()) === 0 && (await page.locator("#demo").getByRole("button", { name: /Play the CFoh! demo video/ }).isVisible()));
+  await page.locator("#demo").getByRole("button", { name: /Play the CFoh! demo video/ }).click();
+  const videoSrc = await page.locator("#demo video").getAttribute("src");
+  const head = await fetch(`http://localhost:${PORT}${videoSrc}`, { method: "GET", headers: { Range: "bytes=0-1023" } });
+  check("Pressing play loads the video file", /cfoh-demo\.mp4$/.test(videoSrc ?? "") && head.ok, `${videoSrc} -> ${head.status}`);
+  await page.reload({ waitUntil: "networkidle" });
   const firstPhrase = await page.locator("h1 [aria-live]").innerText();
   await page.waitForTimeout(3200);
   const secondPhrase = await page.locator("h1 [aria-live]").innerText();

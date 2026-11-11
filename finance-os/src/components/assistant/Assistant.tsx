@@ -208,7 +208,15 @@ export function AssistantReply({ m, compact }: { m: ChatMessage; compact?: boole
   const { undo, confirm } = useAssistant();
   return (
     <div className={clsx("space-y-1.5", compact ? "text-sm" : "text-sm")} data-assistant-reply>
-      {m.text && <p className={clsx("whitespace-pre-wrap leading-relaxed", m.failed ? "text-fg-muted" : "text-fg")}>{m.text}</p>}
+      {m.text &&
+        (m.failed || m.pending ? (
+          <p className="whitespace-pre-wrap leading-relaxed text-fg-muted">{m.text}</p>
+        ) : (
+          <div className="flex items-start gap-2 rounded-xl bg-accent-soft px-3 py-2.5 text-fg">
+            <Sparkles size={15} className="mt-0.5 shrink-0 text-accent" />
+            <p className={clsx("min-w-0 flex-1 whitespace-pre-wrap leading-relaxed", compact && "text-[15px] font-medium")}>{m.text}</p>
+          </div>
+        ))}
       {m.results?.map((r, i) => (
         <div key={i} className={clsx("flex items-start gap-2 rounded-xl px-3 py-2", r.ok ? "bg-positive-soft text-fg" : "bg-caution-soft text-fg")}>
           {r.ok ? <Check size={15} className="mt-0.5 shrink-0 text-positive" /> : <AlertCircle size={15} className="mt-0.5 shrink-0 text-caution" />}

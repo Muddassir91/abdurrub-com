@@ -1,39 +1,47 @@
-// Generates the demo voiceover with Kokoro (Apache-2.0 open-source TTS) on CPU.
-// Output: public/vo/NN.wav + public/vo/manifest.json (durations in seconds).
-// Usage: node scripts/make-voiceover.mjs            (voice via VO_VOICE, default af_heart)
-import { mkdirSync, writeFileSync } from "node:fs";
+// Generates the narration for the product video with an open-source voice model.
+//
+//   VO_PYTHON=/path/to/python node scripts/make-voiceover.mjs
+//
+// Environment:
+//   VO_ENGINE      "chatter" (Chatterbox, default) or "pocket" (Kyutai Pocket TTS)
+//   VO_PYTHON      Python with the engine installed (pip install chatterbox-tts, or pocket-tts)
+//   VO_PYTHONPATH  optional extra site-packages for VO_PYTHON
+//   VO_ASR_PYTHON  Python with faster-whisper, used to check every clip says the right words
+//                  (defaults to VO_PYTHON; without faster-whisper the first take is used unchecked)
+//   VO_VOICE       pocket: a built-in voice name. chatter: path to a reference recording you have the right to use.
+//   VO_TAKES       takes per line (default 2); lines that fail the check get up to two more rounds
+//
+// The lines live in scripts/video/script.mjs. Output: media/vo/<id>.wav and media/vo/manifest.json.
+import { execFileSync } from "node:child_process";
+import { mkdirSync, rmSync, writeFileSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { SCRIPT } from "./video/script.mjs";
 
-// Route Node's fetch through the sandbox proxy when one is configured (model download).
-if (process.env.HTTPS_PROXY) {
-  const { ProxyAgent, setGlobalDispatcher } = await import("undici");
-  setGlobalDispatcher(new ProxyAgent(process.env.HTTPS_PROXY));
+const engine = process.env.VO_ENGINE ?? "chatter";
+const python = process.env.VO_PYTHON ?? "python3";
+const asrPython = process.env.VO_ASR_PYTHON ?? python;
+const takes = process.env.VO_TAKES ?? "2";
+const work = resolve(process.cwd(), ".e2e", "vo");
+const out = resolve(process.cwd(), "media", "vo");
+rmSync(work, { recursive: true, force: true });
+mkdirSync(work, { recursive: true });
+mkdirSync(out, { recursive: true });
+const scriptJson = resolve(work, "script.json");
+writeFileSync(scriptJson, JSON.stringify(SCRIPT, null, 1));
+const env = { ...process.env, HF_HUB_DISABLE_XET: "1", ...(process.env.VO_PYTHONPATH ? { PYTHONPATH: process.env.VO_PYTHONPATH } : {}) };
+const dir = resolve(import.meta.dirname, "video");
+
+let only = "";
+for (let round = 0; round < 3; round++) {
+  execFileSync(python, [resolve(dir, "tts.py"), engine, scriptJson, work, process.env.VO_VOICE ?? "-", String(Number(takes) + round), only], { stdio: ["ignore", "inherit", "ignore"], env });
+  try {
+    execFileSync(asrPython, [resolve(dir, "pick.py"), scriptJson, work, out], { stdio: ["ignore", "inherit", "ignore"], env: { ...process.env, HF_HUB_DISABLE_XET: "1" } });
+    break;
+  } catch (e) {
+    if (e.status !== 3) throw e;
+    const m = JSON.parse(readFileSync(resolve(out, "manifest.json"), "utf8"));
+    only = m.lines.filter((l) => !l.ok).map((l) => l.id).join(",");
+    console.log(`retrying: ${only}`);
+  }
 }
-const { KokoroTTS } = await import("kokoro-js");
-
-export const LINES = [
-  { id: "01", scene: "hook", text: "You made good money this month. So why is the account empty again? It is not a discipline problem. You just can't see where it goes." },
-  { id: "02", scene: "dashboard", text: "One balance makes every dollar look spendable. CFoh gives every dollar a job the moment it lands." },
-  { id: "03", scene: "dashboard-alloc", text: "Six envelopes: operating, your pay, tax, profit, reserve and growth. Set once, applied to the cent." },
-  { id: "04", scene: "expenses", text: "A ceiling on tools and overhead. It warns you the day you cross it, not at month end." },
-  { id: "05", scene: "personal", text: "Pay yourself on purpose. Household first, then the rest." },
-  { id: "06", scene: "trends", text: "Watch the result line climb, week by week." },
-  { id: "07", scene: "month-end", text: "Close the month in ten steps. The report writes itself." },
-  { id: "08", scene: "cta", text: "Start your free month today, at abdurrub dot com slash CFoh." },
-];
-
-const OUT = resolve(process.cwd(), "public", "vo");
-mkdirSync(OUT, { recursive: true });
-const voice = process.env.VO_VOICE ?? "af_heart";
-const tts = await KokoroTTS.from_pretrained("onnx-community/Kokoro-82M-v1.0-ONNX", { dtype: "q8", device: "cpu" });
-const manifest = [];
-for (const line of LINES) {
-  const audio = await tts.generate(line.text, { voice, speed: 1.0 });
-  const file = resolve(OUT, `${line.id}.wav`);
-  await audio.save(file);
-  const seconds = audio.audio.length / audio.sampling_rate;
-  manifest.push({ ...line, file: `vo/${line.id}.wav`, seconds: Number(seconds.toFixed(3)) });
-  console.log(`${line.id} ${seconds.toFixed(2)}s  ${line.text}`);
-}
-writeFileSync(resolve(OUT, "manifest.json"), JSON.stringify({ voice, model: "onnx-community/Kokoro-82M-v1.0-ONNX (Apache-2.0)", lines: manifest }, null, 2));
-console.log(`total ${manifest.reduce((a, l) => a + l.seconds, 0).toFixed(1)}s of narration`);
+writeFileSync(resolve(out, "README.txt"), `Narration for the product video, generated by scripts/make-voiceover.mjs with the open-source "${engine}" voice model.\n`);

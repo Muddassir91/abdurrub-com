@@ -3,8 +3,7 @@ import Link from "next/link";
 import { ArrowRight, Check, X, PlayCircle } from "lucide-react";
 import { LogoMark, Wordmark } from "@/components/Logo";
 import { RotatingHeadline } from "@/components/marketing/RotatingHeadline";
-import { AllocationDemo } from "@/components/marketing/AllocationDemo";
-import { ProductTour, type TourScene } from "@/components/marketing/ProductTour";
+import { DemoVideo } from "@/components/marketing/DemoVideo";
 import { Reveal } from "@/components/marketing/Reveal";
 import { Founder } from "@/components/marketing/Founder";
 import { AuthForwarder } from "@/components/marketing/AuthForwarder";
@@ -15,15 +14,6 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-const TOUR: TourScene[] = [
-  { src: "/screens/onboarding.png", title: "Setup", caption: "A few questions, one at a time. Your income, your costs, what you need at home. Your dashboard is built from the answers.", focus: "50% 20%" },
-  { src: "/screens/dashboard.png", title: "Just tell it", caption: "\u201cSpent 20 on lunch.\u201d \u201cGot paid 1,200.\u201d Type or say what happened and your numbers update. Then it tells you what to do next.", focus: "50% 15%" },
-  { src: "/screens/dashboard-alloc.png", title: "Budgets", caption: "Running costs, home essentials, your pay: progress bars, not spreadsheets. Add a purchase in two taps.", focus: "30% 55%" },
-  { src: "/screens/expenses.png", title: "Spending", caption: "A ceiling on tools and overhead. Unspent allowance stays in the business, it is not an invitation to buy more.", focus: "50% 30%" },
-  { src: "/screens/personal.png", title: "Paying yourself", caption: "Household first, then discretionary. You see the number before you spend it, not after.", focus: "40% 30%" },
-  { src: "/screens/trends.png", title: "Progress", caption: "Daily, weekly, monthly and yearly. Watch the result line climb as the habits stick.", focus: "50% 35%" },
-  { src: "/screens/month-end.png", title: "Month-end", caption: "A ten-step close that books every allocation, locks the month and writes the report for you.", focus: "35% 40%" },
-];
 
 const OLD_WAY = [
   "One bank balance for everything, so every number looks spendable.",
@@ -59,9 +49,9 @@ export default function HomePage() {
             <Wordmark size="md" />
           </Link>
           <nav className="flex items-center gap-1 sm:gap-2">
-            <Link href="/app/?demo=1" className="hidden rounded-lg px-3 py-2 text-sm font-medium text-fg-muted hover:text-fg md:inline-block">
-              Live demo
-            </Link>
+            <a href="#demo" className="hidden rounded-lg px-3 py-2 text-sm font-medium text-fg-muted hover:text-fg md:inline-block">
+              Watch the demo
+            </a>
             <Link href="/app/" className="rounded-lg px-3 py-2 text-sm font-medium text-fg-muted hover:text-fg">
               Sign in
             </Link>
@@ -87,31 +77,19 @@ export default function HomePage() {
               <Link href="/app/" className={cta}>
                 Start your free month <ArrowRight size={16} />
               </Link>
-              <Link href="/app/?demo=1" className={ghost}>
-                <PlayCircle size={18} /> Explore the live demo
-              </Link>
+              <a href="#demo" className={ghost}>
+                <PlayCircle size={18} /> Watch the demo
+              </a>
             </div>
             <p className="mt-3 text-xs text-fg-faint">Free for 30 days. No card. Works on phone and laptop.</p>
           </Reveal>
         </div>
-        {/* Tour (silent explainer) */}
-        <div className="relative mx-auto max-w-5xl px-5 pb-16 sm:px-8">
+        {/* The product video */}
+        <div id="demo" className="relative mx-auto max-w-5xl scroll-mt-24 px-5 pb-20 sm:px-8">
           <Reveal delay={320}>
-            <ProductTour scenes={TOUR} video={{ src: "/cfoh-demo.mp4", poster: "/screens/dashboard.png" }} />
+            <DemoVideo />
           </Reveal>
         </div>
-      </section>
-
-      {/* Interactive demo */}
-      <section id="demo" className="mx-auto max-w-5xl px-5 pb-20 sm:px-8">
-        <Reveal className="mb-6 text-center">
-          <div className="text-xs font-semibold uppercase tracking-wider text-accent">See how it works</div>
-          <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Drag the slider. Watch every dollar get a job.</h2>
-          <p className="mx-auto mt-3 max-w-xl text-fg-muted">This is the same allocation engine the app runs, not a picture. Move the revenue, then push your tool spend past the ceiling and see what CFoh! would tell you.</p>
-        </Reveal>
-        <Reveal delay={120}>
-          <AllocationDemo />
-        </Reveal>
       </section>
 
       {/* Old way vs new way */}
@@ -184,9 +162,9 @@ export default function HomePage() {
             <Link href="/app/" className={cta}>
               Start your free month <ArrowRight size={16} />
             </Link>
-            <Link href="/app/?demo=1" className={ghost}>
-              Explore the live demo
-            </Link>
+            <a href="#demo" className={ghost}>
+              Watch the demo
+            </a>
           </div>
           <p className="mt-3 text-xs text-fg-faint">Free for 30 days. Sign in to keep everything in sync across devices.</p>
         </Reveal>

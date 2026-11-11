@@ -40,7 +40,6 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.5",
     "jsdom": "^31.0.0",
-    "kokoro-js": "^1.2.1",
     "tailwindcss": "^4",
     "typescript": "^5",
     "undici": "^8.12.4",

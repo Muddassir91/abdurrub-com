@@ -1,0 +1,247 @@
+{
+ "lines": [
+  {
+   "id": "intro1",
+   "text": "You earn good money.",
+   "file": "intro1.wav",
+   "seconds": 1.123,
+   "take": "intro1.0.wav",
+   "heard": "You earn good money.",
+   "ok": true
+  },
+  {
+   "id": "intro2",
+   "text": "But by the end of the month, it's gone.",
+   "file": "intro2.wav",
+   "seconds": 2.256,
+   "take": "intro2.1.wav",
+   "heard": "But by the end of the month, it's gone.",
+   "ok": true
+  },
+  {
+   "id": "intro3",
+   "text": "And you can't say where it went.",
+   "file": "intro3.wav",
+   "seconds": 2.325,
+   "take": "intro3.0.wav",
+   "heard": "and you can't say where it went.",
+   "ok": true
+  },
+  {
+   "id": "meet1",
+   "text": "This is C F O.",
+   "file": "meet1.wav",
+   "seconds": 1.341,
+   "take": "meet1.1.wav",
+   "heard": "This is CFO.",
+   "ok": true
+  },
+  {
+   "id": "meet2",
+   "text": "It helps you see your money.",
+   "file": "meet2.wav",
+   "seconds": 1.276,
+   "take": "meet2.0.wav",
+   "heard": "It helps you see your money.",
+   "ok": true
+  },
+  {
+   "id": "p1",
+   "text": "Problem one. Writing things down is a chore. So you don't.",
+   "file": "p1.wav",
+   "seconds": 3.759,
+   "take": "p1.2.wav",
+   "heard": "Problem 1, writing things down is a chore, so you don't.",
+   "ok": true
+  },
+  {
+   "id": "s1a",
+   "text": "Here, you just say it.",
+   "file": "s1a.wav",
+   "seconds": 1.318,
+   "take": "s1a.1.wav",
+   "heard": "Here you just say it.",
+   "ok": true
+  },
+  {
+   "id": "s1b",
+   "text": "Spent twenty on lunch.",
+   "file": "s1b.wav",
+   "seconds": 1.103,
+   "take": "s1b.2.wav",
+   "heard": "Spent 20 on lunch.",
+   "ok": true
+  },
+  {
+   "id": "s1c",
+   "text": "Done.",
+   "file": "s1c.wav",
+   "seconds": 0.682,
+   "take": "s1c.1.wav",
+   "heard": "Done.",
+   "ok": true
+  },
+  {
+   "id": "p2",
+   "text": "Problem two. When you get paid, it all looks like spending money.",
+   "file": "p2.wav",
+   "seconds": 3.686,
+   "take": "p2.0.wav",
+   "heard": "Problem two, when you get paid, it all looks like spending money.",
+   "ok": true
+  },
+  {
+   "id": "s2a",
+   "text": "Here, it's split the moment it lands.",
+   "file": "s2a.wav",
+   "seconds": 2.274,
+   "take": "s2a.1.wav",
+   "heard": "Here, it's split the moment it lands.",
+   "ok": true
+  },
+  {
+   "id": "s2b",
+   "text": "Running costs. Your pay. Tax. And savings.",
+   "file": "s2b.wav",
+   "seconds": 3.113,
+   "take": "s2b.0.wav",
+   "heard": "running costs, your pay, tax, and savings.",
+   "ok": true
+  },
+  {
+   "id": "p3",
+   "text": "Problem three. You never know how much you can pay yourself.",
+   "file": "p3.wav",
+   "seconds": 2.936,
+   "take": "p3.3.wav",
+   "heard": "Problem 3, you never know how much you can pay yourself.",
+   "ok": true
+  },
+  {
+   "id": "s3a",
+   "text": "Now it tells you.",
+   "file": "s3a.wav",
+   "seconds": 1.771,
+   "take": "s3a.2.wav",
+   "heard": "Now, it tells you...",
+   "ok": true
+  },
+  {
+   "id": "s3b",
+   "text": "One tap, and it's recorded.",
+   "file": "s3b.wav",
+   "seconds": 1.661,
+   "take": "s3b.1.wav",
+   "heard": "One tap, and it's recorded.",
+   "ok": true
+  },
+  {
+   "id": "p4",
+   "text": "Problem four. Small costs grow quietly.",
+   "file": "p4.wav",
+   "seconds": 2.582,
+   "take": "p4.1.wav",
+   "heard": "Problem four, small costs grow quietly.",
+   "ok": true
+  },
+  {
+   "id": "s4a",
+   "text": "So put a limit on one.",
+   "file": "s4a.wav",
+   "seconds": 1.359,
+   "take": "s4a.0.wav",
+   "heard": "So, put a limit on one.",
+   "ok": true
+  },
+  {
+   "id": "s4b",
+   "text": "Track food, under three hundred.",
+   "file": "s4b.wav",
+   "seconds": 1.681,
+   "take": "s4b.1.wav",
+   "heard": "Track food under 300.",
+   "ok": true
+  },
+  {
+   "id": "s4c",
+   "text": "Now you can see it coming.",
+   "file": "s4c.wav",
+   "seconds": 1.534,
+   "take": "s4c.1.wav",
+   "heard": "Now you can see it coming.",
+   "ok": true
+  },
+  {
+   "id": "p5",
+   "text": "Problem five. Too many numbers. So you stop looking.",
+   "file": "p5.wav",
+   "seconds": 3.336,
+   "take": "p5.1.wav",
+   "heard": "Problem 5, too many numbers, so you stop looking.",
+   "ok": true
+  },
+  {
+   "id": "s5a",
+   "text": "So don't look. Just ask.",
+   "file": "s5a.wav",
+   "seconds": 1.76,
+   "take": "s5a.1.wav",
+   "heard": "So don't look, just ask.",
+   "ok": true
+  },
+  {
+   "id": "s5b",
+   "text": "How much is left for running costs?",
+   "file": "s5b.wav",
+   "seconds": 1.856,
+   "take": "s5b.1.wav",
+   "heard": "How much is left for running costs?",
+   "ok": true
+  },
+  {
+   "id": "s5c",
+   "text": "One clear answer.",
+   "file": "s5c.wav",
+   "seconds": 1.124,
+   "take": "s5c.0.wav",
+   "heard": "1 clear answer.",
+   "ok": true
+  },
+  {
+   "id": "who1",
+   "text": "C F O is for freelancers, solo founders, and small agency owners.",
+   "file": "who1.wav",
+   "seconds": 4.055,
+   "take": "who1.1.wav",
+   "heard": "CFO is for freelancers, solo founders, and small agency owners.",
+   "ok": true
+  },
+  {
+   "id": "who2",
+   "text": "And for anyone whose money keeps disappearing.",
+   "file": "who2.wav",
+   "seconds": 2.439,
+   "take": "who2.1.wav",
+   "heard": "and for anyone whose money keeps disappearing.",
+   "ok": true
+  },
+  {
+   "id": "cta1",
+   "text": "Your first month is free.",
+   "file": "cta1.wav",
+   "seconds": 1.274,
+   "take": "cta1.0.wav",
+   "heard": "Your first month is free.",
+   "ok": true
+  },
+  {
+   "id": "cta2",
+   "text": "Start today.",
+   "file": "cta2.wav",
+   "seconds": 0.809,
+   "take": "cta2.0.wav",
+   "heard": "Start today.",
+   "ok": true
+  }
+ ]
+}

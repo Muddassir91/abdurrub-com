@@ -79,7 +79,7 @@ const parts = sections.map((s, i) => {
   return out;
 });
 const total = sections.reduce((a, s) => a + s.seconds, 0);
-const music = resolve(process.cwd(), "public", "cfoh-music.mp3");
+const music = process.env.MUSIC_OUT ? resolve(process.env.MUSIC_OUT) : resolve(process.cwd(), "public", "cfoh-music.mp3");
 const inputs = parts.flatMap((p) => ["-i", p]);
 let graph = "";
 let last = "[0:a]";
