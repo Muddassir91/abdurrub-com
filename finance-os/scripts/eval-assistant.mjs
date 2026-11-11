@@ -107,7 +107,13 @@ async function ask(model, message) {
   return { ms: Date.now() - t, parsed: parsed ? { reply: typeof parsed.reply === "string" ? parsed.reply : "", actions: Array.isArray(parsed.actions) ? parsed.actions : [] } : null, raw, usage, error: res.ok ? null : JSON.stringify(j.errors ?? j).slice(0, 200) };
 }
 
-const models = process.argv.slice(2);
+// Every message here spends the account's shared daily Workers AI allowance, the same one
+// real users draw on. By default only the first 6 cases run; EVAL_ALL=1 runs all of them.
+if (!process.env.EVAL_ALL && CASES.length > 6) {
+  console.log(`Running 6 of ${CASES.length} cases (set EVAL_ALL=1 for all; each one uses the live daily allowance).`);
+  CASES.length = 6;
+}
+const models = process.argv.slice(2).filter((a) => !a.startsWith("-"));
 const verbose = process.env.VERBOSE === "1";
 for (const model of models) {
   let pass = 0, ms = 0, inTok = 0, outTok = 0;

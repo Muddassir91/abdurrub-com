@@ -42,6 +42,7 @@ const fakeAI = {
     const last = messages[messages.length - 1].content;
     const msg = last.slice(last.lastIndexOf("Message:") + 8).trim().toLowerCase();
     const hasContext = /this month: collected/.test(last);
+    if (msg.includes("meaning of life")) throw new Error("4006: you have used up your daily free allocation of 10,000 neurons");
     if (msg.includes("afford")) return { response: JSON.stringify({ reply: hasContext ? "Your running-costs ceiling is 1,125 and 308 has gone out. The decision is yours." : "no context", actions: [] }) };
     if (msg.includes("rent went up")) return { response: 'Sure! ```json\n{"reply": "", "actions": [{"name": "update_setup", "args": {"homeLine": {"name": "Rent", "amount": 1600}}}]}\n```' };
     if (msg.includes("delete")) return { response: { reply: "", actions: [{ name: "delete_transaction", args: { match: "figma" } }, { name: "format_disk", args: {} }] } };
@@ -316,6 +317,15 @@ try {
   await say("track food under 300");
   await replyText("Added a tracker");
   check("Assistant adds a custom tracker", await pas.locator('[data-section="trackers"]').getByText("Food this month").isVisible());
+  const tAsk = Date.now();
+  await say("How much is left for running costs?");
+  const leftAnswer = await replyText("is left this month");
+  check("Common questions are answered on the device, without the model", /Running costs: \$[\d,]+ spent of a \$[\d,]+ ceiling/.test(leftAnswer), `${Date.now() - tAsk} ms · ${leftAnswer.replace(/\n/g, " ")}`);
+  await say("who are you?");
+  check("It introduces itself as CFoh!", (await replyText("I'm CFoh!")).includes("I'm CFoh!"));
+  await say("what is the meaning of life?");
+  const limitMsg = await replyText("today's limit");
+  check("When the model's daily limit is used up it says so plainly and stays useful", limitMsg.includes("resets at midnight UTC") && limitMsg.includes("how much is left") && !/assistant|resting/i.test(limitMsg), limitMsg.replace(/\n/g, " | "));
   await say("can I afford a new 200 dollar tool?");
   const afford = await replyText("The decision is yours");
   check("Questions go to the model with this month's numbers", afford.includes("1,125"));

@@ -396,7 +396,7 @@ export function runAction(env: ExecEnv, action: RawAction): ActionResult {
         nextRenewalDate: existing?.nextRenewalDate ?? `${addMonths(currentMonthKey(), frequency === "annual" ? 12 : frequency === "quarterly" ? 3 : 1)}-${env.today.slice(8, 10) > "28" ? "28" : env.today.slice(8, 10)}`,
         status: "active",
         isEssential: existing?.isEssential ?? true,
-        justification: existing?.justification ?? "Added from the assistant.",
+        justification: existing?.justification ?? "Added by telling CFoh!.",
         notes: existing?.notes ?? null,
       });
       return { ok: true, changed: true, text: `${existing ? "Updated" : "Added"} ${name}: ${formatMoney(amountMinor, currency)} ${frequency}` };
@@ -468,7 +468,7 @@ export function runAction(env: ExecEnv, action: RawAction): ActionResult {
       const delta = target - accountBalance(acc, data.transactions, data.settings);
       if (delta === 0) return { ok: true, text: `${acc.name} already shows ${formatMoney(target, acc.currency)}.` };
       try {
-        recordBalanceAdjustment(env.db, acc.id, delta, env.today, "Balance corrected from the assistant", data.settings, data.fxRates);
+        recordBalanceAdjustment(env.db, acc.id, delta, env.today, "Balance corrected by telling CFoh!", data.settings, data.fxRates);
       } catch (e) {
         return fail(e instanceof Error ? e.message : String(e));
       }

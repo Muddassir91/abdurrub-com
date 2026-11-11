@@ -9,7 +9,8 @@ import { useTheme } from "@/components/AppShell";
 import { CONFIRM_FIRST, runAction, type ActionResult, type RawAction, type UiEffect } from "@/assistant/actions";
 import { parseLocal } from "@/assistant/parser";
 import { buildContext } from "@/assistant/context";
-import { askModel, assistantUrl, type ModelTurn } from "@/assistant/client";
+import { askModel, assistantUrl, ModelError, type ModelTurn } from "@/assistant/client";
+import { answerLocal, modelUnavailable } from "@/assistant/answers";
 
 /**
  * The assistant: type (or say) what happened or what you want changed, from
@@ -148,6 +149,12 @@ export function AssistantProvider({ children }: { children: React.ReactNode }) {
         historyRef.current = [...historyRef.current, { role: "user" as const, content: text }, { role: "assistant" as const, content: (reply.results ?? []).map((r) => r.text).join(" ") }].slice(-8);
         return reply;
       }
+      // Common questions about the person's own numbers are answered on the device.
+      const known = answerLocal(text, data, snapshot, month, today);
+      if (known) {
+        historyRef.current = [...historyRef.current, { role: "user" as const, content: text }, { role: "assistant" as const, content: known }].slice(-8);
+        return push({ role: "assistant", text: known, via: "device" });
+      }
       if (!assistantUrl()) {
         return push({ role: "assistant", text: `I did not catch that. Try something like "spent 20 on lunch", "got paid 1,200", "paid myself 500", "my tax is 1%", "simple dashboard" or "review my setup".`, failed: true, via: "device" });
       }
@@ -163,7 +170,7 @@ export function AssistantProvider({ children }: { children: React.ReactNode }) {
         historyRef.current = [...historyRef.current, { role: "user" as const, content: text }, { role: "assistant" as const, content: [answer.reply, ...(reply.results ?? []).map((r) => r.text)].filter(Boolean).join(" ") || "Done." }].slice(-8);
         return reply;
       } catch (e) {
-        return push({ role: "assistant", text: e instanceof Error && e.name !== "TypeError" ? e.message : "I could not reach the assistant. Check your connection. Typed commands like \"spent 20 on lunch\" still work.", failed: true, via: "model" });
+        return push({ role: "assistant", text: modelUnavailable(e instanceof ModelError ? e.reason : "error"), failed: true, via: "model" });
       } finally {
         setBusy(false);
       }
@@ -348,7 +355,7 @@ function AssistantPanel() {
             <div className="text-sm font-semibold text-fg">Ask CFoh!</div>
             <div className="truncate text-[11px] text-fg-faint">Record money, change anything, or ask about your numbers</div>
           </div>
-          <button type="button" onClick={() => setOpen(false)} className="rounded-lg p-1.5 text-fg-muted hover:bg-surface-2" aria-label="Close assistant">
+          <button type="button" onClick={() => setOpen(false)} className="rounded-lg p-1.5 text-fg-muted hover:bg-surface-2" aria-label="Close CFoh!">
             <X size={18} />
           </button>
         </div>

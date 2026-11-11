@@ -4,6 +4,7 @@ import { seedDatabase } from "@/db/seed";
 import { loadEngineData } from "@/db/repo";
 import { buildSnapshot } from "@/engine/snapshot";
 import { parseLocal, takeAmount } from "@/assistant/parser";
+import { answerLocal, modelUnavailable } from "@/assistant/answers";
 import { runAction, resolvePage } from "@/assistant/actions";
 import { applyOnboarding } from "@/onboarding/apply";
 import { currentAnswers } from "@/onboarding/derive";
@@ -211,5 +212,63 @@ describe("split and next steps", () => {
     expect(ids).toContain("tax");
     expect(steps.find((s) => s.id === "tax")?.say).toBe("moved 600 to tax");
     expect(steps.length).toBeLessThanOrEqual(3);
+  });
+});
+
+describe("answers on the device", () => {
+  async function ready() {
+    const { db, env } = await workspace();
+    runAction(env, { name: "add_money_in", args: { amount: 4000, from: "Harbor" } });
+    runAction(env, { name: "add_money_out", args: { amount: 120, what: "Figma", side: "business" } });
+    runAction(env, { name: "add_money_out", args: { amount: 20, currency: "USD", what: "Lunch", side: "personal" } });
+    runAction(env, { name: "pay_myself", args: { amount: 500 } });
+    const data = loadEngineData(db);
+    const snap = buildSnapshot(data, MONTH, TODAY);
+    return { data, snap, ask: (q: string) => answerLocal(q, data, snap, MONTH, TODAY) };
+  }
+
+  it("answers common questions from the person's own numbers", async () => {
+    const { snap, ask } = await ready();
+    expect(ask("How much is left for running costs?")).toMatch(/Running costs: .* spent of a .* ceiling, so .* is left this month\./);
+    expect(ask("how much did I spend?")).toMatch(/^Money out this month: \$/);
+    expect(ask("what did i spend on figma")).toMatch(/\$120/);
+    expect(ask("how much did I make this month?")).toMatch(/^Money in this month: \$4,000/);
+    expect(ask("how much can I pay myself?")).toMatch(/You have taken \$500/);
+    expect(ask("what's next?")).toMatch(/^(Next on your list:|Nothing is waiting)/);
+    expect(ask("what is my split")).toMatch(/running costs 25%, your pay 35%, tax 15%/);
+    expect(ask("how am I doing?")).toMatch(/^This month: /);
+    expect(ask("what subscriptions do I have?")).toMatch(/Figma/);
+    expect(ask("hey cfoh, how much cash do i have?")).toMatch(/Business account: /);
+    expect(snap.revenue.collected).toBeGreaterThan(0);
+  });
+
+  it("is called CFoh! and explains itself without a model", async () => {
+    const { ask } = await ready();
+    expect(ask("who are you?")).toMatch(/^I'm CFoh!/);
+    expect(ask("what can you do?")).toMatch(/plain words/);
+    expect(ask("hello")).toMatch(/^Hi Ayesha/);
+  });
+
+  it("reports tax figures without saying what is owed", async () => {
+    const { ask } = await ready();
+    const a = ask("how much tax do I owe?")!;
+    expect(a).toMatch(/Your split puts 15% toward tax/);
+    expect(a).toMatch(/can't tell you what you owe/);
+  });
+
+  it("leaves advice, how-to, other periods and commands to the model", async () => {
+    const { ask } = await ready();
+    expect(ask("should I hire a designer?")).toBeNull();
+    expect(ask("can I afford a new laptop?")).toBeNull();
+    expect(ask("how much did I spend last month?")).toBeNull();
+    expect(ask("how do I add a client?")).toBeNull();
+    expect(ask("spent 20 on lunch")).toBeNull();
+    expect(ask("add netflix 15 a month?")).toBeNull();
+  });
+
+  it("says something useful when the model is unavailable", () => {
+    expect(modelUnavailable("limit")).toMatch(/resets at midnight UTC/);
+    expect(modelUnavailable("limit")).not.toMatch(/assistant|resting/i);
+    expect(modelUnavailable("offline")).toMatch(/how much is left/);
   });
 });

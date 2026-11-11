@@ -1,7 +1,7 @@
 import { ACTION_NAMES, type RawAction } from "./actions";
 
 /**
- * Calls the assistant Worker (Cloudflare Workers AI). Only used when the
+ * Calls the CFoh! Worker (Cloudflare Workers AI). Only used when the
  * on-device parser does not understand a message. The Worker returns
  * {reply, actions}; actions are validated again before anything runs.
  */
@@ -18,7 +18,7 @@ export interface ModelAnswer {
   model?: string;
 }
 
-/** Where the assistant lives. The browser test points this at a local stand-in. */
+/** Where the language model lives. The browser test points this at a local stand-in. */
 export function assistantUrl(): string {
   if (typeof window !== "undefined") {
     try {
@@ -46,17 +46,30 @@ export function cleanActions(raw: unknown): RawAction[] {
   return out;
 }
 
+/** Why the model gave no answer, so the app can say something useful. */
+export class ModelError extends Error {
+  constructor(public reason: "limit" | "offline" | "error") {
+    super(reason);
+    this.name = "ModelError";
+  }
+}
+
 export async function askModel(message: string, context: string, history: ModelTurn[], signal?: AbortSignal): Promise<ModelAnswer> {
   const url = assistantUrl();
-  if (!url) throw new Error("The assistant model is not connected.");
-  const res = await fetch(`${url}/chat`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: message.slice(0, 1000), context, history: history.slice(-6).map((h) => ({ role: h.role, content: h.content.slice(0, 600) })) }),
-    signal,
-  });
-  if (res.status === 429) throw new Error("The assistant has answered a lot today and is resting. Typed commands like \"spent 20 on lunch\" still work.");
-  if (!res.ok) throw new Error("The assistant could not answer just now. Typed commands like \"spent 20 on lunch\" still work.");
+  if (!url) throw new ModelError("error");
+  let res: Response;
+  try {
+    res = await fetch(`${url}/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: message.slice(0, 1000), context, history: history.slice(-6).map((h) => ({ role: h.role, content: h.content.slice(0, 600) })) }),
+      signal,
+    });
+  } catch {
+    throw new ModelError("offline");
+  }
+  if (res.status === 429) throw new ModelError("limit");
+  if (!res.ok) throw new ModelError("error");
   const body = (await res.json()) as { reply?: unknown; actions?: unknown; model?: unknown };
   return { reply: typeof body.reply === "string" ? body.reply.trim() : "", actions: cleanActions(body.actions), model: typeof body.model === "string" ? body.model : undefined };
 }
