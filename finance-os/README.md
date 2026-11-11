@@ -80,6 +80,8 @@ npm run export:site                                           # the URL is saved
 
 Without `assistantUrl` the app runs on-device commands only.
 
+The model is `@cf/openai/gpt-oss-20b` with `@cf/meta/llama-3.3-70b-instruct-fp8-fast` as fallback, chosen with `scripts/eval-assistant.mjs`, which sends 25 realistic messages (including Roman Urdu) and checks the actions that come back; gpt-oss-20b got all 25. Re-run it after editing `worker/prompt.md`. One answer uses about 3,000 input and 200 output tokens, roughly 60 "neurons", so the free allowance of 10,000 neurons a day covers about 170 model answers a day across all users. On-device commands do not use it. The allowance resets at 00:00 UTC; note that the eval script itself spends about 1,500 neurons per model. `scripts/e2e-assistant-live.mjs` checks the real Worker from a browser.
+
 ### Speed
 
 The app opens from the copy on the device and talks to the account afterwards: access check, workspace list and a newer copy from another device are fetched in the background and swapped in if needed. Saving happens just after the screen updates rather than before it, several changes in a row save once, and the encryption key for passphrase-locked workspaces is derived once per session instead of on every save.

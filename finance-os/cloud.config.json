@@ -1,5 +1,6 @@
 {
   "_comment": "Cloud accounts for CFoh!. Supabase project URL and publishable (anon) key. Both are public by design; privacy comes from row-level security (see supabase/schema.sql).",
   "supabaseUrl": "https://gsaiioxnsmcbmxhwlmxb.supabase.co",
-  "supabaseAnonKey": "sb_publishable_aFIZrBY4sshsz7f4Cv0eHg_bzLAGZX_"
+  "supabaseAnonKey": "sb_publishable_aFIZrBY4sshsz7f4Cv0eHg_bzLAGZX_",
+  "assistantUrl": "https://cfoh-assistant.m-a-rab2012.workers.dev"
 }

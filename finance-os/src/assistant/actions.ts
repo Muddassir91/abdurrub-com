@@ -449,7 +449,8 @@ export function runAction(env: ExecEnv, action: RawAction): ActionResult {
       }
       if (Object.keys(split).length === 0) return fail("Tell me the shares, for example \"profit 15% and cushion 10%\".");
       try {
-        const notes = patchSetup(env.db, { split });
+        // A new tax share is also the person's tax answer, so both stay in step.
+        const notes = patchSetup(env.db, split.tax !== undefined ? { split, taxPct: split.tax } : { split });
         return { ok: true, changed: true, text: notes.join(". ") + "." };
       } catch (e) {
         return fail(e instanceof Error ? e.message : String(e));

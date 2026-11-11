@@ -15,7 +15,8 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
-export const DEFAULT_MODELS = ["@cf/meta/llama-3.3-70b-instruct-fp8-fast", "@cf/meta/llama-3.1-8b-instruct-fast"];
+// Chosen with scripts/eval-assistant.mjs: gpt-oss-20b answered every test message correctly and is the cheapest of the good ones; llama 3.3 is the fallback.
+export const DEFAULT_MODELS = ["@cf/openai/gpt-oss-20b", "@cf/meta/llama-3.3-70b-instruct-fp8-fast"];
 
 export function bundle(models = DEFAULT_MODELS) {
   const root = resolve(import.meta.dirname, "..");

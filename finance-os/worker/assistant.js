@@ -107,11 +107,11 @@ export default {
       try {
         let out;
         try {
-          out = await env.AI.run(model, { messages, max_tokens: 600, temperature: 0.1, response_format: { type: "json_object" } });
+          out = await env.AI.run(model, { messages, max_tokens: 1500, temperature: 0.1, response_format: { type: "json_object" } });
         } catch (e) {
           // Some models reject response_format; ask again without it.
           if (!/response_format|json|schema|unsupported|invalid/i.test(String(e && e.message))) throw e;
-          out = await env.AI.run(model, { messages, max_tokens: 600, temperature: 0.1 });
+          out = await env.AI.run(model, { messages, max_tokens: 1500, temperature: 0.1 });
         }
         const parsed = extract(out);
         if (parsed && (typeof parsed.reply === "string" || Array.isArray(parsed.actions))) {

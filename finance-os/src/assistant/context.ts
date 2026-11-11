@@ -3,6 +3,7 @@ import { accountBalance, isBusinessSpend, isPersonalSpend, isRevenue } from "@/e
 import { minorToMajor, type CurrencyCode, type Minor } from "@/lib/money";
 import { parseUi, SECTION_LABELS } from "@/lib/ui";
 import { currentAnswers } from "@/onboarding/derive";
+import { nextSteps } from "@/engine/nextSteps";
 
 /**
  * The summary the language model sees: this month's figures, budgets, recent
@@ -55,6 +56,7 @@ export function buildContext(data: EngineData, snap: MonthSnapshot, month: strin
     `personal categories: ${data.categories.filter((c) => c.scope === "personal").map((c) => c.name).join(", ")}`,
     `goals: ${a.goals.join(", ") || "none picked"}`,
     `dashboard shows: ${shown.map((s) => SECTION_LABELS[s]).join(", ")}; hidden: ${ui.dashboard.hidden.map((s) => SECTION_LABELS[s]).join(", ") || "nothing"}; trackers: ${ui.dashboard.trackers.map((t) => t.label).join(", ") || "none"}`,
+    `to do next: ${nextSteps(data, snap, today, month).map((x) => x.title).join("; ") || "nothing outstanding"}`,
     `recent entries, newest first:`,
     ...(recent.length ? recent : ["(none)"]),
   ];
